@@ -2,22 +2,6 @@
   (:require [clojure.test :refer :all]
             [slipway.websockets :as ws]))
 
-(require '[slipway.auth.constraints :as constraints])
-
-{:auth-method         "basic"                               ;; either "basic" or "form"
- :auth-type           "jaas"                                ;; either "jaas" or "hash"
- :login-uri           "/login"                              ;; the URI where the login form is hosted
- :login-retry-uri     "/login-retry"
- :realm               "my-app"
- :logout-uri          "/logout"
- :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
- :constraint-mappings (constraints/constraint-mappings
-                       ;; /css/* is not protected. Everyone (including unauthenticated users) can access
-                       ["/css/*" (constraints/no-auth)]
-                       ;; /api/* is protected. Any authenticated user can access
-                       ["/api/*" (constraints/basic-auth-any-constraint)])}
-
-
 (deftest websocket-req
   (is (false? (ws/upgrade-request? {})))
   (is (false? (ws/upgrade-request? {:headers {"connection" "upgrade"}})))
