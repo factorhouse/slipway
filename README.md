@@ -7,7 +7,7 @@ Slipway is based off [Jetty](https://www.eclipse.org/jetty/) and evolved from th
 
 Slipway is built to meet the requirements of [kPow](https://kpow.io/). 
 
-kPow is a self-hosted JAR/Docker container that runs on our customers infrastructure. Each customers configuration+deployment of kPow's web server is unique. 
+kPow is a self-hosted JAR/Docker container that runs on our customer's infrastructure. Each customer's configuration+deployment of kPow's web server is unique. 
 
 Thus, Slipway is battle tested. We imagine kPow is one of the most heavily deployed Clojure projects out there.
 
@@ -22,7 +22,7 @@ Thus, Slipway is battle tested. We imagine kPow is one of the most heavily deplo
 * Provide configuration options for Gzip, SSL, HTTP forwarding, SNI checking etc
 * First-class WebSockets support (with [Sente](https://github.com/ptaoussanis/sente) integration)
 * Avoid breaking changes to the API
-* No fat. For us that means no async handlers or HTTP2 support.
+* No fat. For us, that means no async handlers or HTTP2 support.
 
 ## Usage
 
@@ -170,7 +170,7 @@ JAAS implements a Java version of the standard Pluggable Authentication Module (
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
 
-Slipway is the only ring adapter that supports Jetty JAAS out of the box. Thus, one of the only ways to authenticate using LDAP in the Clojure world. Oftentimes a requirement for the enterprise.
+Slipway is the only ring adapter that supports Jetty JAAS out of the box. Thus, one of the few ways to authenticate using LDAP in the Clojure world. Oftentimes a requirement for the enterprise.
 
 #### Usage
 
