@@ -177,15 +177,20 @@ Slipway is the only ring adapter that supports Jetty JAAS out of the box. Thus, 
 Pass an `:auth` key to your `run-jetty` options map:
 
 ```clojure 
-{:auth-method "basic" ;; either "basic" or "form" 
- :login-uri "/login"
- :login-retry-uri "/login-retry"
- :realm "my-app"
- :logout-uri "/logout"
+(require '[slipway.auth.constraints :as constraints])
+
+{:auth-method         "basic" ;; either "basic" (basic authentication) or "form" (form based authencation, with a HTML login form served at :login-uri)
+ :auth-type           "jaas" ;; either "jaas" or "hash"
+ :login-uri           "/login" ;; the URI where the login form is hosted
+ :login-retry-uri     "/login-retry"
+ :realm               "my-app"
+ :logout-uri          "/logout"
  :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
- :constraint-mappings {"api/*" :authenticated ;; API endpoints require auth
-                       "public/*" :no-auth}  ;; resources in public require no auth
- :auth-type "jaas"}
+ :constraint-mappings (constraints/constraint-mappings
+                       ;; /css/* is not protected. Everyone (including unauthenticated users) can access
+                       ["/css/*" (constraints/no-auth)]
+                       ;; /api/* is protected. Any authenticated user can access
+                       ["/api/*" (constraints/basic-auth-any-constraint)])}
 ```
 
 #### jaas.config
