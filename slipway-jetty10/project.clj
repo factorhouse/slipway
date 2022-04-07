@@ -1,4 +1,4 @@
-(defproject io.operatr/slipway-jetty10 "1.0.0"
+(defproject io.operatr/slipway-jetty10 "1.0.1"
   :description "A Jetty ring adapter for enterprise Clojure development."
   :url "https://github.com/operatr-io/slipway"
   :license {:name "Eclipse Public License"
@@ -19,7 +19,7 @@
   :dependencies [[org.clojure/clojure "1.11.0"]
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
-                 [io.operatr/slipway-core "1.0.0"]
+                 [io.operatr/slipway-core "1.0.1"]
                  [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.9" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.9" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty.websocket/websocket-servlet "10.0.9" :exclusions [org.slf4j/slf4j-api]]
