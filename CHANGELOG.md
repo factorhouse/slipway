@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [1.0.2] - 2022-04-07
 ### Changed
-- **Jetty9** - also pass in response body in the case of WS upgrade errors.
+- **Jetty9** - pass in response body in the case of WS upgrade error.
 
 
 ## [1.0.1] - 2022-04-07
