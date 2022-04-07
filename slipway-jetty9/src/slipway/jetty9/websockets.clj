@@ -157,8 +157,8 @@
                 (when-let [exts (not-empty (:extensions ws-results))]
                   (.setExtensions resp (mapv #(ExtensionConfig. ^String %) exts)))
                 (proxy-ws-adapter ws-results))
-              ;; If we don't get a ws-response, send appropriate status code + generic error message
-              (.sendError resp (get resp-map :status 500) "Unable to handle WS upgrade request")))
+              ;; If we don't get a ws-response, send appropriate status code + error message
+              (.sendError resp (:status resp-map 500) (str (:body resp-map "Unable to handle WS upgrade request")))))
           ;; This should be handled by the ring-app-handler handler, but be extra defensive anyway
           (.sendError resp 406 "Unable to process request"))))))
 
