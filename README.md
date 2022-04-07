@@ -32,12 +32,12 @@ Add one of these dependencies to your deps:
 
 ```clojure 
 ;; Recommended for most users, tracks against the latest version of Jetty:
-[io.operatr/slipway-jetty10 "1.0.1"]
+[io.operatr/slipway-jetty10 "1.0.2"]
 ```
 
 ```clojure 
 ;; If you are still on Java8 use this dependency:
-[io.operatr/slipway-jetty9 "1.0.1"]
+[io.operatr/slipway-jetty9 "1.0.2"]
 ```
 
 ### Running a server
