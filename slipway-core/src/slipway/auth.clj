@@ -111,7 +111,7 @@
 
 (defn configurator
   [^Server server
-   {:keys [auth-method login-uri login-retry-uri constraint-mappings cookie]
+   {:keys [auth-method login-uri login-retry-uri constraint-mappings session cookie]
     :as   opts}]
   (let [login            (login-service opts)
         security-handler (doto (ConstraintSecurityHandler.)
@@ -125,6 +125,6 @@
     (if (= "basic" auth-method)
       (.setHandler server security-handler)
       (.setHandler server (HandlerCollection.
-                           (into-array Handler [(session-handler cookie)
+                           (into-array Handler [(session-handler (or session cookie))
                                                 security-handler]))))
     server))

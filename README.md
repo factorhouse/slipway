@@ -187,11 +187,11 @@ Pass an `:auth` key to your `run-jetty` options map:
  :realm               "my-app"
  :logout-uri          "/logout"
  :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
- :cookie              {:http-only?            true
-                       :same-site             :strict       ;; can be :lax, :strict or :none
-                       :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
-                       :max-inactive-interval -1            ;; Sets the max period of inactivity, after which the session is invalidated, in seconds.
-                       :cookie-name           "JSESSIONID"}
+ :session             {:http-only?            true
+                      :same-site             :strict       ;; can be :lax, :strict or :none
+                      :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
+                      :max-inactive-interval -1            ;; Sets the max period of inactivity, after which the session is invalidated, in seconds.
+                      :cookie-name           "JSESSIONID"}
  :constraint-mappings (constraints/constraint-mappings
                        ;; /css/* is not protected. Everyone (including unauthenticated users) can access
                        ["/css/*" (constraints/no-auth)]
