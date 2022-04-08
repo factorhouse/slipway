@@ -179,13 +179,18 @@ Pass an `:auth` key to your `run-jetty` options map:
 ```clojure 
 (require '[slipway.auth.constraints :as constraints])
 
-{:auth-method         "basic" ;; either "basic" (basic authentication) or "form" (form based authencation, with a HTML login form served at :login-uri)
- :auth-type           "jaas" ;; either "jaas" or "hash"
- :login-uri           "/login" ;; the URI where the login form is hosted
+{:auth-method         "basic"                               ;; either "basic" (basic authentication) or "form" (form based authencation, with a HTML login form served at :login-uri)
+ :auth-type           "jaas"                                ;; either "jaas" or "hash"
+ :login-uri           "/login"                              ;; the URI where the login form is hosted
  :login-retry-uri     "/login-retry"
  :realm               "my-app"
  :logout-uri          "/logout"
  :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
+ :cookie              {:http-only?            true
+                       :same-site             :strict       ;; can be :lax, :strict or :none
+                       :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
+                       :max-inactive-interval -1            ;; Sets the max period of inactivity, after which the session is invalidated, in seconds.
+                       :cookie-name           "JSESSIONID"}
  :constraint-mappings (constraints/constraint-mappings
                        ;; /css/* is not protected. Everyone (including unauthenticated users) can access
                        ["/css/*" (constraints/no-auth)]
