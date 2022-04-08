@@ -73,7 +73,7 @@
   (if hash-user-file
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))
-    (throw (ex-info (str "Set the path to your hash user realm properties file with the HASH_USER_FILE environment variable") {}))))
+    (throw (ex-info (str "Set the path to your hash user realm properties file") {}))))
 
 (defn ->tracking-mode
   [mode]
