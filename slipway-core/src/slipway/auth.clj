@@ -10,7 +10,8 @@
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (javax.servlet SessionTrackingMode)
            (org.eclipse.jetty.server.session SessionHandler)
-           (org.eclipse.jetty.server.handler HandlerCollection)))
+           (org.eclipse.jetty.server.handler HandlerCollection)
+           (org.eclipse.jetty.http HttpCookie$SameSite)))
 
 (defn user
   "Derive user credentials (name + roles) from a base jetty request"
@@ -74,8 +75,44 @@
       (HashLoginService. realm hash-user-file))
     (throw (ex-info (str "Set the path to your hash user realm properties file with the HASH_USER_FILE environment variable") {}))))
 
+(defn ->tracking-mode
+  [mode]
+  (case mode
+    :cookie SessionTrackingMode/COOKIE
+    :url SessionTrackingMode/URL
+    :ssl SessionTrackingMode/SSL))
+
+(defn ->same-site
+  [same-site]
+  (case same-site
+    :none HttpCookie$SameSite/NONE
+    :lax HttpCookie$SameSite/LAX
+    :strict HttpCookie$SameSite/STRICT))
+
+(defn ^SessionHandler session-handler
+  ;; Apply sensible defaults in-line with ring-defaults:
+  ;; https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
+  [{:keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
+    :or   {max-inactive-interval -1
+           secure-request-only?  true
+           http-only?            true
+           same-site             :strict
+           cookie-name           "JSESSIONID"
+           tracking-modes        #{:cookie}}}]
+  (let [same-site      (->same-site same-site)
+        tracking-modes (into #{} (map ->tracking-mode) tracking-modes)]
+    (doto (SessionHandler.)
+      (.setSessionTrackingModes tracking-modes)
+      (.setMaxInactiveInterval max-inactive-interval)
+      (.setSecureRequestOnly secure-request-only?)
+      (.setHttpOnly http-only?)
+      (.setSameSite same-site)
+      (.setSessionCookie cookie-name))))
+
 (defn configurator
-  [^Server server {:keys [auth-method login-uri login-retry-uri constraint-mappings] :as opts}]
+  [^Server server
+   {:keys [auth-method login-uri login-retry-uri constraint-mappings cookie]
+    :as   opts}]
   (let [login            (login-service opts)
         security-handler (doto (ConstraintSecurityHandler.)
                            (.setConstraintMappings ^List constraint-mappings)
@@ -88,7 +125,6 @@
     (if (= "basic" auth-method)
       (.setHandler server security-handler)
       (.setHandler server (HandlerCollection.
-                           (into-array Handler [(doto (SessionHandler.)
-                                                  (.setSessionTrackingModes #{SessionTrackingMode/COOKIE}))
+                           (into-array Handler [(session-handler cookie)
                                                 security-handler]))))
     server))
