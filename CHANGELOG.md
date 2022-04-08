@@ -2,10 +2,12 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [1.0.5] - 2022-04-08
-**Note** skipped `1.0.4`, woops!
-
 ### Changed
 - SessionHandler: prefer `:session` key over `:cookie`
+
+## [1.0.4] - 2022-04-08
+### Changed
+- Update exception for misconfigured hash login
 
 ## [1.0.3] - 2022-04-08
 ### Changed
