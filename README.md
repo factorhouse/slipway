@@ -28,16 +28,16 @@ Thus, Slipway is battle tested. We imagine kPow is one of the most heavily deplo
 
 ### Installation
 
-Add one of these dependencies to your deps:
+Slipway is available from Clojars. Add one of these dependencies to your deps:
 
 ```clojure 
 ;; Recommended for most users, tracks against the latest version of Jetty:
-[io.operatr/slipway-jetty10 "1.0.3"]
+[io.operatr/slipway-jetty10 "1.0.4"]
 ```
 
 ```clojure 
 ;; If you are still on Java8 use this dependency:
-[io.operatr/slipway-jetty9 "1.0.3"]
+[io.operatr/slipway-jetty9 "1.0.4"]
 ```
 
 ### Running a server
