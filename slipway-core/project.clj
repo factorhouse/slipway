@@ -1,4 +1,4 @@
-(defproject io.operatr/slipway-core "1.0.2"
+(defproject io.operatr/slipway-core "1.0.3"
   :description "A Jetty ring adapter for enterprise Clojure development."
   :url "https://github.com/operatr-io/slipway"
   :license {:name "Eclipse Public License"
