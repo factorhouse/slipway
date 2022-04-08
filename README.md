@@ -207,6 +207,12 @@ Successfully authenticated users will have their details assoced into the Ring r
  :roles    ["admin"]}
 ```
 
+#### Constraints
+
+[Constraints](https://www.eclipse.org/jetty/javadoc/jetty-10/org/eclipse/jetty/util/security/Constraint.html) describe an auth and/or data constraint. 
+
+The `slipway.auth.constraints` namespace has a few useful helper functions for working with constraints. 
+
 #### jaas.config
 
 Start your application (JAR or REPL session) with the additional JVM opt `-Djava.security.auth.login.config=/some/path/to/jaas.config`
