@@ -199,6 +199,14 @@ Pass an `:auth` key to your `run-jetty` options map:
                        ["/api/*" (constraints/basic-auth-any-constraint)])}
 ```
 
+Successfully authenticated users will have their details assoced into the Ring request map under the key `:slipway.auth/user` - it contains: 
+
+```clojure
+{:provider :jetty
+ :name     "Jane"
+ :roles    ["admin"]}
+```
+
 #### jaas.config
 
 Start your application (JAR or REPL session) with the additional JVM opt `-Djava.security.auth.login.config=/some/path/to/jaas.config`
