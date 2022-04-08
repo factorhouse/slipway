@@ -66,6 +66,7 @@ The third argument to `run-jetty` is the options map:
   :http-forwarded? - support for X-Forwarded-For header (defaults to false)
   :gzip? - enables Gzip compression on the server (defaults to false)
   :gzip-content-types - contents types to apply Gzip compression to (defaults to ["text/css" "text/plain" "text/javascript" "application/javascript" "image/svg+xml"])
+  :gzip-min-size - the minimum size (in bytes) to apply Gzip compression to the response body. Default 1024
   :error-handler - sets an error handlers on the server for catch-all Jetty errors (something that extends the `org.eclipse.jetty.server.handler.ErrorHandler` class)
   :daemon? - use daemon threads (defaults to false)
   :send-server-version? - whether to send the Server header in responses (default true)

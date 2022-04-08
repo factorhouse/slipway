@@ -119,10 +119,10 @@
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
 (defn gzip-configurator
-  [^Server server content-types]
+  [^Server server content-types min-gzip-size]
   (let [gzip-handler (doto (GzipHandler.)
                        (.setIncludedMimeTypes (into-array String content-types))
-                       (.setMinGzipSize 1024)
+                       (.setMinGzipSize min-gzip-size)
                        (.setHandler (.getHandler server)))]
     (log/infof "Enabling gzip compression on the following content types: %s" content-types)
     (.setHandler server gzip-handler)))
