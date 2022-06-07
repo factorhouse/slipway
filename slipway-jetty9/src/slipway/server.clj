@@ -66,13 +66,13 @@
    "application/javascript"
    "image/svg+xml"])
 
-(defn run-jetty
+(defn run-jetty ^Server
   "Starts a Jetty server.
    See https://github.com/operatr-io/slipway#usage for list of options"
-  ^Server [handler {:as   options
-                    :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-                    :or   {gzip-content-types default-gzip-content-types
-                           gzip-min-size      1024}}]
+  [handler {:as   options
+            :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
+            :or   {gzip-content-types default-gzip-content-types
+                   gzip-min-size      1024}}]
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)
         ws-handler       (doto (ContextHandler.)

@@ -127,21 +127,21 @@
     (log/infof "Enabling gzip compression on the following content types: %s" content-types)
     (.setHandler server gzip-handler)))
 
-(defn create-server
-  ^Server [{:as   options
-            :keys [port max-threads min-threads threadpool-idle-timeout job-queue
-                   daemon? max-idle-time host ssl? ssl-port http? proxy?
-                   thread-pool]
-            :or   {port                    3000
-                   max-threads             50
-                   min-threads             8
-                   threadpool-idle-timeout 60000
-                   job-queue               nil
-                   daemon?                 false
-                   max-idle-time           200000
-                   ssl?                    false
-                   http?                   true
-                   proxy?                  false}}]
+(defn create-server ^Server
+  [{:as   options
+    :keys [port max-threads min-threads threadpool-idle-timeout job-queue
+           daemon? max-idle-time host ssl? ssl-port http? proxy?
+           thread-pool]
+    :or   {port                    3000
+           max-threads             50
+           min-threads             8
+           threadpool-idle-timeout 60000
+           job-queue               nil
+           daemon?                 false
+           max-idle-time           200000
+           ssl?                    false
+           http?                   true
+           proxy?                  false}}]
   {:pre [(or http? ssl? ssl-port)]}
   (let [pool               (or thread-pool
                                (doto (QueuedThreadPool. (int max-threads)

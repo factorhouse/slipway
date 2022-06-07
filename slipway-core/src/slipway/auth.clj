@@ -89,7 +89,7 @@
     :lax HttpCookie$SameSite/LAX
     :strict HttpCookie$SameSite/STRICT))
 
-(defn ^SessionHandler session-handler
+(defn session-handler ^SessionHandler
   ;; Apply sensible defaults in-line with ring-defaults:
   ;; https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
   [{:keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
