@@ -1,22 +1,22 @@
 (ns slipway.auth.constraints
-  (:import (org.eclipse.jetty.util.security Constraint)
-           (org.eclipse.jetty.security ConstraintMapping)))
+  (:import (org.eclipse.jetty.security ConstraintMapping)
+           (org.eclipse.jetty.util.security Constraint)))
 
-(defn ^Constraint basic-auth-any-constraint []
+(defn basic-auth-any-constraint ^Constraint []
   (doto (Constraint. Constraint/__BASIC_AUTH Constraint/ANY_AUTH) ;; == allow any authenticated user
     (.setName "auth")
     (.setAuthenticate true)))
 
-(defn ^Constraint form-auth-any-constraint []
+(defn form-auth-any-constraint ^Constraint []
   (doto (Constraint. Constraint/__FORM_AUTH Constraint/ANY_AUTH) ;; == allow any authenticated user
     (.setName "auth")
     (.setAuthenticate true)))
 
-(defn ^Constraint no-auth []
+(defn no-auth ^Constraint []
   (doto (Constraint.)
     (.setName "no-auth")))
 
-(defn ^ConstraintMapping constraint-mapping
+(defn constraint-mapping ^ConstraintMapping
   [^String path ^Constraint constraint]
   (doto (ConstraintMapping.)
     (.setConstraint constraint)

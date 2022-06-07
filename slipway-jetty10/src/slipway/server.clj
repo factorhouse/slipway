@@ -7,14 +7,14 @@
   (:require [clojure.tools.logging :as log]
             [ring.util.servlet :as servlet]
             [slipway.auth :as auth]
-            [slipway.jetty10.websockets :as jetty10.ws]
+            [slipway.impl.server :as server]
             [slipway.jetty10.auth]
+            [slipway.jetty10.websockets :as jetty10.ws]
             [slipway.util :as util]
-            [slipway.websockets :as ws]
-            [slipway.impl.server :as server])
-  (:import (org.eclipse.jetty.server Server Request)
-           (org.eclipse.jetty.servlet ServletHandler ServletContextHandler)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)
+            [slipway.websockets :as ws])
+  (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
+           (org.eclipse.jetty.server Request Server)
+           (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
 
 (extend-protocol util/RequestMapDecoder
@@ -25,7 +25,7 @@
 (defn wrap-proxy-handler
   [jetty-handler]
   (doto (ServletContextHandler.)
-    (.setContextPath "/*")
+    (.setContextPath "/")
     (.setAllowNullPathInfo true)
     (JettyWebSocketServletContainerInitializer/configure nil)
     (.setServletHandler jetty-handler)))
@@ -62,13 +62,13 @@
    "application/javascript"
    "image/svg+xml"])
 
-(defn ^Server run-jetty
+(defn run-jetty
   "Starts a Jetty server.
    See https://github.com/operatr-io/slipway#usage for list of options"
-  [handler {:as   options
-            :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-            :or   {gzip-content-types default-gzip-content-types
-                   gzip-min-size      1024}}]
+  ^Server [handler {:as   options
+                    :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
+                    :or   {gzip-content-types default-gzip-content-types
+                           gzip-min-size      1024}}]
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)]
     (.setHandler server ring-app-handler)

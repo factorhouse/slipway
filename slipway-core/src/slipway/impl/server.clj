@@ -5,12 +5,12 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log])
-  (:import (org.eclipse.jetty.server Server ServerConnector HttpConfiguration HttpConnectionFactory
-                                     ConnectionFactory SecureRequestCustomizer ProxyConnectionFactory Connector ForwardedRequestCustomizer)
-           (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)
+  (:import (java.security KeyStore)
+           (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer HttpConfiguration
+                                     HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
+           (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Server)
-           (java.security KeyStore)
-           (org.eclipse.jetty.server.handler.gzip GzipHandler)))
+           (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
 (defn http-config
   [{:keys [ssl-port secure-scheme output-buffer-size request-header-size
@@ -40,7 +40,7 @@
       (.setHeaderCacheSize header-cache-size)
       (.addCustomizer secure-customizer))))
 
-(defn ^SslContextFactory$Server ssl-context-factory
+(defn ssl-context-factory ^SslContextFactory$Server
   [{:keys [keystore keystore-type key-password client-auth key-manager-password
            truststore trust-password truststore-type ssl-protocols ssl-provider
            exclude-ciphers replace-exclude-ciphers? exclude-protocols replace-exclude-protocols?
@@ -127,7 +127,7 @@
     (log/infof "Enabling gzip compression on the following content types: %s" content-types)
     (.setHandler server gzip-handler)))
 
-(defn ^Server create-server
+(defn create-server ^Server
   [{:as   options
     :keys [port max-threads min-threads threadpool-idle-timeout job-queue
            daemon? max-idle-time host ssl? ssl-port http? proxy?

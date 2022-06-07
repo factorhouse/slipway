@@ -3,18 +3,18 @@
 
   Dervied from:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
-  (:require [slipway.websockets :as ws]
-            [slipway.util :as util])
-  (:import (org.eclipse.jetty.websocket.api WebSocketAdapter Session RemoteEndpoint WriteCallback
-                                            WebSocketPingPongListener)
-           (org.eclipse.jetty.websocket.server JettyWebSocketServerContainer JettyWebSocketCreator
-                                               JettyServerUpgradeRequest)
+  (:require [slipway.util :as util]
+            [slipway.websockets :as ws])
+  (:import (clojure.lang IFn)
+           (java.nio ByteBuffer)
+           (java.time Duration)
+           (java.util Locale)
            (javax.servlet AsyncContext)
            (javax.servlet.http HttpServletRequest HttpServletResponse)
-           (clojure.lang IFn)
-           (java.nio ByteBuffer)
-           (java.util Locale)
-           (java.time Duration)))
+           (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WebSocketPingPongListener
+                                            WriteCallback)
+           (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator
+                                               JettyWebSocketServerContainer)))
 
 (def ^:private no-op (constantly nil))
 

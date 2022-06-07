@@ -4,17 +4,17 @@
   Derived from:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
-  (:require [ring.util.servlet :as servlet]
-            [slipway.util :as util]
-            [slipway.jetty9.websockets :as jetty9.websockets]
+  (:require [clojure.tools.logging :as log]
+            [ring.util.servlet :as servlet]
             [slipway.auth :as auth]
-            [slipway.jetty9.auth]
-            [slipway.websockets :as ws]
             [slipway.impl.server :as server]
-            [clojure.tools.logging :as log])
-  (:import (org.eclipse.jetty.server Handler Server Request)
-           (org.eclipse.jetty.server.handler AbstractHandler HandlerList ContextHandler)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)))
+            [slipway.jetty9.auth]
+            [slipway.jetty9.websockets :as jetty9.websockets]
+            [slipway.util :as util]
+            [slipway.websockets :as ws])
+  (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
+           (org.eclipse.jetty.server Handler Request Server)
+           (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
 (extend-protocol util/RequestMapDecoder
   HttpServletRequest
@@ -66,17 +66,17 @@
    "application/javascript"
    "image/svg+xml"])
 
-(defn ^Server run-jetty
+(defn run-jetty
   "Starts a Jetty server.
    See https://github.com/operatr-io/slipway#usage for list of options"
-  [handler {:as   options
-            :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-            :or   {gzip-content-types default-gzip-content-types
-                   gzip-min-size      1024}}]
+  ^Server [handler {:as   options
+                    :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
+                    :or   {gzip-content-types default-gzip-content-types
+                           gzip-min-size      1024}}]
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)
         ws-handler       (doto (ContextHandler.)
-                           (.setContextPath "/*")
+                           (.setContextPath "/")
                            (.setAllowNullPathInfo true)
                            (.setHandler (jetty9.websockets/proxy-ws-handler handler options)))
         contexts         (doto (HandlerList.)

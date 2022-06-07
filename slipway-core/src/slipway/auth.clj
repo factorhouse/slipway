@@ -1,17 +1,17 @@
 (ns slipway.auth
-  (:require [clojure.tools.logging :as log]
-            [clojure.core.protocols :as p])
+  (:require [clojure.core.protocols :as p]
+            [clojure.tools.logging :as log])
   (:import (org.eclipse.jetty.server Authentication$User)
-           (org.eclipse.jetty.server Authentication$User Request Handler Server)
-           (javax.security.auth.login Configuration)
-           (org.eclipse.jetty.jaas JAASLoginService)
-           (org.eclipse.jetty.security HashLoginService ConstraintSecurityHandler)
            (java.util List)
-           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
+           (javax.security.auth.login Configuration)
            (javax.servlet SessionTrackingMode)
-           (org.eclipse.jetty.server.session SessionHandler)
+           (org.eclipse.jetty.http HttpCookie$SameSite)
+           (org.eclipse.jetty.jaas JAASLoginService)
+           (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
+           (org.eclipse.jetty.server Authentication$User Handler Request Server)
            (org.eclipse.jetty.server.handler HandlerCollection)
-           (org.eclipse.jetty.http HttpCookie$SameSite)))
+           (org.eclipse.jetty.server.session SessionHandler)))
 
 (defn user
   "Derive user credentials (name + roles) from a base jetty request"
@@ -89,7 +89,7 @@
     :lax HttpCookie$SameSite/LAX
     :strict HttpCookie$SameSite/STRICT))
 
-(defn ^SessionHandler session-handler
+(defn session-handler ^SessionHandler
   ;; Apply sensible defaults in-line with ring-defaults:
   ;; https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
   [{:keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
