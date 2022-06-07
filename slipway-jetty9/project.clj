@@ -3,12 +3,12 @@
   :url "https://github.com/operatr-io/slipway"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :profiles {:dev    {:dependencies   [[clj-kondo "2022.03.09"]
+  :profiles {:dev    {:dependencies   [[clj-kondo "2022.05.31"]
                                        [clj-http "3.12.3"]
-                                       [commons-io "2.10.0"]]
+                                       [commons-io "2.11.0"]]
                       :resource-paths ["dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.0"]]}
-             :kaocha {:dependencies [[lambdaisland/kaocha "1.64.1010"]]}
+             :kaocha {:dependencies [[lambdaisland/kaocha "1.66.1034"]]}
              :smoke  {:pedantic? :abort}}
   :aliases {"check"  ["with-profile" "+smoke" "check"]
             "kaocha" ["with-profile" "+kaocha,+smoke" "run" "-m" "kaocha.runner"]
@@ -16,7 +16,7 @@
             "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
 
-  :dependencies [[org.clojure/clojure "1.11.0"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
                  [ring/ring-servlet "1.9.5"]
                  [io.operatr/slipway-core "1.0.5"]
                  [org.eclipse.jetty/jetty-server "9.4.46.v20220331"]
