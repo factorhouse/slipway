@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress>
+        <notes><![CDATA[
+   file name: kpow-*-standalone.jar (shaded: org.clojure:core.async:1.5.648)
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.clojure/core\.async@.*$</packageUrl>
+        <cve>CVE-2021-43138</cve>
+    </suppress>
 </suppressions>
