@@ -40,7 +40,7 @@
       (.setHeaderCacheSize header-cache-size)
       (.addCustomizer secure-customizer))))
 
-(defn ^SslContextFactory$Server ssl-context-factory
+(defn ssl-context-factory ^SslContextFactory$Server
   [{:keys [keystore keystore-type key-password client-auth key-manager-password
            truststore trust-password truststore-type ssl-protocols ssl-provider
            exclude-ciphers replace-exclude-ciphers? exclude-protocols replace-exclude-protocols?
