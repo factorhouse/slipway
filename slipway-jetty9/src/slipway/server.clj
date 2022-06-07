@@ -76,7 +76,7 @@
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)
         ws-handler       (doto (ContextHandler.)
-                           (.setContextPath "/*")
+                           (.setContextPath "/")
                            (.setAllowNullPathInfo true)
                            (.setHandler (jetty9.websockets/proxy-ws-handler handler options)))
         contexts         (doto (HandlerList.)

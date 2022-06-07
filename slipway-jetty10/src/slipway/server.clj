@@ -25,7 +25,7 @@
 (defn wrap-proxy-handler
   [jetty-handler]
   (doto (ServletContextHandler.)
-    (.setContextPath "/*")
+    (.setContextPath "/")
     (.setAllowNullPathInfo true)
     (JettyWebSocketServletContainerInitializer/configure nil)
     (.setServletHandler jetty-handler)))
