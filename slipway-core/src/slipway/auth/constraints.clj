@@ -1,6 +1,6 @@
 (ns slipway.auth.constraints
-  (:import (org.eclipse.jetty.util.security Constraint)
-           (org.eclipse.jetty.security ConstraintMapping)))
+  (:import (org.eclipse.jetty.security ConstraintMapping)
+           (org.eclipse.jetty.util.security Constraint)))
 
 (defn ^Constraint basic-auth-any-constraint []
   (doto (Constraint. Constraint/__BASIC_AUTH Constraint/ANY_AUTH) ;; == allow any authenticated user

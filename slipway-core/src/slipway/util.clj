@@ -4,8 +4,8 @@
   Derived from:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj"
   (:require [clojure.string :as string])
-  (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
-           (java.util Locale)))
+  (:import (java.util Locale)
+           (javax.servlet.http HttpServletRequest HttpServletResponse)))
 
 (defprotocol RequestMapDecoder
   (build-request-map [r]))

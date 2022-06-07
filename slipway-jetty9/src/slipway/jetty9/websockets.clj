@@ -5,14 +5,14 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
   (:require [slipway.util :as util]
             [slipway.websockets :as ws])
-  (:import (org.eclipse.jetty.server Request Response)
-           (org.eclipse.jetty.websocket.api WebSocketAdapter Session RemoteEndpoint WriteCallback)
+  (:import (clojure.lang IFn)
+           (java.nio ByteBuffer)
+           (java.util Locale)
+           (org.eclipse.jetty.server Request Response)
+           (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WriteCallback)
            (org.eclipse.jetty.websocket.api.extensions ExtensionConfig)
            (org.eclipse.jetty.websocket.server WebSocketHandler)
-           (org.eclipse.jetty.websocket.servlet WebSocketServletFactory WebSocketCreator ServletUpgradeRequest)
-           (clojure.lang IFn)
-           (java.nio ByteBuffer)
-           (java.util Locale)))
+           (org.eclipse.jetty.websocket.servlet ServletUpgradeRequest WebSocketCreator WebSocketServletFactory)))
 
 (def ^:private no-op (constantly nil))
 
