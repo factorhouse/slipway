@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [1.0.6] - 2022-06-09
+### Fixed
+- Set ContextPath to `/` instead of `/*` to stop unnecessary logging of `o.e.j.s.ServletContextHandler@3ed292ae{/,null,STOPPED} contextPath ends with /*`
+
 ## [1.0.5] - 2022-04-08
 ### Changed
 - SessionHandler: prefer `:session` key over `:cookie`
