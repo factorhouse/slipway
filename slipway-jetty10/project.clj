@@ -21,7 +21,7 @@
                  [ring/ring-servlet "1.9.5"]
                  [io.operatr/slipway-core "1.0.7"]
                  [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api org.ow2.asm/asm]]
                  [org.eclipse.jetty.websocket/websocket-servlet "10.0.11" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty/jetty-alpn-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty/jetty-alpn-java-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
