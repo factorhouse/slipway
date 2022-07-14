@@ -32,12 +32,12 @@ Slipway is available from Clojars. Add one of these dependencies to your deps:
 
 ```clojure 
 ;; Recommended for most users, tracks against the latest version of Jetty:
-[io.operatr/slipway-jetty10 "1.0.6"]
+[io.operatr/slipway-jetty10 "1.0.7"]
 ```
 
 ```clojure 
 ;; If you are still on Java8 use this dependency:
-[io.operatr/slipway-jetty9 "1.0.6"]
+[io.operatr/slipway-jetty9 "1.0.7"]
 ```
 
 ### Running a server
