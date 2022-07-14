@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [1.0.7] - 2022-07-14
+### Changed
+- Bump Jetty versions to resolve CVE-2022-2047
+ 
 ## [1.0.6] - 2022-06-09
 ### Fixed
 - Set ContextPath to `/` instead of `/*` to stop unnecessary logging of `o.e.j.s.ServletContextHandler@3ed292ae{/,null,STOPPED} contextPath ends with /*`
