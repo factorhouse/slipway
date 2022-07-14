@@ -1,14 +1,14 @@
-(defproject io.operatr/slipway-jetty10 "1.0.6"
+(defproject io.operatr/slipway-jetty10 "1.0.7"
   :description "A Jetty ring adapter for enterprise Clojure development."
   :url "https://github.com/operatr-io/slipway"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :profiles {:dev    {:dependencies   [[clj-kondo "2022.05.31"]
+  :profiles {:dev    {:dependencies   [[clj-kondo "2022.06.22"]
                                        [clj-http "3.12.3"]
                                        [commons-io "2.11.0"]]
                       :resource-paths ["dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.0"]]}
-             :kaocha {:dependencies [[lambdaisland/kaocha "1.66.1034"]]}
+             :kaocha {:dependencies [[lambdaisland/kaocha "1.68.1059"]]}
              :smoke  {:pedantic? :abort}}
   :aliases {"check"  ["with-profile" "+smoke" "check"]
             "kaocha" ["with-profile" "+kaocha,+smoke" "run" "-m" "kaocha.runner"]
@@ -19,13 +19,13 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
-                 [io.operatr/slipway-core "1.0.6"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-servlet "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-alpn-server "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-alpn-java-server "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-server "10.0.9" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-jaas "10.0.9" :exclusions [org.slf4j/slf4j-api]]
+                 [io.operatr/slipway-core "1.0.7"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-alpn-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-alpn-java-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-jaas "10.0.11" :exclusions [org.slf4j/slf4j-api]]
                  ;; Explicit due to cve in 2.1.3 brought in by jetty-jaas 10.0.9 (three minor bumps should be fine)
                  [org.apache.mina/mina-core "2.1.6"]])
