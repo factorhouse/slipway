@@ -7,4 +7,11 @@
         <packageUrl regex="true">^pkg:maven/org\.clojure/core\.async@.*$</packageUrl>
         <cpe>cpe:/a:async_project:async</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: slipway-core-1.0.7-standalone.jar (shaded: org.clojure:data.priority-map:1.1.0)
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.clojure/data\.priority\-map@.*$</packageUrl>
+        <cpe>cpe:/a:priority-software:priority</cpe>
+    </suppress>
 </suppressions>
