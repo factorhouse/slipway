@@ -1,4 +1,5 @@
 # slipway
+[![Clojars Project](https://img.shields.io/clojars/v/io.operatr/slipway-jetty10.svg)](https://clojars.org/io.operatr/slipway-jetty10)
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
 A [Ring](https://github.com/ring-clojure/ring) adapter for enterprise Clojure development.
@@ -186,12 +187,10 @@ Pass an `:auth` key to your `run-jetty` options map:
  :login-retry-uri     "/login-retry"
  :realm               "my-app"
  :logout-uri          "/logout"
- :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
  :session             {:http-only?            true
                        :same-site             :strict       ;; can be :lax, :strict or :none
                        :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
-                       :max-inactive-interval -1            ;; Sets the max period of inactivity, after which the session is invalidated, in seconds.
-                       :cookie-name           "JSESSIONID"}
+                       :max-inactive-interval -1}           ;; set the max period of inactivity, after which the session is invalidated, in seconds.
  :constraint-mappings (constraints/constraint-mappings
                        ;; /css/* is not protected. Everyone (including unauthenticated users) can access
                        ["/css/*" (constraints/no-auth)]
@@ -223,14 +222,14 @@ For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jet
 
 The simplest JAAS authentication module. A static list of hashed users in a file. 
 
-Example `jaas.config`:
+Example `jaas.config`: ('my-app' must be the same as the configured :realm)
 
 ``` 
-kpow {
-         org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
-         debug="true"
-         file="dev-resources/jaas/hash-realm.properties";
-     };
+my-app {
+           org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
+           debug="true"
+           file="dev-resources/jaas/hash-realm.properties";
+       };
 ```
 
 Example `hash-realm.properties`:
