@@ -21,7 +21,7 @@
            output-buffer-size   32768
            request-header-size  8192
            response-header-size 8192
-           send-server-version? true
+           send-server-version? false
            send-date-header?    false
            header-cache-size    512
            sni-required?        false

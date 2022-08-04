@@ -65,12 +65,12 @@ The third argument to `run-jetty` is the options map:
   :join? - blocks the thread until server ends (defaults to false)
   :auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
   :http-forwarded? - support for X-Forwarded-For header (defaults to false)
-  :gzip? - enables Gzip compression on the server (defaults to false)
+  :gzip? - enables Gzip compression on the server (defaults to true)
   :gzip-content-types - contents types to apply Gzip compression to (defaults to ["text/css" "text/plain" "text/javascript" "application/javascript" "image/svg+xml"])
   :gzip-min-size - the minimum size (in bytes) to apply Gzip compression to the response body. Default 1024
   :error-handler - sets an error handlers on the server for catch-all Jetty errors (something that extends the `org.eclipse.jetty.server.handler.ErrorHandler` class)
   :daemon? - use daemon threads (defaults to false)
-  :send-server-version? - whether to send the Server header in responses (default true)
+  :send-server-version? - whether to send the Server header in responses (default false)
   :send-date-header? - whether to send Date header in responses (default false)
   :output-buffer-size - set the size of the buffer into which response content is aggregated before being sent to the client. A larger buffer can improve performance by allowing a content producer to run without blocking, however larger buffers consume more memory and may induce some latency before a client starts processing the content. (default 32768)
   :request-header-size - sets the maximum allowed size in bytes for the HTTP request line and HTTP request headers (default 8192) 
