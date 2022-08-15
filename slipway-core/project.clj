@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :profiles {:dev    {:dependencies [[clj-kondo "2022.08.03"]]
+  :profiles {:dev    {:dependencies [[clj-kondo "2022.08.03":exclusions [org.ow2.asm/asm]]]
                       :plugins      [[lein-cljfmt "0.8.2"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069" :exclusions [org.clojure/tools.reader]]]}
              :smoke  {:pedantic? :abort}}
