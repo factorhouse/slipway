@@ -21,6 +21,6 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
                  [com.taoensso/sente "1.17.0" :scope "provided"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :scope "provided" :exclusions [org.ow2.asm/asm]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :scope "provided"]
                  [org.eclipse.jetty/jetty-jaas "10.0.11" :scope "provided"]
                  [org.apache.mina/mina-core "2.1.6" :scope "provided"]]) ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 10.0.11
