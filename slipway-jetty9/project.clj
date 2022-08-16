@@ -21,9 +21,11 @@
             "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
+                 [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
-                 [io.operatr/slipway-core "1.0.7"]
                  [org.eclipse.jetty/jetty-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]
-                 [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]])
+                 [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
+
+  :source-paths ["src" "src-common"])
