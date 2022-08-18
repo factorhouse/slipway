@@ -117,7 +117,7 @@
       (.setSameSite same-site)
       (.setSessionCookie cookie-name))))
 
-(defn configurator
+(defn configure
   [^Server server
    {:keys [auth-method login-uri login-retry-uri constraint-mappings session cookie]
     :as   opts}]

@@ -46,7 +46,7 @@
       (try
         (let [request-map (util/build-request-map request)]
           (if (ws/upgrade-request? request-map)
-            (.setHandled base-request false) ;; Let the WS handler take care of ws-upgrade-requests
+            (.setHandled base-request false)                ;; Let the WS handler take care of ws-upgrade-requests
             (handle* target handler request request-map base-request response options)))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
@@ -72,19 +72,13 @@
                            (.setHandlers
                             (into-array Handler [ring-app-handler ws-handler])))]
     (.setHandler server contexts)
-    (when configurator
-      (configurator server))
-    (when http-forwarded?
-      (server/http-forwarded-configurator server))
-    (when gzip?
-      (server/gzip-configurator server gzip-content-types gzip-min-size))
-    (when error-handler
-      (.setErrorHandler server error-handler))
-    (when auth
-      (auth/configurator server auth))
+    (when configurator (configurator server))
+    (when http-forwarded? (server/add-forward-request-customizer server))
+    (when gzip? (server/enable-gzip-compression server gzip-content-types gzip-min-size))
+    (when error-handler (.setErrorHandler server error-handler))
+    (when auth (auth/configure server auth))
     (.start server)
-    (when join?
-      (.join server))
+    (when join? (.join server))
     server))
 
 (comment

@@ -117,7 +117,7 @@
       (.setHost host)
       (.setIdleTimeout max-idle-time))))
 
-(defn http-forwarded-configurator
+(defn add-forward-request-customizer
   [^Server server]
   (some-> (.getConnectors server)
           ^Connector first
@@ -125,7 +125,7 @@
           (.getHttpConfiguration)
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
-(defn gzip-configurator
+(defn enable-gzip-compression
   [^Server server content-types min-gzip-size]
   (let [gzip-handler (doto (GzipHandler.)
                        (.setIncludedMimeTypes (into-array String content-types))

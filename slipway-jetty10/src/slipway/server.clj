@@ -60,22 +60,15 @@
                            gzip-content-types server/default-gzip-content-types
                            gzip-min-size      1024}}]
   (log/info "configuring Jetty10")
-  (let [server           (server/create-server options)
-        ring-app-handler (proxy-handler handler options)]
-    (.setHandler server ring-app-handler)
-    (when configurator
-      (configurator server))
-    (when http-forwarded?
-      (server/http-forwarded-configurator server))
-    (when gzip?
-      (server/gzip-configurator server gzip-content-types gzip-min-size))
-    (when error-handler
-      (.setErrorHandler server error-handler))
-    (when auth
-      (auth/configurator server auth))
+  (let [server (server/create-server options)]
+    (.setHandler server (proxy-handler handler options))
+    (when configurator (configurator server))
+    (when http-forwarded? (server/add-forward-request-customizer server))
+    (when gzip? (server/enable-gzip-compression server gzip-content-types gzip-min-size))
+    (when error-handler (.setErrorHandler server error-handler))
+    (when auth (auth/configure server auth))
     (.start server)
-    (when join?
-      (.join server))
+    (when join? (.join server))
     server))
 
 (comment
