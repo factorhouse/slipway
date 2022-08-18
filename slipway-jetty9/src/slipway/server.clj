@@ -24,15 +24,11 @@
 (defn handle*
   [target handler request request-map base-request response {:keys [auth]}]
   (try
-    (when auth
-      (auth/default-login-redirect target request auth))
-    (let [auth-user    (when auth
-                         (auth/user base-request))
-          request-map  (cond-> request-map
-                         auth-user (assoc ::auth/user auth-user))
+    (auth/default-login-redirect auth target request)
+    (let [request-map  (cond-> request-map
+                         auth (assoc ::auth/user (auth/user base-request)))
           response-map (handler request-map)]
-      (when auth
-        (auth/maybe-logout base-request auth))
+      (auth/maybe-logout auth base-request request-map)
       (when response-map
         (if (ws/upgrade-response? response-map)
           (servlet/update-servlet-response response {:status 406})
@@ -50,10 +46,8 @@
       (try
         (let [request-map (util/build-request-map request)]
           (if (ws/upgrade-request? request-map)
-            ;; Let the WS handler take care of ws-upgrade-requests
-            (.setHandled base-request false)
+            (.setHandled base-request false) ;; Let the WS handler take care of ws-upgrade-requests
             (handle* target handler request request-map base-request response options)))
-        ;; Send client error if we fail to deserialize the request map
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))

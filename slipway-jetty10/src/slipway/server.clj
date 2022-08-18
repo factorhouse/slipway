@@ -36,15 +36,11 @@
    (proxy [ServletHandler] []
      (doHandle [target ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
        (try
-         (when auth
-           (auth/default-login-redirect target request auth))
-         (let [auth-user    (when auth
-                              (auth/user base-request))
-               request-map  (cond-> (util/build-request-map request)
-                              auth-user (assoc ::auth/user auth-user))
+         (auth/default-login-redirect auth target request)
+         (let [request-map  (cond-> (util/build-request-map request)
+                              auth (assoc ::auth/user (auth/user base-request)))
                response-map (handler request-map)]
-           (when auth
-             (auth/maybe-logout base-request auth))
+           (auth/maybe-logout auth base-request request-map)
            (when response-map
              (if (and (ws/upgrade-request? request-map) (ws/upgrade-response? response-map))
                (jetty10.ws/upgrade-websocket request response (:ws response-map) opts)

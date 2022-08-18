@@ -1,10 +1,11 @@
 (ns slipway.auth
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log])
-  (:import (org.eclipse.jetty.server Authentication$User)
-           (java.util List)
+  (:import (java.util List)
+           (org.eclipse.jetty.server Authentication$User)
            (javax.security.auth.login Configuration)
            (javax.servlet SessionTrackingMode)
+           (javax.servlet.http HttpServletRequest)
            (org.eclipse.jetty.http HttpCookie$SameSite)
            (org.eclipse.jetty.jaas JAASLoginService)
            (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService)
@@ -24,27 +25,29 @@
                                          (map p/datafy)
                                          (filter #(= :role (:type %)))
                                          (map :name)
-                                         set)]
-      (log/debugf "user: %s, roles: %s" name roles)
-      {:provider :jetty
-       :name     name
-       :roles    roles})))
+                                         set)
+          user                      {:provider :jetty
+                                     :name     name
+                                     :roles    roles}]
+      (log/debug "user" user)
+      user)))
 
 (defn maybe-logout
   "Invalidate the session IFF the URI is /logout"
-  [^Request base-request opts]
-  (when (= (:logout-uri opts) (.getRequestURI base-request))
-    (log/infof "logout")
+  [{:keys [logout-uri] :as auth} ^Request base-request request-map]
+  (when auth
     (try
-      (.invalidate (.getSession base-request))
+      (when (= logout-uri (.getRequestURI base-request))
+        (log/debug "logout" (::user request-map))
+        (.invalidate (.getSession base-request)))
       (catch Exception ex
         (log/error ex "logout error")))))
 
 (defn default-login-redirect
   "When logging in we have some special cases to consider with the post-login uri"
-  [target request {:keys [login-uri login-retry-uri]}]
-  (when (#{login-uri login-retry-uri} target)
-    (let [post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
+  [{:keys [login-uri login-retry-uri] :as auth} target ^HttpServletRequest request]
+  (when (and auth (#{login-uri login-retry-uri} target))
+    (let [^String post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
       ;; Note: post-login-uri can be:
       ;;  - nil if a user session starts on the login page (no concept of where to go after) - causes a NullPointerException post login
       ;;    - d-t-w 04.08.22 - I think this is only possible with Jetty9 now (jetty10 appears to return "" from the request.getContextPath(). Leaving in to be defensive as Jetty returns "/" as default regardless.
@@ -66,11 +69,11 @@
 (defmethod login-service "jaas"
   [{:keys [realm]}]
   (let [config (System/getProperty "java.security.auth.login.config")]
-    (log/infof "Initializing JAASLoginService -> realm: %s, java.security.auth.login.config: %s " realm config)
+    (log/infof "initializing JAASLoginService -> realm: %s, java.security.auth.login.config: %s " realm config)
     (if config
       (when (slurp config)                                  ;; biffs an exception if not found
         (doto (JAASLoginService. realm) (.setConfiguration (Configuration/getConfiguration))))
-      (throw (ex-info (str "Start with -Djava.security.auth.login.config=/some/path/to/jaas.config to use Jetty/JAAS auth provider") {})))))
+      (throw (ex-info (str "start with -Djava.security.auth.login.config=/some/path/to/jaas.config to use Jetty/JAAS auth provider") {})))))
 
 (defmethod login-service "hash"
   [{:keys [hash-user-file realm]}]
@@ -78,16 +81,16 @@
   (if hash-user-file
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))
-    (throw (ex-info (str "Set the path to your hash user realm properties file") {}))))
+    (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
 
-(defn ->tracking-mode
+(defn session-tracking-mode
   [mode]
   (case mode
     :cookie SessionTrackingMode/COOKIE
     :url SessionTrackingMode/URL
     :ssl SessionTrackingMode/SSL))
 
-(defn ->same-site
+(defn cookie-same-site
   [same-site]
   (case same-site
     :none HttpCookie$SameSite/NONE
@@ -104,8 +107,8 @@
            same-site             :strict
            cookie-name           "JSESSIONID"
            tracking-modes        #{:cookie}}}]
-  (let [same-site      (->same-site same-site)
-        tracking-modes (into #{} (map ->tracking-mode) tracking-modes)]
+  (let [same-site      (cookie-same-site same-site)
+        tracking-modes (into #{} (map session-tracking-mode) tracking-modes)]
     (doto (SessionHandler.)
       (.setSessionTrackingModes tracking-modes)
       (.setMaxInactiveInterval max-inactive-interval)
