@@ -12,6 +12,13 @@
            (org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Server)
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
+(def default-gzip-content-types
+  ["text/css"
+   "text/plain"
+   "text/javascript"
+   "application/javascript"
+   "image/svg+xml"])
+
 (defn http-config
   [{:keys [ssl-port secure-scheme output-buffer-size request-header-size
            response-header-size send-server-version? send-date-header?
