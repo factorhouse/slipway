@@ -8,7 +8,9 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
   :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03"]
-                                       [clj-http "3.12.3" :exclusions [commons-io]]]
+                                       [clj-http "3.12.3" :exclusions [commons-io]]
+                                       [org.slf4j/slf4j-api "1.7.36"]
+                                       [ch.qos.logback/logback-classic "1.2.11"]]
                       :resource-paths ["dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069"]]}
