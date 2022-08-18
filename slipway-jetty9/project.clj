@@ -11,7 +11,7 @@
                                        [clj-http "3.12.3" :exclusions [commons-io]]
                                        [org.slf4j/slf4j-api "1.7.36"]
                                        [ch.qos.logback/logback-classic "1.2.11"]]
-                      :resource-paths ["dev-resources"]
+                      :resource-paths ["dev-resources" "common/dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069"]]}
              :smoke  {:pedantic? :abort}}
@@ -30,4 +30,5 @@
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]
                  [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
 
-  :source-paths ["src" "src-common"])
+  :source-paths ["src" "common/src"]
+  :test-paths ["test" "common/test"])
