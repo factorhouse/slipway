@@ -38,7 +38,7 @@
           (servlet/update-servlet-response response {:status 406})
           (servlet/update-servlet-response response response-map))))
     (catch Throwable e
-      (log/error e "Unhandled exception processing HTTP request")
+      (log/error e "unhandled exception processing HTTP request")
       (.sendError response 500 (.getMessage e)))
     (finally
       (.setHandled base-request true))))
@@ -55,7 +55,7 @@
             (handle* target handler request request-map base-request response options)))
         ;; Send client error if we fail to deserialize the request map
         (catch Throwable e
-          (log/error e "Unhandled exception processing HTTP request")
+          (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))
           (.setHandled base-request true))))))
 
@@ -67,6 +67,7 @@
                     :or   {gzip?              true
                            gzip-content-types server/default-gzip-content-types
                            gzip-min-size      1024}}]
+  (log/info "configuring Jetty9")
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)
         ws-handler       (doto (ContextHandler.)

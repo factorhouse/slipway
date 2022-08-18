@@ -95,7 +95,7 @@
 (defn https-connector
   [server http-configuration ssl-context-factory port host max-idle-time]
   (let [secure-connection-factory [(HttpConnectionFactory. http-configuration)]]
-    (log/infof "Starting a HTTPS connector on port %s" port)
+    (log/infof "starting HTTPS connector on port %s" port)
     (doto (ServerConnector.
            ^Server server
            ^SslContextFactory ssl-context-factory
@@ -108,7 +108,7 @@
   [server http-configuration port host max-idle-time proxy?]
   (let [plain-connection-factories (cond-> [(HttpConnectionFactory. http-configuration)]
                                      proxy? (concat [(ProxyConnectionFactory.)]))]
-    (log/infof "Starting a HTTP connector on port %s" port)
+    (log/infof "starting HTTP connector on port %s" port)
     (doto (ServerConnector.
            ^Server server
            ^"[Lorg.eclipse.jetty.server.ConnectionFactory;"
@@ -131,7 +131,7 @@
                        (.setIncludedMimeTypes (into-array String content-types))
                        (.setMinGzipSize min-gzip-size)
                        (.setHandler (.getHandler server)))]
-    (log/infof "Enabling gzip compression on the following content types: %s" content-types)
+    (log/infof "enabling gzip compression on the following content types: %s" content-types)
     (.setHandler server gzip-handler)))
 
 (defn create-server ^Server

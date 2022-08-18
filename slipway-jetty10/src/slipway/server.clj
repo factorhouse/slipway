@@ -63,6 +63,7 @@
                     :or   {gzip?              true
                            gzip-content-types server/default-gzip-content-types
                            gzip-min-size      1024}}]
+  (log/info "configuring Jetty10")
   (let [server           (server/create-server options)
         ring-app-handler (proxy-handler handler options)]
     (.setHandler server ring-app-handler)
