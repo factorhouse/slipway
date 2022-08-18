@@ -55,7 +55,7 @@
 
 (defn run-jetty
   "Starts a Jetty server.
-   See https://github.com/operatr-io/slipway#usage for list of options"
+   See https://github.com/factorhouse/slipway#usage for list of options"
   ^Server [handler {:as   options
                     :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
                     :or   {gzip?              true

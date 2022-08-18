@@ -1,8 +1,8 @@
-(defproject io.operatr/slipway-jetty10 "1.0.7"
+(defproject io.factorhouse/slipway-jetty10 "1.0.7"
 
   :description "A Jetty ring adapter for enterprise Clojure development."
 
-  :url "https://github.com/operatr-io/slipway"
+  :url "https://github.com/factorhouse/slipway"
 
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
