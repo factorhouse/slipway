@@ -9,7 +9,6 @@
 
   :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
                                        [clj-http "3.12.3" :exclusions [commons-io]]
-                                       [org.slf4j/slf4j-api "1.7.36"]
                                        [ch.qos.logback/logback-classic "1.2.11"]]
                       :resource-paths ["dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}

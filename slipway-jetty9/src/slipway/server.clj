@@ -9,7 +9,7 @@
             [slipway.auth :as auth]
             [slipway.impl.server :as server]
             [slipway.jetty9.auth]
-            [slipway.jetty9.websockets :as jetty9.websockets]
+            [slipway.jetty9.websockets :as jetty9.ws]
             [slipway.util :as util]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
@@ -73,7 +73,7 @@
         ws-handler       (doto (ContextHandler.)
                            (.setContextPath "/")
                            (.setAllowNullPathInfo true)
-                           (.setHandler (jetty9.websockets/proxy-ws-handler handler options)))
+                           (.setHandler (jetty9.ws/proxy-ws-handler handler options)))
         contexts         (doto (HandlerList.)
                            (.setHandlers
                             (into-array Handler [ring-app-handler ws-handler])))]
