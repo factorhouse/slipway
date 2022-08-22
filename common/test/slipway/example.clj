@@ -1,6 +1,10 @@
 (ns slipway.example)
 
-(def ssl-opts
+(defn handler-hello
+  [_]
+  {:status 200 :body "Hello world"})
+
+(def server-ssl
   {:ssl?            true
    :http?           false
    :ssl-port        3000
