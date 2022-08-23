@@ -23,7 +23,7 @@
               [:body
                [:div.flex.items-center.justify-center.min-h-screen.bg-gray-100
                 [:div.px-8.py-6.mt-4.text-left.bg-white.shadow-lg
-                 [:h3.text-2xl.font-bold.text-center (if retry? "Login failed, please retry" "Login to Slipway Demo")]
+                 [:h3.text-2xl.font-bold.text-center (if retry? "Login failed, please retry" "Login to Slipway")]
                  [:form {:method "POST" :action "j_security_check"}
                   [:div.mt-4
                    [:div
