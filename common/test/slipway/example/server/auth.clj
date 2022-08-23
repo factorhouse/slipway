@@ -21,21 +21,18 @@
                [:meta {:name "description" :content "A Jetty Ring adapter by the team at Factor House"}]]
               [:body
                [:div.ui.container {:style "display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh"}
-                [:div {:style "color: white;"}
-                 (if retry?
-                   [:p [:i.exclamation.triangle.icon] " Sign in failed, please retry."]
-                   [:p [:i.user.outline.icon] " Sign in to Slipway Demo"])
-                 [:br]
-                 [:form.ui.form {:method "POST" :action "j_security_check"}
-                  [:div.field
-                   [:div.ui.labeled.input
-                    [:div.ui.label.label {:style "color: #18364e; font-weight: normal;"} "username"]
-                    [:input {:name "j_username" :type "text" :autocomplete "off" :autocapitalize "off" :autocorrect "off" :spellcheck "false" :autofocus "autofocus"}]]]
-                  [:div.field
-                   [:div.ui.labeled.input
-                    [:div.ui.label.label {:style "color: #18364e; font-weight: normal;"} "password"]
-                    [:input {:name "j_password" :type "password"}]]]
-                  [:div.field [:button.ui.right.floated.blue.button {:type "submit" :style "padding: 12px"} "Sign in"]]]]]]))})
+                (if retry?
+                  [:p "Sign in failed, please retry."]
+                  [:p "Sign in to Slipway Demo"])
+                [:br]
+                [:form.ui.form {:method "POST" :action "j_security_check"}
+                 [:div
+                  [:label "username"]
+                  [:input {:name "j_username" :type "text" :autocomplete "off" :autocapitalize "off" :autocorrect "off" :spellcheck "false" :autofocus "autofocus"}]]
+                 [:div
+                  [:label "password"]
+                  [:input {:name "j_password" :type "password"}]]
+                 [:button {:type "submit" :style "padding: 12px"} "Sign in"]]]]))})
 
 (defn error-body
   [code]
@@ -51,17 +48,14 @@
                     "Error") " | Slipway Demo")]
      [:meta {:charset "utf-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
-     [:meta {:name "description" :content "A simple, secure, self-contained toolkit for Apache Kafka®"}]]
+     [:meta {:name "description" :content "A Jetty Ring adapter by the team at Factor House"}]]
     [:body
-     [:div.ui.container {:style "display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh"}
-      [:div {:style "color: #c9c9c9;"}
-       [:p [:i.exclamation.triangle.grey.icon] (case code
-                                                 404 "404: Page Not Found"
-                                                 405 "405: Method Not Allowed"
-                                                 406 "406: Not Acceptable"
-                                                 500 "500: System Error"
-                                                 "Error")]
-       [:br]]]])))
+     [:p (case code
+           404 "404: Page Not Found"
+           405 "405: Method Not Allowed"
+           406 "406: Not Acceptable"
+           500 "500: System Error"
+           "Error")]])))
 
 (defn error-page
   [code _]

@@ -12,7 +12,8 @@
                                        [org.slf4j/slf4j-api "1.7.36"]
                                        [ch.qos.logback/logback-classic "1.2.11"]
                                        [hiccup "1.0.5"]
-                                       [metosin/reitit-ring "0.5.18"]]
+                                       [metosin/reitit-ring "0.5.18"]
+                                       [ring/ring-defaults "0.3.3" :exclusions [javax.servlet/javax.servlet-api]]]
                       :resource-paths ["dev-resources" "common/dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069"]]}
