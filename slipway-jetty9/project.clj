@@ -30,5 +30,5 @@
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]
                  [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
 
-  :source-paths ["src" "common/src" "common/src-javax"]
+  :source-paths ["src" "common/src" "common-javax/src"]
   :test-paths ["test" "common/test"])

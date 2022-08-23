@@ -32,5 +32,5 @@
                  [org.eclipse.jetty/jetty-jaas "11.0.11" :exclusions [org.slf4j/slf4j-api]]
                  [org.apache.mina/mina-core "2.1.6"]]       ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
 
-  :source-paths ["src" "common/src" "common/src-jakarta"]
+  :source-paths ["src" "common/src" "common-jakarta/src"]
   :test-paths ["test" "common/test"])
