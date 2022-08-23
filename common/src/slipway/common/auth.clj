@@ -3,9 +3,7 @@
             [clojure.tools.logging :as log])
   (:import (java.util List)
            (org.eclipse.jetty.server Authentication$User)
-           (javax.security.auth.login Configuration)
-           (javax.servlet SessionTrackingMode)
-           (javax.servlet.http HttpServletRequest)
+           (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this case.
            (org.eclipse.jetty.http HttpCookie$SameSite)
            (org.eclipse.jetty.jaas JAASLoginService)
            (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService)
@@ -13,6 +11,8 @@
            (org.eclipse.jetty.server Authentication$User Handler Request Server)
            (org.eclipse.jetty.server.handler HandlerCollection)
            (org.eclipse.jetty.server.session SessionHandler)))
+
+(defmulti session-tracking-mode identity)
 
 (defn user
   "Derive user credentials (name + roles) from a base jetty request"
@@ -43,26 +43,26 @@
       (catch Exception ex
         (log/error ex "logout error")))))
 
-(defn default-login-redirect
-  "When logging in we have some special cases to consider with the post-login uri"
-  [{:keys [login-uri login-retry-uri] :as auth} target ^HttpServletRequest request]
-  (when (and auth (#{login-uri login-retry-uri} target))
-    (let [^String post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
-      ;; Note: post-login-uri can be:
-      ;;  - nil if a user session starts on the login page (no concept of where to go after) - causes a NullPointerException post login
-      ;;    - d-t-w 04.08.22 - I think this is only possible with Jetty9 now (jetty10 appears to return "" from the request.getContextPath(). Leaving in to be defensive as Jetty returns "/" as default regardless.
-      ;;  - /chsk if a websocket request triggers the auth-flow (possible with expired session) - causes a redirect to /chsk + 404 post login
-      ;;
-      ;;  substituting "/" is in the nil case is error prone when running path-proxied apps but is least-wrong for these edge-cases
-      ;;  if anyone complains, take a look at emulating the ForwardedRequestCustomizer login in Jetty or take a configurable default post-login full url for this specific nil case.
-      ;;  I guess it's possible FRC catches this case and updates response on write, but I doubt it. We can test.
-      (cond
-        (nil? post-login-uri)
-        (do (log/info "defaulting post-login uri to '/'")
-            (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/"))
-        (.contains post-login-uri "/chsk")
-        (do (log/info "avoiding /chsk post-login, setting post-login uri to '/'")
-            (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/"))))))
+;(defn default-login-redirect
+;  "When logging in we have some special cases to consider with the post-login uri"
+;  [{:keys [login-uri login-retry-uri] :as auth} target ^HttpServletRequest request]
+;  (when (and auth (#{login-uri login-retry-uri} target))
+;    (let [^String post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
+;      ;; Note: post-login-uri can be:
+;      ;;  - nil if a user session starts on the login page (no concept of where to go after) - causes a NullPointerException post login
+;      ;;    - d-t-w 04.08.22 - I think this is only possible with Jetty9 now (jetty10 appears to return "" from the request.getContextPath(). Leaving in to be defensive as Jetty returns "/" as default regardless.
+;      ;;  - /chsk if a websocket request triggers the auth-flow (possible with expired session) - causes a redirect to /chsk + 404 post login
+;      ;;
+;      ;;  substituting "/" is in the nil case is error prone when running path-proxied apps but is least-wrong for these edge-cases
+;      ;;  if anyone complains, take a look at emulating the ForwardedRequestCustomizer login in Jetty or take a configurable default post-login full url for this specific nil case.
+;      ;;  I guess it's possible FRC catches this case and updates response on write, but I doubt it. We can test.
+;      (cond
+;        (nil? post-login-uri)
+;        (do (log/info "defaulting post-login uri to '/'")
+;            (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/"))
+;        (.contains post-login-uri "/chsk")
+;        (do (log/info "avoiding /chsk post-login, setting post-login uri to '/'")
+;            (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/"))))))
 
 (defmulti login-service :auth-type)
 
@@ -82,13 +82,6 @@
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))
     (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
-
-(defn session-tracking-mode
-  [mode]
-  (case mode
-    :cookie SessionTrackingMode/COOKIE
-    :url SessionTrackingMode/URL
-    :ssl SessionTrackingMode/SSL))
 
 (defn cookie-same-site
   [same-site]

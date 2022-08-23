@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty9 "1.0.7"
+(defproject io.factorhouse/slipway-jetty11 "1.0.7"
 
   :description "A Jetty ring adapter for enterprise Clojure development."
 
@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03"]
+  :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
                                        [clj-http "3.12.3" :exclusions [commons-io]]
                                        [org.slf4j/slf4j-api "1.7.36"]
                                        [ch.qos.logback/logback-classic "1.2.11"]]
@@ -25,10 +25,12 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
-                 [org.eclipse.jetty/jetty-server "9.4.48.v20220622"]
-                 [org.eclipse.jetty.websocket/websocket-server "9.4.48.v20220622"]
-                 [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]
-                 [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.11"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-jaas "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.apache.mina/mina-core "2.1.6"]]       ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
 
-  :source-paths ["src" "common/src" "common/src-javax"]
+  :source-paths ["src" "common/src" "common/src-jakarta"]
   :test-paths ["test" "common/test"])

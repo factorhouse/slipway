@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [slipway-jetty9, slipway-jetty10]
+        project: [slipway-jetty9, slipway-jetty10, slipway-jetty11]
 
     steps:
       - name: Checkout

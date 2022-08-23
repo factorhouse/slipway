@@ -1,9 +1,9 @@
 (ns slipway.auth
   (:require [clojure.core.protocols :as p]
             [slipway.common.auth :as common.auth])
-  (:import (javax.servlet SessionTrackingMode)
+  (:import (jakarta.servlet SessionTrackingMode)
            (org.eclipse.jetty.jaas JAASPrincipal JAASRole)
-           (org.eclipse.jetty.security AbstractLoginService$RolePrincipal AbstractLoginService$UserPrincipal)))
+           (org.eclipse.jetty.security RolePrincipal UserPrincipal)))
 
 (extend-protocol p/Datafiable
   JAASPrincipal
@@ -16,12 +16,12 @@
     {:type :role
      :name (.getName role)})
 
-  AbstractLoginService$UserPrincipal
+  UserPrincipal
   (datafy [user]
     {:type :user
      :name (.getName user)})
 
-  AbstractLoginService$RolePrincipal
+  RolePrincipal
   (datafy [role]
     {:type :role
      :name (.getName role)}))

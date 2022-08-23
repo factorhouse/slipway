@@ -22,9 +22,8 @@
     (servlet/build-request-map request)))
 
 (defn handle*
-  [target handler request request-map base-request response {:keys [auth]}]
+  [handler request-map base-request response {:keys [auth]}]
   (try
-    (common.auth/default-login-redirect auth target request)
     (let [request-map  (cond-> request-map
                          auth (assoc ::common.auth/user (common.auth/user base-request)))
           response-map (handler request-map)]
@@ -42,12 +41,12 @@
 (defn proxy-handler
   [handler options]
   (proxy [AbstractHandler] []
-    (handle [target ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
+    (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
         (let [request-map (common.util/build-request-map request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)                ;; Let the WS handler take care of ws-upgrade-requests
-            (handle* target handler request request-map base-request response options)))
+            (handle* handler request-map base-request response options)))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))

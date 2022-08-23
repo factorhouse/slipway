@@ -1,26 +1,20 @@
 (ns slipway.server
-  "A Jetty10 server that conforms to the slipway API.
+  "A Jetty11 server that conforms to the slipway API.
 
   Derived from:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
-            [ring.util.servlet :as servlet]
             [slipway.auth]
             [slipway.common.auth :as common.auth]
             [slipway.common.server :as common.server]
             [slipway.common.util :as common.util]
             [slipway.common.websockets :as common.ws]
             [slipway.websockets :as ws])
-  (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
+  (:import (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
            (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
-
-(extend-protocol common.util/RequestMapDecoder
-  HttpServletRequest
-  (build-request-map [request]
-    (servlet/build-request-map request)))
 
 (defn wrap-proxy-handler
   [jetty-handler]
@@ -43,7 +37,7 @@
            (when response-map
              (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
                (ws/upgrade-websocket request response (:ws response-map) opts)
-               (servlet/update-servlet-response response response-map))))
+               (common.util/update-servlet-response response response-map))))
          (catch Throwable ex
            (log/error ex "Unhandled exception processing HTTP request")
            (.sendError response 500 (.getMessage ex)))
@@ -58,7 +52,7 @@
                     :or   {gzip?              true
                            gzip-content-types common.server/default-gzip-content-types
                            gzip-min-size      1024}}]
-  (log/info "configuring Jetty10")
+  (log/info "configuring Jetty11")
   (let [server (common.server/create-server options)]
     (.setHandler server (proxy-handler handler options))
     (when configurator (configurator server))
