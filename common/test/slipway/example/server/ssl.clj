@@ -1,10 +1,7 @@
-(ns slipway.example)
+(ns slipway.example.server.ssl
+  (:require [clojure.test :refer :all]))
 
-(defn handler-hello
-  [_]
-  {:status 200 :body "Hello world"})
-
-(def server-ssl
+(def opts
   {:ssl?            true
    :http?           false
    :ssl-port        3000
