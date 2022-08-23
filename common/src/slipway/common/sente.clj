@@ -1,4 +1,4 @@
-(ns slipway.sente
+(ns slipway.common.sente
   (:require [clojure.tools.logging :as log]
             [slipway.websockets :as slipway.websockets]
             [taoensso.sente.interfaces :as i])

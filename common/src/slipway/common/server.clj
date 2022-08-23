@@ -1,4 +1,4 @@
-(ns slipway.impl.server
+(ns slipway.common.server
   "Fns to create an org.eclipse.jetty.server.Server instance that conforms to the options map specified in the slipway README.
 
   Derived from:

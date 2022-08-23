@@ -1,4 +1,4 @@
-(ns slipway.websockets
+(ns slipway.common.websockets
   "The Websockets interface and related utility functions.
 
   Derived from:

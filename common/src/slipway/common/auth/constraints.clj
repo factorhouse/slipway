@@ -1,4 +1,4 @@
-(ns slipway.auth.constraints
+(ns slipway.common.auth.constraints
   (:import (org.eclipse.jetty.security ConstraintMapping)
            (org.eclipse.jetty.util.security Constraint)))
 

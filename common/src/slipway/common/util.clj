@@ -1,4 +1,4 @@
-(ns slipway.util
+(ns slipway.common.util
   "Utility functions.
 
   Derived from:

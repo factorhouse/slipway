@@ -6,18 +6,18 @@
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
             [ring.util.servlet :as servlet]
-            [slipway.auth :as auth]
-            [slipway.impl.server :as server]
-            [slipway.jetty10.auth]
-            [slipway.jetty10.websockets :as jetty10.ws]
-            [slipway.util :as util]
+            [slipway.auth]
+            [slipway.common.auth :as common.auth]
+            [slipway.common.server :as common.server]
+            [slipway.common.util :as common.util]
+            [slipway.common.websockets :as common.ws]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
            (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
 
-(extend-protocol util/RequestMapDecoder
+(extend-protocol common.util/RequestMapDecoder
   HttpServletRequest
   (build-request-map [request]
     (servlet/build-request-map request)))
@@ -36,14 +36,14 @@
    (proxy [ServletHandler] []
      (doHandle [target ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
        (try
-         (auth/default-login-redirect auth target request)
-         (let [request-map  (cond-> (util/build-request-map request)
-                              auth (assoc ::auth/user (auth/user base-request)))
+         (common.auth/default-login-redirect auth target request)
+         (let [request-map  (cond-> (common.util/build-request-map request)
+                              auth (assoc ::common.auth/user (common.auth/user base-request)))
                response-map (handler request-map)]
-           (auth/maybe-logout auth base-request request-map)
+           (common.auth/maybe-logout auth base-request request-map)
            (when response-map
-             (if (and (ws/upgrade-request? request-map) (ws/upgrade-response? response-map))
-               (jetty10.ws/upgrade-websocket request response (:ws response-map) opts)
+             (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
+               (ws/upgrade-websocket request response (:ws response-map) opts)
                (servlet/update-servlet-response response response-map))))
          (catch Throwable ex
            (log/error ex "Unhandled exception processing HTTP request")
@@ -57,16 +57,16 @@
   ^Server [handler {:as   options
                     :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
                     :or   {gzip?              true
-                           gzip-content-types server/default-gzip-content-types
+                           gzip-content-types common.server/default-gzip-content-types
                            gzip-min-size      1024}}]
   (log/info "configuring Jetty10")
-  (let [server (server/create-server options)]
+  (let [server (common.server/create-server options)]
     (.setHandler server (proxy-handler handler options))
     (when configurator (configurator server))
-    (when http-forwarded? (server/add-forward-request-customizer server))
-    (when gzip? (server/enable-gzip-compression server gzip-content-types gzip-min-size))
+    (when http-forwarded? (common.server/add-forward-request-customizer server))
+    (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
     (when error-handler (.setErrorHandler server error-handler))
-    (when auth (auth/configure server auth))
+    (when auth (common.auth/configure server auth))
     (.start server)
     (when join? (.join server))
     server))
@@ -74,8 +74,8 @@
 (comment
   (def handler
     (fn [req]
-      (if (ws/upgrade-request? req)
-        (ws/upgrade-response
+      (if (common.ws/upgrade-request? req)
+        (common.ws/upgrade-response
          {:on-connect (fn [_] (prn "Hello world"))})
         {:status 200 :body "Hello world!"})))
 

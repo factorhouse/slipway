@@ -1,4 +1,4 @@
-(ns slipway.auth
+(ns slipway.common.auth
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log])
   (:import (java.util List)
