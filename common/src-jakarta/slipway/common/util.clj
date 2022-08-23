@@ -8,7 +8,6 @@
            (java.io FilterOutputStream)
            (java.util Locale)))
 
-
 (defprotocol RequestMapDecoder
   (build-request-map [r]))
 
