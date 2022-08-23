@@ -1,7 +1,5 @@
 (ns slipway.server
-  "A Jetty9 server that conforms to the slipway API.
-
-  Derived from:
+  "A Jetty9 server that conforms to the slipway API, inspired by:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]

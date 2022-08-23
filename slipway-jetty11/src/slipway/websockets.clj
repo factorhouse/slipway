@@ -13,6 +13,13 @@
 
 (def ^:private no-op (constantly nil))
 
+(extend-protocol common.servlet/RequestMapDecoder
+  JettyServerUpgradeRequest
+  (build-request-map [request]
+    (assoc (-> (.getHttpServletRequest request) (common.servlet/updgrade-servlet-request-map))
+           :websocket-subprotocols (into [] (.getSubProtocols request))
+           :websocket-extensions (into [] (.getExtensions request)))))
+
 (defn write-callback
   [{:keys [write-failed write-success]
     :or   {write-failed  no-op
@@ -22,13 +29,6 @@
       (write-failed throwable))
     (writeSuccess [_]
       (write-success))))
-
-(extend-protocol common.servlet/RequestMapDecoder
-  JettyServerUpgradeRequest
-  (build-request-map [request]
-    (assoc (-> (.getHttpServletRequest request) (common.servlet/updgrade-servlet-request-map))
-           :websocket-subprotocols (into [] (.getSubProtocols request))
-           :websocket-extensions (into [] (.getExtensions request)))))
 
 (extend-protocol common.ws/WebSocketSend
   (Class/forName "[B")
