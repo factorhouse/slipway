@@ -1,6 +1,6 @@
 (defproject io.factorhouse/slipway-jetty9 "1.0.7"
 
-  :description "A Jetty ring adapter for enterprise Clojure development."
+  :description "A Jetty Ring adapter for enterprise Clojure development."
 
   :url "https://github.com/factorhouse/slipway"
 
@@ -10,7 +10,9 @@
   :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03"]
                                        [clj-http "3.12.3" :exclusions [commons-io]]
                                        [org.slf4j/slf4j-api "1.7.36"]
-                                       [ch.qos.logback/logback-classic "1.2.11"]]
+                                       [ch.qos.logback/logback-classic "1.2.11"]
+                                       [hiccup "1.0.5"]
+                                       [metosin/reitit-ring "0.5.18"]]
                       :resource-paths ["dev-resources" "common/dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}
              :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069"]]}

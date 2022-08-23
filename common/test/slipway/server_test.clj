@@ -2,7 +2,7 @@
   (:require [clj-http.client :as client]
             [clojure.test :refer :all]
             [slipway.example.handler :as handler]
-            [slipway.example.server.ssl :as server.ssl]
+            [slipway.example.server.auth :as server.ssl]
             [slipway.server :as slipway]))
 
 (deftest server-test--happy-days

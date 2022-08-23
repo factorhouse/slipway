@@ -1,5 +1,7 @@
 (ns slipway.example.server.ssl
-  (:require [clojure.test :refer :all]))
+  (:require [clojure.test :refer :all]
+            [slipway.example.handler :as handler]
+            [slipway.server :as slipway]))
 
 (def opts
   {:ssl?            true
@@ -11,3 +13,7 @@
    :truststore      "dev-resources/my-truststore.jks"
    :trust-password  "password"
    :truststore-type "PKCS12"})
+
+(defn server
+  []
+  (slipway/run-jetty handler/hello opts))
