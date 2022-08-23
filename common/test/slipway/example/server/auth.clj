@@ -16,23 +16,24 @@
               {:lang "en"}
               [:head
                [:title "Login | Slipway Demo"]
-               [:meta {:charset "utf-8"}]
+               [:meta {:charset "UTF-8"}]
                [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
-               [:meta {:name "description" :content "A Jetty Ring adapter by the team at Factor House"}]]
+               [:meta {:name "description" :content "A Jetty Ring adapter by the team at Factor House"}]
+               [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
               [:body
-               [:div.ui.container {:style "display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh"}
-                (if retry?
-                  [:p "Sign in failed, please retry."]
-                  [:p "Sign in to Slipway Demo"])
-                [:br]
-                [:form.ui.form {:method "POST" :action "j_security_check"}
-                 [:div
-                  [:label "username"]
-                  [:input {:name "j_username" :type "text" :autocomplete "off" :autocapitalize "off" :autocorrect "off" :spellcheck "false" :autofocus "autofocus"}]]
-                 [:div
-                  [:label "password"]
-                  [:input {:name "j_password" :type "password"}]]
-                 [:button {:type "submit" :style "padding: 12px"} "Sign in"]]]]))})
+               [:div.flex.items-center.justify-center.min-h-screen.bg-gray-100
+                [:div.px-8.py-6.mt-4.text-left.bg-white.shadow-lg
+                 [:h3.text-2xl.font-bold.text-center (if retry? "Login failed, please retry" "Login to Slipway Demo")]
+                 [:form {:method "POST" :action "j_security_check"}
+                  [:div.mt-4
+                   [:div
+                    [:label.block {:for "user"} "User"
+                     [:label [:input.w-full.px-4.py-2.mt-2.border.rounded-md.focus:outline-none.focus:ring-1.focus:ring-blue-600 {:name "j_username" :type "text" :autocomplete "off" :autocapitalize "off" :autocorrect "off" :spellcheck "false" :autofocus "autofocus"}]]]]
+                   [:div.mt-4
+                    [:label.block {:for "password"} "Password"
+                     [:label [:input.w-full.px-4.py-2.mt-2.border.rounded-md.focus:outline-none.focus:ring-1.focus:ring-blue-600 {:name "j_password" :type "password"}]]]]
+                   [:div.flex.items-baseline.justify-between
+                    [:button.px-6.py-2.mt-4.text-white.bg-blue-600.rounded-lg.hover:bg-blue-900 {:type "submit"} "Login"]]]]]]]))})
 
 (defn error-body
   [code]
@@ -46,7 +47,7 @@
                     406 "Not Acceptable"
                     500 "System Error"
                     "Error") " | Slipway Demo")]
-     [:meta {:charset "utf-8"}]
+     [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Jetty Ring adapter by the team at Factor House"}]]
     [:body
