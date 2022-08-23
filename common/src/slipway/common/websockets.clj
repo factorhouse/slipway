@@ -1,7 +1,5 @@
 (ns slipway.common.websockets
-  "The Websockets interface and related utility functions.
-
-  Derived from:
+  "The Websockets interface and related utility functions, inspired by:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
   (:require [clojure.string :as string]))
 

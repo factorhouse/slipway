@@ -8,7 +8,7 @@
             [slipway.auth]
             [slipway.common.auth :as common.auth]
             [slipway.common.server :as common.server]
-            [slipway.common.util :as common.util]
+            [slipway.common.servlet :as common.servlet]
             [slipway.common.websockets :as common.ws]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
@@ -30,14 +30,14 @@
    (proxy [ServletHandler] []
      (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
        (try
-         (let [request-map  (cond-> (common.util/build-request-map request)
+         (let [request-map  (cond-> (common.servlet/build-request-map request)
                               auth (assoc ::common.auth/user (common.auth/user base-request)))
                response-map (handler request-map)]
            (common.auth/maybe-logout auth base-request request-map)
            (when response-map
              (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
                (ws/upgrade-websocket request response (:ws response-map) opts)
-               (common.util/update-servlet-response response response-map))))
+               (common.servlet/update-servlet-response response response-map))))
          (catch Throwable ex
            (log/error ex "Unhandled exception processing HTTP request")
            (.sendError response 500 (.getMessage ex)))

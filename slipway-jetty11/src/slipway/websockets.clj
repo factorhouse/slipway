@@ -1,16 +1,13 @@
 (ns slipway.websockets
-  "Jetty10 impl of the Websockets API + handler.
-
-  Dervied from:
+  "Jetty11 impl of the Websockets API + handler, inspired by:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
-  (:require [slipway.common.util :as common.util]
+  (:require [slipway.common.servlet :as common.servlet]
             [slipway.common.websockets :as common.ws])
   (:import (clojure.lang IFn)
            (jakarta.servlet AsyncContext)
            (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (java.nio ByteBuffer)
            (java.time Duration)
-           (java.util Locale)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WebSocketPingPongListener WriteCallback)
            (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator JettyWebSocketServerContainer)))
 
@@ -26,23 +23,12 @@
     (writeSuccess [_]
       (write-success))))
 
-(extend-protocol common.util/RequestMapDecoder
+(extend-protocol common.servlet/RequestMapDecoder
   JettyServerUpgradeRequest
   (build-request-map [request]
-    (let [servlet-request  (.getHttpServletRequest request)
-          base-request-map {:server-port     (.getServerPort servlet-request)
-                            :server-name     (.getServerName servlet-request)
-                            :remote-addr     (.getRemoteAddr servlet-request)
-                            :uri             (.getRequestURI servlet-request)
-                            :query-string    (.getQueryString servlet-request)
-                            :scheme          (keyword (.getScheme servlet-request))
-                            :request-method  (keyword (.toLowerCase (.getMethod servlet-request) Locale/ENGLISH))
-                            :protocol        (.getProtocol servlet-request)
-                            :headers         (common.util/get-headers servlet-request)
-                            :ssl-client-cert (common.util/get-client-cert servlet-request)}]
-      (assoc base-request-map
-             :websocket-subprotocols (into [] (.getSubProtocols request))
-             :websocket-extensions (into [] (.getExtensions request))))))
+    (assoc (-> (.getHttpServletRequest request) (common.servlet/updgrade-servlet-request-map))
+           :websocket-subprotocols (into [] (.getSubProtocols request))
+           :websocket-extensions (into [] (.getExtensions request)))))
 
 (extend-protocol common.ws/WebSocketSend
   (Class/forName "[B")
@@ -118,7 +104,7 @@
   (connected? [this]
     (. this (isConnected)))
   (req-of [this]
-    (common.util/build-request-map (.getUpgradeResponse (.getSession this)))))
+    (common.servlet/build-request-map (.getUpgradeResponse (.getSession this)))))
 
 (defn proxy-ws-adapter
   [{:keys [on-connect on-error on-text on-close on-bytes on-ping on-pong]

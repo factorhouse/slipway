@@ -1,6 +1,7 @@
-(ns slipway.common.util
-  "Derived from:
-    * https://github.com/ring-clojure/ring/blob/master/ring-servlet/src/ring/util/servlet.clj"
+(ns slipway.common.servlet
+  "This ns pulls in most of ring.util.servlet that we would otherwise use, but are unable to do so because
+   ring depends on the javax servlet API, rather than the jakarta one.
+   Once a jakarta compatible version of ring is available this ns can model the javax/slipway.common.servlet ns."
   (:require [clojure.string :as string]
             [ring.core.protocols :as protocols])
   (:import (jakarta.servlet AsyncContext)
@@ -19,6 +20,8 @@
       (.setHeader response key val-or-vals)
       (doseq [val val-or-vals]
         (.addHeader response key val))))
+  ;; TODO: check the reason for this case-sensitive double-attempt here, it's different from underlying ring impl
+  ;; TODO: took it from an earlier slipway where it wasn't actually used - d-t-w 2022-08-23
   ; Some headers must be set through specific methods
   (when-let [content-type (or (get headers "Content-Type") (get headers "content-type"))]
     (.setContentType response content-type)))
@@ -26,12 +29,26 @@
 (defn get-headers
   "Creates a name/value map of all the request headers."
   [^HttpServletRequest request]
-  (into {} (map (fn [^String name]
-                  [(.toLowerCase name Locale/ENGLISH)
-                   (->> (.getHeaders request name)
-                        (enumeration-seq)
-                        (string/join ","))]))
-        (enumeration-seq (.getHeaderNames request))))
+  (reduce
+   (fn [headers, ^String name]
+     (assoc headers
+            (.toLowerCase name Locale/ENGLISH)
+            (->> (.getHeaders request name)
+                 (enumeration-seq)
+                 (string/join ","))))
+   {}
+   (enumeration-seq (.getHeaderNames request))))
+
+(defn get-content-length
+  "Returns the content length, or nil if there is no content."
+  [^HttpServletRequest request]
+  (let [length (.getContentLength request)]
+    (if (>= length 0) length)))
+
+(defn get-client-cert
+  "Returns the SSL client certificate of the request, if one exists."
+  [^HttpServletRequest request]
+  (first (.getAttribute request "jakarta.servlet.request.X509Certificate")))
 
 (defn- make-output-stream
   [^HttpServletResponse response ^AsyncContext context]
@@ -47,8 +64,7 @@
           (.complete context))))))
 
 (defn update-servlet-response
-  "Update the HttpServletResponse using a response map. Takes an optional
-  AsyncContext."
+  "Update the HttpServletResponse using a response map. Takes an optional AsyncContext."
   ([response response-map]
    (update-servlet-response response nil response-map))
   ([^HttpServletResponse response context response-map]
@@ -63,16 +79,18 @@
      (let [output-stream (make-output-stream response context)]
        (protocols/write-body-to-stream body response-map output-stream)))))
 
-(defn get-content-length
-  "Returns the content length, or nil if there is no content."
+(defn updgrade-servlet-request-map
   [^HttpServletRequest request]
-  (let [length (.getContentLength request)]
-    (if (>= length 0) length)))
-
-(defn get-client-cert
-  "Returns the SSL client certificate of the request, if one exists."
-  [^HttpServletRequest request]
-  (first (.getAttribute request "jakarta.servlet.request.X509Certificate")))
+  {:server-port     (.getServerPort request)
+   :server-name     (.getServerName request)
+   :remote-addr     (.getRemoteAddr request)
+   :uri             (.getRequestURI request)
+   :query-string    (.getQueryString request)
+   :scheme          (keyword (.getScheme request))
+   :request-method  (keyword (.toLowerCase (.getMethod request) Locale/ENGLISH))
+   :protocol        (.getProtocol request)
+   :headers         (get-headers request)
+   :ssl-client-cert (get-client-cert request)})
 
 (extend-protocol RequestMapDecoder
   HttpServletRequest
