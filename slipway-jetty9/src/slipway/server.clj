@@ -5,7 +5,6 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
-            [ring.util.servlet :as servlet]
             [slipway.auth]
             [slipway.common.auth :as common.auth]
             [slipway.common.server :as common.server]
@@ -16,11 +15,6 @@
            (org.eclipse.jetty.server Handler Request Server)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
-(extend-protocol common.util/RequestMapDecoder
-  HttpServletRequest
-  (build-request-map [request]
-    (servlet/build-request-map request)))
-
 (defn handle*
   [handler request-map base-request response {:keys [auth]}]
   (try
@@ -30,8 +24,8 @@
       (common.auth/maybe-logout auth base-request request-map)
       (when response-map
         (if (common.ws/upgrade-response? response-map)
-          (servlet/update-servlet-response response {:status 406})
-          (servlet/update-servlet-response response response-map))))
+          (common.util/update-servlet-response response {:status 406})
+          (common.util/update-servlet-response response response-map))))
     (catch Throwable e
       (log/error e "unhandled exception processing HTTP request")
       (.sendError response 500 (.getMessage e)))

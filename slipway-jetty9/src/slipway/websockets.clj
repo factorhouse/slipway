@@ -7,7 +7,6 @@
             [slipway.common.websockets :as common.ws])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
-           (java.util Locale)
            (org.eclipse.jetty.server Request Response)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WriteCallback)
            (org.eclipse.jetty.websocket.api.extensions ExtensionConfig)
@@ -79,20 +78,9 @@
 (extend-protocol common.util/RequestMapDecoder
   ServletUpgradeRequest
   (build-request-map [request]
-    (let [servlet-request  (.getHttpServletRequest request)
-          base-request-map {:server-port     (.getServerPort servlet-request)
-                            :server-name     (.getServerName servlet-request)
-                            :remote-addr     (.getRemoteAddr servlet-request)
-                            :uri             (.getRequestURI servlet-request)
-                            :query-string    (.getQueryString servlet-request)
-                            :scheme          (keyword (.getScheme servlet-request))
-                            :request-method  (keyword (.toLowerCase (.getMethod servlet-request) Locale/ENGLISH))
-                            :protocol        (.getProtocol servlet-request)
-                            :headers         (common.util/get-headers servlet-request)
-                            :ssl-client-cert (first (.getAttribute servlet-request "javax.servlet.request.X509Certificate"))}]
-      (assoc base-request-map
-             :websocket-subprotocols (into [] (.getSubProtocols request))
-             :websocket-extensions (into [] (.getExtensions request))))))
+    (assoc (-> (.getHttpServletRequest request) (common.util/updgrade-servlet-request-map))
+           :websocket-subprotocols (into [] (.getSubProtocols request))
+           :websocket-extensions (into [] (.getExtensions request)))))
 
 (extend-protocol common.ws/WebSockets
   WebSocketAdapter
