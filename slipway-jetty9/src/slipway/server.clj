@@ -54,14 +54,16 @@
                            gzip-min-size      1024}}]
   (log/info "configuring Jetty9")
   (let [server           (common.server/create-server options)
-        ring-app-handler (proxy-handler handler options)
+        ring-app-handler (doto (ContextHandler.)
+                           (.setContextPath "/")
+                           (.setAllowNullPathInfo true)
+                           (.setHandler (proxy-handler handler options)))
         ws-handler       (doto (ContextHandler.)
                            (.setContextPath "/")
                            (.setAllowNullPathInfo true)
                            (.setHandler (ws/proxy-ws-handler handler options)))
         contexts         (doto (HandlerList.)
-                           (.setHandlers
-                            (into-array Handler [ring-app-handler ws-handler])))]
+                           (.setHandlers (into-array Handler [ring-app-handler ws-handler])))]
     (.setHandler server contexts)
     (when configurator (configurator server))
     (when http-forwarded? (common.server/add-forward-request-customizer server))

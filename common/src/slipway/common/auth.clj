@@ -9,7 +9,7 @@
            (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (org.eclipse.jetty.server Authentication$User Handler Request Server)
-           (org.eclipse.jetty.server.handler HandlerCollection)
+           (org.eclipse.jetty.server.handler ContextHandler HandlerCollection)
            (org.eclipse.jetty.server.session SessionHandler)))
 
 (defmulti session-tracking-mode identity)
@@ -121,11 +121,15 @@
                                                 (BasicAuthenticator.)
                                                 (FormAuthenticator. login-uri login-retry-uri false)))
                            (.setLoginService login)
-                           (.setHandler (.getHandler server)))]
+                           (.setHandler (.getHandler server)))
+        security-context (doto (ContextHandler.)
+                           (.setContextPath "/")
+                           (.setAllowNullPathInfo true)
+                           (.setHandler security-handler))]
     (.addBean server login)
     (if (= "basic" auth-method)
       (.setHandler server security-handler)
       (.setHandler server (HandlerCollection.
                            (into-array Handler [(session-handler (or session cookie))
-                                                security-handler]))))
+                                                security-context]))))
     server))
