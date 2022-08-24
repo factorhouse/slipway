@@ -117,6 +117,7 @@
       (.setHost host)
       (.setIdleTimeout max-idle-time))))
 
+;; TODO validate this for dual http/https mode
 (defn add-forward-request-customizer
   [^Server server]
   (some-> (.getConnectors server)
