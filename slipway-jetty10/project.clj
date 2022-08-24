@@ -1,6 +1,6 @@
 (defproject io.factorhouse/slipway-jetty10 "1.0.7"
 
-  :description "A Jetty Ring adapter for enterprise Clojure development."
+  :description "A Clojure companion for Jetty and Websockets"
 
   :url "https://github.com/factorhouse/slipway"
 
