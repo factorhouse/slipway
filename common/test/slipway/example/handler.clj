@@ -1,7 +1,7 @@
 (ns slipway.example.handler
   (:require
    [clojure.string :as str]
-   [clojure.test :refer :all]
+   [clojure.tools.logging :as log]
    [hiccup.core :as hiccup]
    [hiccup.page :as hiccup.page]))
 
@@ -113,7 +113,7 @@
    (hiccup.page/html5
     {:class "h-full bg-gray-50" :lang "en"}
     [:head
-     [:title "Home | Slipway Demo"]
+     [:title "User | Slipway Demo"]
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
@@ -125,7 +125,7 @@
       [:div.py-10
        [:header
         [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "Home"]]]
+         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "User Details"]]]
        [:main
         [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
          [:div.px-4.py-8.sm:px-0
@@ -206,6 +206,10 @@
    :headers {"content-type" "text/html"}
    :body    (error-html 500 "Application Error")})
 
+(defn error-route
+  [_]
+  (throw (RuntimeException. "Error Route")))
+
 (defn error-server
   [_]
   {:status  500
@@ -217,3 +221,11 @@
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    hello-html})
+
+(defn wrap-errors
+  [handler]
+  (fn [req]
+    (try (handler req)
+         (catch Throwable ex
+           (log/errorf ex "application error %s" (:uri req))
+           (error-application ex)))))
