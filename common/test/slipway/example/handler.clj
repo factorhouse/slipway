@@ -1,7 +1,9 @@
 (ns slipway.example.handler
-  (:require [clojure.test :refer :all]
-            [hiccup.core :as hiccup]
-            [hiccup.page :as hiccup.page]))
+  (:require
+   [clojure.string :as str]
+   [clojure.test :refer :all]
+   [hiccup.core :as hiccup]
+   [hiccup.page :as hiccup.page]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
 
@@ -50,8 +52,39 @@
     [:a.border-indigo-500.text-gray-900.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:aria-current "page" :href href} text]
     [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href href} text]))
 
-(defn page-html
+(defn menu
   [selected]
+  [:nav.bg-white.shadow-sm
+   [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+    [:div.flex.justify-between.h-16
+     [:div.flex
+      [:div.flex-shrink-0.flex.items-center
+       [:img.block.lg:hidden.h-8.w-auto {:src "img/fh-icon.png" :alt "Factor House"}]
+       [:img.hidden.lg:block.h-8.w-auto {:src "img/fh-icon.png" :alt "Factor House"}]]
+      [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
+       (menu-item "/" "Home" (= :home selected))
+       (menu-item "/user" "User Details" (= :user selected))
+       (menu-item "/404" "404" false)
+       (menu-item "/405" "405" false)
+       (menu-item "/406" "406" false)
+       (menu-item "/500" "500" false)
+       (menu-item "/logout" "Logout" false)]]]]])
+
+(defn user-details
+  [req]
+  [:div
+   [:div.mt-5.border-t.border-gray-200
+    [:dl.divide-y.divide-gray-200
+     [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+      [:dt.text-sm.font-medium.text-gray-500 "Username"]
+      [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+       [:span.flex-grow (:name req)]]]
+     [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+      [:dt.text-sm.font-medium.text-gray-500 "Roles"]
+      [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+       [:span.flex-grow (str/join ", " (sort (:roles req)))]]]]]])
+
+(def home-html
   (hiccup/html
    (hiccup.page/html5
     {:class "h-full bg-gray-50" :lang "en"}
@@ -64,21 +97,7 @@
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
-      [:nav.bg-white.shadow-sm
-       [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-        [:div.flex.justify-between.h-16
-         [:div.flex
-          [:div.flex-shrink-0.flex.items-center
-           [:img.block.lg:hidden.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]
-           [:img.hidden.lg:block.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]]
-          [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
-           (menu-item "/" "Home" (= :home selected))
-           (menu-item "/user" "User Details" (= :user selected))
-           (menu-item "/404" "404" false)
-           (menu-item "/405" "405" false)
-           (menu-item "/406" "406" false)
-           (menu-item "/500" "500" false)
-           (menu-item "/logout" "Logout" false)]]]]]
+      (menu :home)
       [:div.py-10
        [:header
         [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
@@ -87,6 +106,30 @@
         [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
          [:div.px-4.py-8.sm:px-0
           [:div.border-4.border-dashed.border-gray-200.rounded-lg.h-96]]]]]]])))
+
+(defn user-html
+  [req]
+  (hiccup/html
+   (hiccup.page/html5
+    {:class "h-full bg-gray-50" :lang "en"}
+    [:head
+     [:title "Home | Slipway Demo"]
+     [:meta {:charset "UTF-8"}]
+     [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
+     [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+    [:body.h-full
+     [:div.min-h-full
+      (menu :user)
+      [:div.py-10
+       [:header
+        [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "Home"]]]
+       [:main
+        [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
+         [:div.px-4.py-8.sm:px-0
+          (user-details (:slipway.common.auth/user req))]]]]]])))
 
 (defn error-html
   [code text]
@@ -131,13 +174,13 @@
   [_]
   {:status  200
    :headers {"content-type" "text/html"}
-   :body    (page-html :home)})
+   :body    home-html})
 
 (defn user
-  [_]
+  [req]
   {:status  200
    :headers {"content-type" "text/html"}
-   :body    (page-html :user)})
+   :body    (user-html req)})
 
 (defn error-404
   [_]
