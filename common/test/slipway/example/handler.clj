@@ -3,6 +3,8 @@
             [hiccup.core :as hiccup]
             [hiccup.page :as hiccup.page]))
 
+(def hello-html "<html><h1>Hello world</h1></html>")
+
 (defn login-html
   [retry?]
   (hiccup/html
@@ -41,6 +43,51 @@
            [:svg.h-5.w-5.text-indigo-500.group-hover:text-indigo-400 {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 20 20" :fill "currentColor" :aria-hidden "true"}
             [:path {:fill-rule "evenodd" :d "M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" :clip-rule "evenodd"}]]] "Sign in"]]]]]])))
 
+(def page-html
+  (hiccup/html
+   (hiccup.page/html5
+    {:class "h-full bg-gray-50" :lang "en"}
+    [:head
+     [:title "Home | Slipway Demo"]
+     [:meta {:charset "UTF-8"}]
+     [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
+     [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+    [:body/h-full
+     [:div.min-h-full
+      [:nav.bg-white.shadow-sm
+       [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+        [:div.flex.justify-between.h-16
+         [:div.flex
+          [:div.flex-shrink-0.flex.items-center
+           [:img.block.lg:hidden.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]
+           [:img.hidden.lg:block.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]]
+          [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
+           [:a.border-indigo-500.text-gray-900.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#" :aria-current "page"} "Home"]
+           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "Team"]
+           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "Projects"]
+           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "Calendar"]]]
+         [:div.hidden.sm:ml-6.sm:flex.sm:items-center
+          [:button.bg-white.p-1.rounded-full.text-gray-400.hover:text-gray-500.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:type "button"}
+           [:span.sr-only "View notifications"]
+           [:svg.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
+            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"}]]]]
+         [:div.-mr-2.flex.items-center.sm:hidden
+          [:button.bg-white.inline-flex.items-center.justify-center.p-2.rounded-md.text-gray-400.hover:text-gray-500.hover:bg-gray-100.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:type "button" :aria-controls "mobile-menu" :aria-expanded "false"}
+           [:span.sr-only "Open main menu"]
+           [:svg.block.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
+            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"}]]
+           [:svg.hidden.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
+            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M6 18L18 6M6 6l12 12"}]]]]]]]
+      [:div.py-10
+       [:header
+        [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "Home"]]]
+       [:main
+        [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
+         [:div.px-4.py-8.sm:px-0
+          [:div.border-4.border-dashed.border-gray-200.rounded-lg.h-96]]]]]]])))
+
 (defn error-html
   [code text]
   (hiccup/html
@@ -56,39 +103,6 @@
                         [:div.px-8.py-6.mt-4.text-left.bg-white.shadow-lg.divide-y
                          [:div.pb-12 [:h3.text-2xl.font-bold.text-center "Slipway"]]
                          [:div.pt-12 [:h3.text-2xl.font-bold.text-center (str code ": " text)]]]]])))
-
-(def home-html (hiccup/html
-                (hiccup.page/html5
-                 {:lang "en"}
-                 [:head
-                  [:title "Home | Slipway Demo"]
-                  [:meta {:charset "UTF-8"}]
-                  [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
-                  [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-                  [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
-                 [:body
-                  [:div.flex.items-center.justify-center.min-h-screen.bg-gray-400
-                   [:nav.flex.items-center.justify-between.flex-wrap.bg-teal-500.p-6
-                    [:div.flex.items-center.flex-shrink-0.text-white.mr-6
-                     [:svg.fill-current.h-8.w-8.mr-2 {:width "54" :height "54" :viewBox "0 0 54 54" :xmlns "http://www.w3.org/2000/svg"} [:path {:d "M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z"}]]
-                     [:span.font-semibold.text-xl.tracking-tight "Tailwind CSS"]]
-                    [:div.block.lg:hidden
-                     [:button.flex.items-center.px-3.py-2.border.rounded.text-teal-200.border-teal-400.hover:text-white.hover:border-white
-                      [:svg.fill-current.h-3.w-3 {:viewBox "0 0 20 20" :xmlns "http://www.w3.org/2000/svg"} [:title "Menu"] [:path {:d "M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"}]]]]
-                    [:div.w-full.block.flex-grow.lg:flex.lg:items-center.lg:w-auto
-                     [:div.text-sm.lg:flex-grow
-                      [:a.block.mt-4.lg:inline-block.lg:mt-0.text-teal-200.hover:text-white.mr-4 {:href "#responsive-header"} "Docs"]
-                      [:a.block.mt-4.lg:inline-block.lg:mt-0.text-teal-200.hover:text-white.mr-4 {:href "#responsive-header"} "Examples"]
-                      [:a.block.mt-4.lg:inline-block.lg:mt-0.text-teal-200.hover:text-white {:href "logout"} "Logout"]]
-                     [:div
-                      [:a.inline-block.text-sm.px-4.py-2.leading-none.border.rounded.text-white.border-white.hover:border-transparent.hover:text-teal-500.hover:bg-teal-400.mt-4.lg:mt-0 {:href "logout"} "logout"]]]]]])))
-
-(def hello-html "<html><h1>Hello world</h1></html>")
-(def error-404-html (error-html 404 "Page Not Found"))
-(def error-405-html (error-html 405 "Method Not Allowed"))
-(def error-406-html (error-html 406 "Not Acceptable"))
-(def error-application-html (error-html 500 "Application Error"))
-(def error-server-html (error-html 500 "Server Error"))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
 (def logout (constantly {:status 302 :headers {"location" "/"} :session nil}))
@@ -109,7 +123,7 @@
   [_]
   {:status  200
    :headers {"content-type" "text/html"}
-   :body    home-html})
+   :body    page-html})
 
 (defn error-404
   [_]
