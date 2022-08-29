@@ -44,6 +44,12 @@
            [:svg.h-5.w-5.text-indigo-500.group-hover:text-indigo-400 {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 20 20" :fill "currentColor" :aria-hidden "true"}
             [:path {:fill-rule "evenodd" :d "M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" :clip-rule "evenodd"}]]] "Sign in"]]]]]])))
 
+(defn menu-item
+  [href text selected?]
+  (if selected?
+    [:a.border-indigo-500.text-gray-900.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:aria-current "page" :href href} text]
+    [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href href} text]))
+
 (defn page-html
   [selected]
   (hiccup/html
@@ -66,30 +72,13 @@
            [:img.block.lg:hidden.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]
            [:img.hidden.lg:block.h-8.w-auto {:src "img/fh-icon.png" :alt "Workflow"}]]
           [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
-           [:a.border-indigo-500.text-gray-900.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium (cond-> {:href "#"} (= :home selected) (assoc :aria-current "page")) "Home"]
-           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "404"]
-           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "405"]
-           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "406"]
-           [:a.border-transparent.text-gray-500.hover:text-gray-700.hover:border-gray-300.inline-flex.items-center.px-1.pt-1.border-b-2.text-sm.font-medium {:href "#"} "500"]]]
-         [:div.hidden.sm:ml-6.sm:flex.sm:items-center
-          [:button.bg-white.p-1.rounded-full.text-gray-400.hover:text-gray-500.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:type "button"}
-           [:span.sr-only "View notifications"]
-           [:svg.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
-            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"}]]]
-          [:div.ml-3.relative
-           [:div
-            [:button#user-menu-button.max-w-xs.bg-white.flex.items-center.text-sm.rounded-full.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:type "button" :aria-expanded "false" :aria-haspopup "true"}
-             [:span.sr-only "Open user menu"]
-             [:svg.w-6.h-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor"}
-              [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"}]]]]]]
-         [:div.-mr-2.flex.items-center.sm:hidden
-          [:button.bg-white.inline-flex.items-center.justify-center.p-2.rounded-md.text-gray-400.hover:text-gray-500.hover:bg-gray-100.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 \
-           {:type "button" :aria-controls "mobile-menu" :aria-expanded "false"}
-           [:span.sr-only "Open main menu"]
-           [:svg.block.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
-            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"}]]
-           [:svg.hidden.h-6.w-6 {:xmlns "http://www.w3.org/2000/svg" :fill "none" :viewBox "0 0 24 24" :stroke-width "1.5" :stroke "currentColor" :aria-hidden "true"}
-            [:path {:stroke-linecap "round" :stroke-linejoin "round" :d "M6 18L18 6M6 6l12 12"}]]]]]]]
+           (menu-item "/" "Home" (= :home selected))
+           (menu-item "/user" "User Details" (= :user selected))
+           (menu-item "/404" "404" false)
+           (menu-item "/405" "405" false)
+           (menu-item "/406" "406" false)
+           (menu-item "/500" "500" false)
+           (menu-item "/logout" "Logout" false)]]]]]
       [:div.py-10
        [:header
         [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
@@ -143,6 +132,12 @@
   {:status  200
    :headers {"content-type" "text/html"}
    :body    (page-html :home)})
+
+(defn user
+  [_]
+  {:status  200
+   :headers {"content-type" "text/html"}
+   :body    (page-html :user)})
 
 (defn error-404
   [_]

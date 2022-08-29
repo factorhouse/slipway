@@ -11,7 +11,8 @@
    ["/login" {:get {:handler handler/login}}]
    ["/login-retry" {:get {:handler handler/login-retry}}]
    ["/logout" {:get {:handler handler/logout}}]
-   ["/" {:get {:handler handler/home}}]])
+   ["/" {:get {:handler handler/home}}]
+   ["/user" {:get {:handler handler/user}}]])
 
 (def opts
   {:auth {:realm               "slipway"
