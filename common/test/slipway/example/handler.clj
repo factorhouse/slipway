@@ -15,6 +15,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.flex.items-center.justify-center.py-12.px-4.sm:px-6.lg:px-8
@@ -53,8 +54,9 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
-    [:body/h-full
+    [:body.h-full
      [:div.min-h-full
       [:nav.bg-white.shadow-sm
        [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
@@ -100,18 +102,26 @@
 (defn error-html
   [code text]
   (hiccup/html
-   (hiccup.page/html5 {:lang "en"}
-                      [:head
-                       [:title (str text " | Slipway Demo")]
-                       [:meta {:charset "UTF-8"}]
-                       [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
-                       [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-                       [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
-                      [:body
-                       [:div.flex.items-center.justify-center.min-h-screen.bg-gray-100
-                        [:div.px-8.py-6.mt-4.text-left.bg-white.shadow-lg.divide-y
-                         [:div.pb-12 [:h3.text-2xl.font-bold.text-center "Slipway"]]
-                         [:div.pt-12 [:h3.text-2xl.font-bold.text-center (str code ": " text)]]]]])))
+   (hiccup.page/html5
+    {:class "h-full bg-gray-50" :lang "en"}
+    [:head
+     [:title "Home | Slipway Demo"]
+     [:meta {:charset "UTF-8"}]
+     [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
+     [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+    [:body.h-full
+     [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
+      [:div.max-w-max.mx-auto
+       [:main.sm:flex
+        [:p.text-4xl.tracking-tight.font-bold.text-indigo-600.sm:text-5xl code]
+        [:div.sm:ml-6
+         [:div.sm:border-l.sm:border-gray-200.sm:pl-6
+          [:h1.text-4xl.font-bold.text-gray-900.tracking-tight.sm:text-5xl text]]
+         [:div.mt-10.flex.space-x-3.sm:border-l.sm:border-transparent.sm:pl-6
+          [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.shadow-sm.text-white.bg-indigo-600.hover:bg-indigo-700.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "/"} "Home"]
+          [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.text-indigo-700.bg-indigo-100.hover:bg-indigo-200.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "#"} "Contact Support"]]]]]]])))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
 (def logout (constantly {:status 302 :headers {"location" "/"} :session nil}))
