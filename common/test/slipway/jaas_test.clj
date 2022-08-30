@@ -6,7 +6,7 @@
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
-(deftest login
+(deftest authentication-constraints
 
   (let [server (jaas/server)]
 
