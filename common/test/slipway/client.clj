@@ -1,8 +1,7 @@
 (ns slipway.client
   (:require [clj-http.client :as client]
             [clojure.string :as str]
-            [clojure.tools.logging :as log])
-  (:import (java.net URLEncoder)))
+            [clojure.tools.logging :as log]))
 
 (defn do-get
   ([scheme host port uri]
@@ -21,28 +20,34 @@
   (when-let [start (some-> (str/index-of body "data-csrf-token=") (+ 17))]
     (subs body start (dec (str/index-of body " id=\"sente-csrf-token")))))
 
+(defn do-login-post
+  [scheme host port user pass cookies]
+  (client/request
+   {:url               (format "%s://%s:%s/j_security_check" scheme host port)
+    :method            "POST"
+    :body              (format "j_username=%s&j_password=%s" user pass)
+    :cookies           cookies
+    :headers           {"Referer"      (format "%s://%s:%s/login" scheme host port)
+                        "Content-Type" "application/x-www-form-urlencoded"}
+    :redirect-strategy :none}))
+
+(defn do-login-redirect
+  [location cookies]
+  (client/request {:url               location
+                   :method            "GET"
+                   :cookies           cookies
+                   :redirect-strategy :none}))
+
 (defn do-login
-  [scheme host port user pass]
-  (let [anonymous        (:cookies (client/request {:url               (format "%s://%s:%s/" scheme host port)
-                                                    :method            "GET"
-                                                    :redirect-strategy :none}))
-        jetty-authed     (:cookies (client/request
-                                    {:url               (format "%s://%s:%s/j_security_check" scheme host port)
-                                     :method            "POST"
-                                     :body              (format "j_username=%s&j_password=%s" user pass)
-                                     :cookies           anonymous
-                                     :headers           {"Referer"      (format "%s://%s:%s/login" scheme host port)
-                                                         "Content-Type" "application/x-www-form-urlencoded"}
-                                     :redirect-strategy :none}))
-        ring-initialized (client/request {:url               (format "%s://%s:%s/" scheme host port)
-                                          :method            "GET"
-                                          :cookies           jetty-authed
-                                          :redirect-strategy :none})
+  [scheme host port uri user pass]
+  (let [anonymous        (do-get scheme host port uri)
+        jetty-authed     (do-login-post scheme host port user pass (:cookies anonymous))
+        ring-initialized (do-login-redirect (get-in jetty-authed [:headers "Location"]) (:cookies jetty-authed))
         csrf-token       (decode-csrf-token (:body ring-initialized))]
     (log/infof "logged in with jetty: %s, ring: %s, csrf-token: %s"
-               (get-in ring-initialized [:cookies "JSESSIONID" :value])
+               (get-in jetty-authed [:cookies "JSESSIONID" :value])
                (get-in ring-initialized [:cookies "ring-session" :value])
                csrf-token)
-    {:cookies    (:cookies ring-initialized)
-     :body       (:body ring-initialized)
-     :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))}))
+    {:anon  (dissoc anonymous :http-client)
+     :jetty (dissoc jetty-authed :http-client)
+     :ring  (dissoc ring-initialized :http-client)}))
