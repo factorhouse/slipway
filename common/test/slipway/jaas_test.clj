@@ -38,71 +38,71 @@
     (testing "login"
 
       ;; root without '/' (tests jetty nullPathInfo)
-      (is (= {:protocol-version {:name "HTTP", :major 1, :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              :headers          {"Connection" "close", "Content-Type" "text/html", "Content-Length" "2504"}
-              :length           2504
-              :body             handler/home-html}
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :length                761
+              :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :headers :length :body]))))
+                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding]))))
 
       ;; root with '/' (tests jetty nullPathInfo)
-      (is (= {:protocol-version {:name "HTTP", :major 1, :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              :headers          {"Connection" "close", "Content-Type" "text/html", "Content-Length" "2504"}
-              :length           2504
-              :body             handler/home-html}
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :length                761
+              :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :headers :length :body])))))
+                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
 
     (testing "post-login-redirect"
 
-      (is (= {:protocol-version {:name "HTTP", :major 1, :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              :headers          {"Connection" "close", "Content-Type" "text/html", "Content-Length" "3048"}
-              :length           3048
-              :body             (handler/user-html {:slipway.common.auth/user {:name  "admin"
-                                                                               :roles #{"admin"
-                                                                                        "content-administrator"
-                                                                                        "server-administrator"
-                                                                                        "user"}}})}
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :length                889
+              :body                  (handler/user-html {:slipway.common.auth/user {:name  "admin"
+                                                                                    :roles #{"admin"
+                                                                                             "content-administrator"
+                                                                                             "server-administrator"
+                                                                                             "user"}}})}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :headers :length :body])))))
+                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
 
     (testing "post-login-redirect-null-request-context"
 
       ;; if we start our session on the login page we have no post-login request context we fallback
       ;; to the default context, this tests a default context is in place in the handler chain
 
-      (is (= {:protocol-version {:name "HTTP", :major 1, :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              :headers          {"Connection" "close", "Content-Type" "text/html", "Content-Length" "2504"}
-              :length           2504
-              :body             handler/home-html}
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :length                761
+              :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :headers :length :body])))))
+                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
 
     (testing "cookie-session"
 
-      (is (= {:protocol-version {:name "HTTP", :major 1, :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              :headers          {"Connection" "close", "Content-Type" "text/html", "Content-Length" "2504"}
-              :length           2504
-              :body             handler/home-html}
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :length                761
+              :body                  handler/home-html}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                                :jetty
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/" session)
-                   (select-keys [:protocol-version :status :reason-phrase :headers :length :body]))))))
+                   (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding]))))))
 
     (testing "logout"
 

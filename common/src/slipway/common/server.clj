@@ -12,13 +12,6 @@
            (org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Server)
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
-(def default-gzip-content-types
-  ["text/css"
-   "text/plain"
-   "text/javascript"
-   "application/javascript"
-   "image/svg+xml"])
-
 (defn http-config
   [{:keys [ssl-port secure-scheme output-buffer-size request-header-size
            response-header-size send-server-version? send-date-header?
@@ -127,12 +120,16 @@
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
 (defn enable-gzip-compression
-  [^Server server content-types min-gzip-size]
-  (let [gzip-handler (doto (GzipHandler.)
-                       (.setIncludedMimeTypes (into-array String content-types))
-                       (.setMinGzipSize min-gzip-size)
-                       (.setHandler (.getHandler server)))]
-    (log/infof "enabling gzip compression on the following content types: %s" content-types)
+  [^Server server gzip-content-types min-gzip-size]
+  (let [gzip-handler (GzipHandler.)]
+    (log/info "enabling gzip compression")
+    (when (seq gzip-content-types)
+      (log/infof "setting gzip included mime types: %s" gzip-content-types)
+      (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
+    (when min-gzip-size
+      (log/infof "setting gzip min size: %s" min-gzip-size)
+      (.setMinGzipSize min-gzip-size))
+    (.setHandler gzip-handler (.getHandler server))
     (.setHandler server gzip-handler)))
 
 (defn create-server ^Server

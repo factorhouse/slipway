@@ -49,19 +49,11 @@
    See https://github.com/factorhouse/slipway#usage for list of options"
   ^Server [handler {:as   options
                     :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-                    :or   {gzip?              true
-                           gzip-content-types common.server/default-gzip-content-types
-                           gzip-min-size      1024}}]
+                    :or   {gzip? true}}]
   (log/info "configuring Jetty9")
   (let [server           (common.server/create-server options)
-        ring-app-handler (doto (ContextHandler.)
-                           (.setContextPath "/")
-                           (.setAllowNullPathInfo true)
-                           (.setHandler (proxy-handler handler options)))
-        ws-handler       (doto (ContextHandler.)
-                           (.setContextPath "/")
-                           (.setAllowNullPathInfo true)
-                           (.setHandler (ws/proxy-ws-handler handler options)))
+        ring-app-handler (proxy-handler handler options)
+        ws-handler       (ws/proxy-ws-handler handler options)
         contexts         (doto (HandlerList.)
                            (.setHandlers (into-array Handler [ring-app-handler ws-handler])))]
     (.setHandler server contexts)
@@ -70,6 +62,15 @@
     (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
     (when error-handler (.setErrorHandler server error-handler))
     (when auth (common.auth/configure server auth))
+
+    ;; TODO invert the above functions to work on handlers not servers
+    ;; TODO figure out importance of order of handlers
+    (let [handler (.getHandler server)]
+      (.setHandler server (doto (ContextHandler.)
+                            (.setContextPath "/")
+                            (.setAllowNullPathInfo true)
+                            (.setHandler handler))))
+
     (.start server)
     (when join? (.join server))
     server))
