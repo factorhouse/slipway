@@ -13,7 +13,7 @@
            (org.eclipse.jetty.server Handler Request Server)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
-(defn handle*
+(defn handle-http
   [handler request-map base-request response {:keys [auth]}]
   (try
     (let [request-map  (cond-> request-map
@@ -38,7 +38,7 @@
         (let [request-map (common.servlet/build-request-map request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)                ;; Let the WS handler take care of ws-upgrade-requests
-            (handle* handler request-map base-request response options)))
+            (handle-http handler request-map base-request response options)))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))
