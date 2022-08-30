@@ -17,14 +17,14 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.flex.items-center.justify-center.py-12.px-4.sm:px-6.lg:px-8
       [:div.max-w-md.w-full.space-y-8
        [:div
         [:a {:href "https://factorhouse.io" :target "_blank"}
-         [:img.mx-auto.h-64.w-auto {:src "img/fh-logo.png" :alt "Factor House"}]]]
+         [:img.mx-auto.w-auto {:src "img/slipway-logo.png" :alt "Factor House"}]]]
        [:form.mt-8.space-y-6 {:method "POST" :action "j_security_check"}
         [:div.rounded-md.shadow-sm.-space-y-px
          [:div
@@ -59,8 +59,8 @@
     [:div.flex.justify-between.h-16
      [:div.flex
       [:div.flex-shrink-0.flex.items-center
-       [:img.block.lg:hidden.h-8.w-auto {:src "img/fh-icon.png" :alt "Factor House"}]
-       [:img.hidden.lg:block.h-8.w-auto {:src "img/fh-icon.png" :alt "Factor House"}]]
+       [:img.block.lg:hidden.h-8.w-auto {:src "img/slipway-icon.png" :alt "Factor House"}]
+       [:img.hidden.lg:block.h-8.w-auto {:src "img/slipway-icon.png" :alt "Factor House"}]]
       [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
        (menu-item "/" "Home" (= :home selected))
        (menu-item "/user" "User Details" (= :user selected))
@@ -93,7 +93,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
@@ -117,7 +117,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
@@ -141,7 +141,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "72x72" :href "/img/fh-icon-alt.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
