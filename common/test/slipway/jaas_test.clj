@@ -12,6 +12,7 @@
   (let [server (jaas/server)]
 
     (testing "constraints"
+
       ;; wrong port / scheme
       (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
       (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
@@ -73,6 +74,5 @@
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
                  (select-keys [:protocol-version :status :reason-phrase :headers :length :body])))))
-
 
     (slipway/stop-jetty server)))
