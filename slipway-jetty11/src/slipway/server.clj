@@ -61,13 +61,3 @@
     (.start server)
     (when join? (.join server))
     server))
-
-(comment
-  (def handler
-    (fn [req]
-      (if (common.ws/upgrade-request? req)
-        (common.ws/upgrade-response
-         {:on-connect (fn [_] (prn "Hello world"))})
-        {:status 200 :body "Hello world!"})))
-
-  (run-jetty handler {:port 5005 :join? false}))

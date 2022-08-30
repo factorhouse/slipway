@@ -36,4 +36,5 @@
                  [org.apache.mina/mina-core "2.1.6"]]       ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 10.0.11
 
   :source-paths ["src" "common/src" "common-javax/src"]
+  :java-source-paths ["common/src-java"]
   :test-paths ["test" "common/test"])

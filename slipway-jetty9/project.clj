@@ -34,4 +34,7 @@
                  [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
-  :test-paths ["test" "common/test"])
+  :java-source-paths ["common/src-java"]
+  :test-paths ["test" "common/test"]
+
+  :javac-options ["-target" "8" "-source" "8"])

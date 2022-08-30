@@ -110,5 +110,5 @@
       (.setHandler server security-handler)
       (.setHandler server (HandlerCollection.
                            (into-array Handler [(session-handler (or session cookie))
-                                                security-context]))))
+                                                security-handler]))))
     server))

@@ -33,7 +33,7 @@
                                 ["/favicon.ico" (constraints/no-auth)]
                                 ["/*" (constraints/form-auth-any-constraint)])}})
 
-(defn handler
+(defn ring-handler
   []
   (-> (reitit.ring/ring-handler
        (reitit.ring/router routes)
@@ -50,4 +50,4 @@
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (slipway/run-jetty (handler) opts))
+  (slipway/run-jetty (ring-handler) opts))
