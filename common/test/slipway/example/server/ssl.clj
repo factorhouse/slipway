@@ -16,4 +16,4 @@
 
 (defn server
   []
-  (slipway/run-jetty handler/hello opts))
+  (slipway/start-jetty handler/hello opts))

@@ -44,7 +44,7 @@
           (.sendError response 500 (.getMessage e))
           (.setHandled base-request true))))))
 
-(defn run-jetty
+(defn start-jetty
   "Starts a Jetty server.
    See https://github.com/factorhouse/slipway#usage for list of options"
   ^Server [handler {:as   options
@@ -73,3 +73,7 @@
     (.start server)
     (when join? (.join server))
     server))
+
+(defn stop-jetty
+  [^Server server]
+  (.stop server))

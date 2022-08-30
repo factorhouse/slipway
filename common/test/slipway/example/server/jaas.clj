@@ -53,4 +53,4 @@
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (slipway/run-jetty (ring-handler) opts))
+  (slipway/start-jetty (ring-handler) opts))
