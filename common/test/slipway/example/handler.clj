@@ -22,9 +22,7 @@
     [:body.h-full
      [:div.min-h-full.flex.items-center.justify-center.py-12.px-4.sm:px-6.lg:px-8
       [:div.max-w-md.w-full.space-y-8
-       [:div
-        [:a {:href "https://factorhouse.io" :target "_blank"}
-         [:img.mx-auto.w-auto {:src "img/slipway-logo.png" :alt "Factor House"}]]]
+       [:div [:img.mx-auto.w-auto {:src "img/slipway-logo.png" :alt "Factor House"}]]
        [:form.mt-8.space-y-6 {:method "POST" :action "j_security_check"}
         [:div.rounded-md.shadow-sm.-space-y-px
          [:div
