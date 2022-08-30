@@ -208,12 +208,6 @@
   [_]
   (throw (RuntimeException. "Error Route")))
 
-(defn error-server
-  [_]
-  {:status  500
-   :headers {"content-type" "text/html"}
-   :body    (error-html 500 "Server Error")})
-
 (defn hello
   [_]
   {:status  200

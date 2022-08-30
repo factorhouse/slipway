@@ -137,9 +137,8 @@
 
 (defn create-server ^Server
   [{:as   options
-    :keys [port max-threads min-threads threadpool-idle-timeout job-queue
-           daemon? max-idle-time host ssl? ssl-port http? proxy?
-           thread-pool]
+    :keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?
+           proxy? thread-pool]
     :or   {port                    3000
            max-threads             50
            min-threads             8

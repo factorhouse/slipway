@@ -3,7 +3,8 @@
             [reitit.ring :as reitit.ring]
             [slipway.common.auth.constraints :as constraints]
             [slipway.example.handler :as handler]
-            [slipway.server :as slipway]))
+            [slipway.server :as slipway])
+  (:import (io.factorhouse.slipway SimpleErrorHandler)))
 
 (def routes
   [""
@@ -18,20 +19,22 @@
    ["/500" {:get {:handler handler/error-route}}]])
 
 (def opts
-  {:auth {:realm               "slipway"
-          :login-uri           "/login"
-          :logout-uri          "/logout"
-          :login-retry-uri     "/login-retry"
-          :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
-          :auth-method         "form"
-          :auth-type           "jaas"
-          ;; first constraint wins, so this applies auth to anything not explicitly listed prior
-          :constraint-mappings (constraints/constraint-mappings
-                                ["/up" (constraints/no-auth)]
-                                ["/css/*" (constraints/no-auth)]
-                                ["/img/*" (constraints/no-auth)]
-                                ["/favicon.ico" (constraints/no-auth)]
-                                ["/*" (constraints/form-auth-any-constraint)])}})
+  {:error-handler (SimpleErrorHandler. (handler/error-html 500 "Server Error"))
+   :auth          {:realm               "slipway"
+                   :login-uri           "/login"
+                   :logout-uri          "/logout"
+                   :login-retry-uri     "/login-retry"
+                   :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
+                   :auth-method         "form"
+                   :auth-type           "jaas"
+                   :session             {:max-inactive-interval 30}
+                   ;; first constraint wins, so this applies auth to anything not explicitly listed prior
+                   :constraint-mappings (constraints/constraint-mappings
+                                         ["/up" (constraints/no-auth)]
+                                         ["/css/*" (constraints/no-auth)]
+                                         ["/img/*" (constraints/no-auth)]
+                                         ["/favicon.ico" (constraints/no-auth)]
+                                         ["/*" (constraints/form-auth-any-constraint)])}})
 
 (defn ring-handler
   []
