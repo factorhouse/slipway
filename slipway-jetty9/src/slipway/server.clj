@@ -3,7 +3,7 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
-            [slipway.auth]
+            [slipway.auth :as auth]
             [slipway.common.auth :as common.auth]
             [slipway.common.server :as common.server]
             [slipway.common.servlet :as common.servlet]
@@ -13,13 +13,22 @@
            (org.eclipse.jetty.server Handler Request Server)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
+;(defn safe-login-redirect
+;  "When logging in we have some special cases to consider with the post-login uri"
+;  [target request {:keys [login-uri login-retry-uri]}]
+;  (when (#{login-uri login-retry-uri} target)
+;    (let [post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
+;      (when (.contains post-login-uri "/chsk")
+;        (log/info "avoiding /chsk post-login, setting post-login uri to '/'")
+;        (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/")))))
+
 (defn handle-http
-  [handler request-map base-request response {:keys [auth]}]
+  [handler request-map base-request response]
   (try
-    (let [request-map  (cond-> request-map
-                         auth (assoc ::common.auth/user (common.auth/user base-request)))
+    (let [request-map  (assoc request-map
+                              ::auth/user (common.auth/user base-request)
+                              ::request base-request)
           response-map (handler request-map)]
-      (common.auth/maybe-logout auth base-request request-map)
       (when response-map
         (if (common.ws/upgrade-response? response-map)
           (common.servlet/update-servlet-response response {:status 406})
@@ -31,14 +40,14 @@
       (.setHandled base-request true))))
 
 (defn proxy-handler
-  [handler options]
+  [handler]
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
         (let [request-map (common.servlet/build-request-map request)]
           (if (common.ws/upgrade-request? request-map)
-            (.setHandled base-request false)                ;; Let the WS handler take care of ws-upgrade-requests
-            (handle-http handler request-map base-request response options)))
+            (.setHandled base-request false)
+            (handle-http handler request-map base-request response)))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))
@@ -52,7 +61,7 @@
                     :or   {gzip? true}}]
   (log/info "configuring Jetty9")
   (let [server           (common.server/create-server options)
-        ring-app-handler (proxy-handler handler options)
+        ring-app-handler (proxy-handler handler)
         ws-handler       (ws/proxy-ws-handler handler options)
         contexts         (doto (HandlerList.)
                            (.setHandlers (into-array Handler [ring-app-handler ws-handler])))]

@@ -12,6 +12,8 @@
            (org.eclipse.jetty.server.handler HandlerCollection)
            (org.eclipse.jetty.server.session SessionHandler)))
 
+(defmulti login-service :auth-type)
+
 (defmulti session-tracking-mode identity)
 
 (defn user
@@ -19,9 +21,9 @@
   [^Request req]
   (when (instance? Authentication$User (.getAuthentication req))
     (let [^Authentication$User auth (.getAuthentication req)
-          user-id                   (.getUserIdentity auth)
-          name                      (some-> user-id (.getUserPrincipal) (.getName))
-          roles                     (->> (some-> user-id (.getSubject) (.getPrincipals))
+          user-identity             (.getUserIdentity auth)
+          name                      (some-> user-identity (.getUserPrincipal) (.getName))
+          roles                     (->> (some-> user-identity (.getSubject) (.getPrincipals))
                                          (map p/datafy)
                                          (filter #(= :role (:type %)))
                                          (map :name)
@@ -32,18 +34,15 @@
       (log/debug "user" user)
       user)))
 
-(defn maybe-logout
-  "Invalidate the session IFF the URI is /logout"
-  [{:keys [logout-uri] :as auth} ^Request base-request request-map]
-  (when auth
-    (try
-      (when (= logout-uri (.getRequestURI base-request))
-        (log/debug "logout" (::user request-map))
-        (.invalidate (.getSession base-request)))
-      (catch Exception ex
-        (log/error ex "logout error")))))
-
-(defmulti login-service :auth-type)
+(defn logout
+  "Logout user and invalidate the session"
+  [{:keys [slipway.auth/user ^Request slipway.server/request]}]
+  (try
+    (log/debug "logout" user)
+    (.logout request)
+    (.invalidate (.getSession request))
+    (catch Exception ex
+      (log/error ex "logout error"))))
 
 (defmethod login-service "jaas"
   [{:keys [realm]}]

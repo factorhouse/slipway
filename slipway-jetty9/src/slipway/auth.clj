@@ -6,6 +6,7 @@
            (org.eclipse.jetty.security AbstractLoginService$RolePrincipal AbstractLoginService$UserPrincipal)))
 
 (extend-protocol p/Datafiable
+
   JAASPrincipal
   (datafy [user]
     {:type :user

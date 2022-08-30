@@ -12,7 +12,7 @@
    ring.util.servlet/get-headers is -private, so we copy here"
   [^HttpServletRequest request]
   (reduce
-   (fn [headers, ^String name]
+   (fn [headers ^String name]
      (assoc headers
             (.toLowerCase name Locale/ENGLISH)
             (->> (.getHeaders request name)

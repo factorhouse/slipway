@@ -1,9 +1,9 @@
 (ns slipway.example.handler
-  (:require
-   [clojure.string :as str]
-   [clojure.tools.logging :as log]
-   [hiccup.core :as hiccup]
-   [hiccup.page :as hiccup.page]))
+  (:require [clojure.string :as str]
+            [clojure.tools.logging :as log]
+            [hiccup.core :as hiccup]
+            [hiccup.page :as hiccup.page]
+            [slipway.common.auth :as auth]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
 
@@ -17,12 +17,12 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.flex.items-center.justify-center.py-12.px-4.sm:px-6.lg:px-8
       [:div.max-w-md.w-full.space-y-8
-       [:div [:img.mx-auto.w-auto {:src "img/slipway-logo.png" :alt "Factor House"}]]
+       [:div.mb-16 [:img.mx-auto.h-24.w-auto {:src "img/sw-logo-zinc.png" :alt "Factor House"}]]
        [:form.mt-8.space-y-6 {:method "POST" :action "j_security_check"}
         [:div.rounded-md.shadow-sm.-space-y-px
          [:div
@@ -38,7 +38,7 @@
          [:div.text-sm.items
           [:a.font-medium.text-indigo-600.hover:text-indigo-500 {:href "#"} "Forgot your password?"]]]
         [:div
-         [:button.group.relative.w-full.flex.justify-center.py-2.px-4.border.border-transparent.text-sm.font-medium.rounded-md.text-white.bg-indigo-600.hover:bg-indigo-700.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500
+         [:button.group.relative.w-full.flex.justify-center.mt-12.py-2.px-4.border.border-transparent.text-sm.font-medium.rounded-md.text-white.bg-indigo-600.hover:bg-indigo-700.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500
           {:type "submit"}
           [:span.absolute.left-0.inset-y-0.flex.items-center.pl-3
            [:svg.h-5.w-5.text-indigo-500.group-hover:text-indigo-400 {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 20 20" :fill "currentColor" :aria-hidden "true"}
@@ -57,8 +57,8 @@
     [:div.flex.justify-between.h-16
      [:div.flex
       [:div.flex-shrink-0.flex.items-center
-       [:img.block.lg:hidden.h-8.w-auto {:src "img/slipway-icon.png" :alt "Factor House"}]
-       [:img.hidden.lg:block.h-8.w-auto {:src "img/slipway-icon.png" :alt "Factor House"}]]
+       [:img.block.lg:hidden.h-8.w-auto {:src "img/sw-icon-zinc.png" :alt "Factor House"}]
+       [:img.hidden.lg:block.h-8.w-auto {:src "img/sw-icon-zinc.png" :alt "Factor House"}]]
       [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
        (menu-item "/" "Home" (= :home selected))
        (menu-item "/user" "User Details" (= :user selected))
@@ -91,7 +91,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
@@ -115,7 +115,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
@@ -127,7 +127,7 @@
        [:main
         [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
          [:div.px-4.py-8.sm:px-0
-          (user-details (:slipway.common.auth/user req))]]]]]])))
+          (user-details (:slipway.auth/user req))]]]]]])))
 
 (defn error-html
   [code text]
@@ -139,7 +139,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/slipway-icon.png"}]
+     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
@@ -154,7 +154,6 @@
           [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.text-indigo-700.bg-indigo-100.hover:bg-indigo-200.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "#"} "Contact Support"]]]]]]])))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
-(def logout (constantly {:status 302 :headers {"location" "/"} :session nil}))
 
 (defn login
   [_]
@@ -167,6 +166,13 @@
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    (login-html true)})
+
+(defn logout
+  [req]
+  (auth/logout req)
+  {:status  302
+   :headers {"location" "/"}
+   :session nil})
 
 (defn home
   [_]
