@@ -104,4 +104,16 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase :headers :length :body]))))))
 
+    (testing "logout"
+
+      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+              :reason-phrase    "See Other"
+              :status           303}
+             (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
+                               :jetty
+                               (select-keys [:cookies]))]
+               (client/do-get "http" "localhost" 3000 "/logout" session)
+               (-> (client/do-get "http" "localhost" 3000 "/" session)
+                   (select-keys [:protocol-version :status :reason-phrase]))))))
+
     (slipway/stop-jetty server)))
