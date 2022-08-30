@@ -1,7 +1,9 @@
 (ns slipway.common.servlet
   (:require [clojure.string :as string]
-            [ring.util.servlet :as servlet])
+            [ring.util.servlet :as servlet]
+            [slipway.common.auth :as auth])
   (:import (java.util Locale)
+           (javax.servlet SessionTrackingMode)
            (javax.servlet.http HttpServletRequest HttpServletResponse)))
 
 (defprotocol RequestMapDecoder
@@ -48,3 +50,15 @@
   HttpServletRequest
   (build-request-map [request]
     (servlet/build-request-map request)))
+
+(defmethod auth/session-tracking-mode :cookie
+  [_]
+  SessionTrackingMode/COOKIE)
+
+(defmethod auth/session-tracking-mode :url
+  [_]
+  SessionTrackingMode/URL)
+
+(defmethod auth/session-tracking-mode :ssl
+  [_]
+  SessionTrackingMode/SSL)

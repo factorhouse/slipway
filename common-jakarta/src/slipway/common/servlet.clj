@@ -3,8 +3,9 @@
    ring depends on the javax servlet API, rather than the jakarta one.
    Once a jakarta compatible version of ring is available this ns can model the javax/slipway.common.servlet ns."
   (:require [clojure.string :as string]
-            [ring.core.protocols :as protocols])
-  (:import (jakarta.servlet AsyncContext)
+            [ring.core.protocols :as protocols]
+            [slipway.common.auth :as auth])
+  (:import (jakarta.servlet AsyncContext SessionTrackingMode)
            (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (java.io FilterOutputStream)
            (java.util Locale)))
@@ -109,3 +110,15 @@
      :character-encoding (.getCharacterEncoding request)
      :ssl-client-cert    (get-client-cert request)
      :body               (.getInputStream request)}))
+
+(defmethod auth/session-tracking-mode :cookie
+  [_]
+  SessionTrackingMode/COOKIE)
+
+(defmethod auth/session-tracking-mode :url
+  [_]
+  SessionTrackingMode/URL)
+
+(defmethod auth/session-tracking-mode :ssl
+  [_]
+  SessionTrackingMode/SSL)

@@ -3,7 +3,6 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
-            [slipway.auth :as auth]
             [slipway.common.auth :as common.auth]
             [slipway.common.server :as common.server]
             [slipway.common.servlet :as common.servlet]
@@ -19,9 +18,9 @@
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (let [request-map  (assoc (common.servlet/build-request-map request)
-                                  ::auth/user (common.auth/user base-request)
-                                  ::request base-request)
+        (let [request-map  (merge (common.servlet/build-request-map request)
+                                  (common.auth/credentials base-request)
+                                  {::request base-request})
               response-map (handler request-map)]
           (when response-map
             (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))

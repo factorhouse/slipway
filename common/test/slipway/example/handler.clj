@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [hiccup.core :as hiccup]
             [hiccup.page :as hiccup.page]
-            [slipway.common.auth :as auth]))
+            [slipway.user :as user]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
 
@@ -76,11 +76,11 @@
      [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
       [:dt.text-sm.font-medium.text-gray-500 "Username"]
       [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-       [:span.flex-grow (:name req)]]]
+       [:span.flex-grow (user/name req)]]]
      [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
       [:dt.text-sm.font-medium.text-gray-500 "Roles"]
       [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-       [:span.flex-grow (str/join ", " (sort (:roles req)))]]]]]])
+       [:span.flex-grow (str/join ", " (user/roles req))]]]]]])
 
 (def home-html
   (hiccup/html
@@ -127,7 +127,7 @@
        [:main
         [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
          [:div.px-4.py-8.sm:px-0
-          (user-details (:slipway.auth/user req))]]]]]])))
+          (user-details req)]]]]]])))
 
 (defn error-html
   [code text]
@@ -169,7 +169,7 @@
 
 (defn logout
   [req]
-  (auth/logout req)
+  (user/logout req)
   {:status  302
    :headers {"location" "/"}
    :session nil})

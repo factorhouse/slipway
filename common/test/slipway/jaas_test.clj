@@ -65,12 +65,13 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                891
-              :body                  (handler/user-html {:slipway.auth/user {:name  "admin"
-                                                                             :roles #{"admin"
-                                                                                      "content-administrator"
-                                                                                      "server-administrator"
-                                                                                      "user"}}})}
+              :length                894
+              :body                  (handler/user-html {:slipway.user/credentials
+                                                         {:name  "admin"
+                                                          :roles #{"admin"
+                                                                   "content-administrator"
+                                                                   "server-administrator"
+                                                                   "user"}}})}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
                  (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))

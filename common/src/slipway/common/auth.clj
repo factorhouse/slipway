@@ -16,27 +16,16 @@
 
 (defmulti session-tracking-mode identity)
 
-(defn user
+(defn credentials
   "Derive user credentials (name + roles) from a base jetty request"
   [^Request req]
-  (when (instance? Authentication$User (.getAuthentication req))
-    (let [^Authentication$User auth (.getAuthentication req)
-          user-identity             (.getUserIdentity auth)
-          name                      (some-> user-identity (.getUserPrincipal) (.getName))
-          roles                     (->> (some-> user-identity (.getSubject) (.getPrincipals))
-                                         (map p/datafy)
-                                         (filter #(= :role (:type %)))
-                                         (map :name)
-                                         set)
-          user                      {:provider :jetty
-                                     :name     name
-                                     :roles    roles}]
-      (log/debug "user" user)
-      user)))
+  (when-let [authentication (.getAuthentication req)]
+    (when (instance? Authentication$User authentication)
+      (p/datafy authentication))))
 
 (defn logout
   "Logout user and invalidate the session"
-  [{:keys [slipway.auth/user ^Request slipway.server/request]}]
+  [{:keys [slipway.user/user ^Request slipway.server/request]}]
   (try
     (log/debug "logout" user)
     (.logout request)
