@@ -1,7 +1,7 @@
 (ns slipway.common.servlet
   (:require [clojure.string :as string]
             [ring.util.servlet :as servlet]
-            [slipway.common.auth :as auth])
+            [slipway.auth :as auth])
   (:import (java.util Locale)
            (javax.servlet SessionTrackingMode)
            (javax.servlet.http HttpServletRequest HttpServletResponse)))

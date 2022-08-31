@@ -1,7 +1,7 @@
 (ns slipway.user
   (:refer-clojure :exclude [name])
   (:require [clojure.core.protocols :as p]
-            [slipway.common.auth :as auth]
+            [slipway.auth :as auth]
             [slipway.user.jaas]
             [slipway.user.jetty])
   (:import (org.eclipse.jetty.server Authentication$User UserIdentity)))

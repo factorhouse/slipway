@@ -1,4 +1,4 @@
-(ns slipway.jaas-test
+(ns slipway.server-ext-test
   (:require [clojure.test :refer :all]
             [slipway.example.server :as server]
             [slipway.server :as slipway]))
