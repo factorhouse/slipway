@@ -6,7 +6,7 @@
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
-(def of-interest [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])
+(def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
 
 (deftest basic-http
 
@@ -17,8 +17,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  "<html><h1>Hello world</h1></html>"
-            :length                48}
+            :body                  "<html><h1>Hello world</h1></html>"}
            (-> (client/do-get "http://localhost:3000/" {})
                (select-keys of-interest))))
 
@@ -33,8 +32,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  "<html><h1>Hello world</h1></html>"
-            :length                48}
+            :body                  "<html><h1>Hello world</h1></html>"}
            (-> (client/do-get "https://localhost:3000/" {:insecure? true})
                (select-keys of-interest))))
 
@@ -51,8 +49,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (handler/login-html false)
-            :length                1134}
+            :body                  (handler/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -65,8 +62,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (handler/login-html false)
-            :length                1134}
+            :body                  (handler/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -79,8 +75,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
-            :body                  (handler/login-html false)
-            :length                2606}
+            :body                  (handler/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -101,19 +96,17 @@
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding nil
-              :body                  ""
-              :length                0}
+              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
+              :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "/up")
-                 (select-keys of-interest))))
+                 (select-keys (vec (butlast of-interest))))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                303
               :reason-phrase         "See Other"
               :orig-content-encoding nil
-              :body                  ""
-              :length                -1}
+              :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
@@ -128,8 +121,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/login-html false)
-              :length                1134}
+              :body                  (handler/login-html false)}
              (-> (client/do-get "http" "localhost" 3000 "/login")
                  (select-keys of-interest))))
 
@@ -145,7 +137,6 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                764
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
@@ -156,7 +147,6 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                764
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
@@ -168,7 +158,6 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                894
               :body                  (handler/user-html {:slipway.user/credentials
                                                          {:name  "admin"
                                                           :roles #{"admin"
@@ -187,7 +176,6 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                764
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
                  :ring
@@ -199,7 +187,6 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                865
               :body                  (handler/user-html {:slipway.user/credentials {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                :jetty
