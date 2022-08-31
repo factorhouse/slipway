@@ -1,8 +1,8 @@
 (ns slipway.websockets
   "Jetty10 impl of the Websockets API + handler, inspired by:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
-  (:require [slipway.common.servlet :as common.servlet]
-            [slipway.common.websockets :as common.ws])
+  (:require [slipway.common.websockets :as common.ws]
+            [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
            (java.time Duration)
@@ -13,10 +13,10 @@
 
 (def ^:private no-op (constantly nil))
 
-(extend-protocol common.servlet/RequestMapDecoder
+(extend-protocol servlet/RequestMapDecoder
   JettyServerUpgradeRequest
   (build-request-map [request]
-    (assoc (-> (.getHttpServletRequest request) (common.servlet/updgrade-servlet-request-map))
+    (assoc (-> (.getHttpServletRequest request) (servlet/updgrade-servlet-request-map))
            :websocket-subprotocols (into [] (.getSubProtocols request))
            :websocket-extensions (into [] (.getExtensions request)))))
 
@@ -104,7 +104,7 @@
   (connected? [this]
     (. this (isConnected)))
   (req-of [this]
-    (common.servlet/build-request-map (.getUpgradeResponse (.getSession this)))))
+    (servlet/build-request-map (.getUpgradeResponse (.getSession this)))))
 
 (defn proxy-ws-adapter
   [{:keys [on-connect on-error on-text on-close on-bytes on-ping on-pong]

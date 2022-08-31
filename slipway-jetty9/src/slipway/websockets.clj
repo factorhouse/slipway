@@ -1,8 +1,8 @@
 (ns slipway.websockets
   "Jetty9 impl of the Websockets API + handler, inspired by:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
-  (:require [slipway.common.servlet :as common.servlet]
-            [slipway.common.websockets :as common.ws])
+  (:require [slipway.common.websockets :as common.ws]
+            [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
            (org.eclipse.jetty.server Request Response)
@@ -73,10 +73,10 @@
   Object
   (-ping! [o ws] (common.ws/-ping! (.getBytes (str o) "UTF-8") ws)))
 
-(extend-protocol common.servlet/RequestMapDecoder
+(extend-protocol servlet/RequestMapDecoder
   ServletUpgradeRequest
   (build-request-map [request]
-    (assoc (-> (.getHttpServletRequest request) (common.servlet/updgrade-servlet-request-map))
+    (assoc (-> (.getHttpServletRequest request) (servlet/updgrade-servlet-request-map))
            :websocket-subprotocols (into [] (.getSubProtocols request))
            :websocket-extensions (into [] (.getExtensions request)))))
 
@@ -104,7 +104,7 @@
   (connected? [this]
     (. this (isConnected)))
   (req-of [this]
-    (common.servlet/build-request-map (.getUpgradeResponse (.getSession this)))))
+    (servlet/build-request-map (.getUpgradeResponse (.getSession this)))))
 
 (defn proxy-ws-adapter
   [{:keys [on-connect on-error on-text on-close on-bytes]
@@ -133,7 +133,7 @@
   [handler]
   (reify WebSocketCreator
     (createWebSocket [_ req resp]
-      (let [req-map (common.servlet/build-request-map req)]
+      (let [req-map (servlet/build-request-map req)]
         (if (common.ws/upgrade-request? req-map)
           (let [resp-map (handler req-map)]
             (if (common.ws/upgrade-response? resp-map)

@@ -1,8 +1,8 @@
 package io.factorhouse.slipway;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
 

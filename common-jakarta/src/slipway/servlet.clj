@@ -1,7 +1,7 @@
-(ns slipway.common.servlet
+(ns slipway.servlet
   "This ns pulls in most of ring.util.servlet that we would otherwise use, but are unable to do so because
    ring depends on the javax servlet API, rather than the jakarta one.
-   Once a jakarta compatible version of ring is available this ns can model the javax/slipway.common.servlet ns."
+   Once a jakarta compatible version of ring is available this ns can model the javax/slipway.servlet ns."
   (:require [clojure.string :as string]
             [ring.core.protocols :as protocols]
             [slipway.auth :as auth])

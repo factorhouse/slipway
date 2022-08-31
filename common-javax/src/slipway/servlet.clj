@@ -1,4 +1,4 @@
-(ns slipway.common.servlet
+(ns slipway.servlet
   (:require [clojure.string :as string]
             [ring.util.servlet :as servlet]
             [slipway.auth :as auth])

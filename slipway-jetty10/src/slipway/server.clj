@@ -5,8 +5,8 @@
   (:require [clojure.tools.logging :as log]
             [slipway.auth :as auth]
             [slipway.common.server :as common.server]
-            [slipway.common.servlet :as common.servlet]
             [slipway.common.websockets :as common.ws]
+            [slipway.servlet :as servlet]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
@@ -18,14 +18,14 @@
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (let [request-map  (merge (common.servlet/build-request-map request)
+        (let [request-map  (merge (servlet/build-request-map request)
                                   (auth/credentials base-request)
                                   {::request base-request})
               response-map (handler request-map)]
           (when response-map
             (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
               (ws/upgrade-websocket request response (:ws response-map) opts)
-              (common.servlet/update-servlet-response response response-map))))
+              (servlet/update-servlet-response response response-map))))
         (catch Throwable ex
           (log/error ex "Unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage ex)))

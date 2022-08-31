@@ -5,8 +5,8 @@
   (:require [clojure.tools.logging :as log]
             [slipway.auth :as auth]
             [slipway.common.server :as common.server]
-            [slipway.common.servlet :as common.servlet]
             [slipway.common.websockets :as common.ws]
+            [slipway.servlet :as servlet]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Handler Request Server)
@@ -36,8 +36,8 @@
           response-map (handler request-map)]
       (when response-map
         (if (common.ws/upgrade-response? response-map)
-          (common.servlet/update-servlet-response response {:status 406})
-          (common.servlet/update-servlet-response response response-map))))
+          (servlet/update-servlet-response response {:status 406})
+          (servlet/update-servlet-response response response-map))))
     (catch Throwable e
       (log/error e "unhandled exception processing HTTP request")
       (.sendError response 500 (.getMessage e)))
@@ -49,7 +49,7 @@
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (let [request-map (common.servlet/build-request-map request)]
+        (let [request-map (servlet/build-request-map request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)
             (handle-http handler request-map base-request response)))
