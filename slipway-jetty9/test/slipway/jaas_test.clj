@@ -2,12 +2,12 @@
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
             [slipway.example.handler :as handler]
-            [slipway.example.server.jaas :as jaas]
+            [slipway.example.server :as server]
             [slipway.server :as slipway]))
 
 (deftest authentication
 
-  (let [server (jaas/server)]
+  (let [server (server/hash-form-auth!)]
 
     (testing "post-login-redirect-chsk"
 
