@@ -3,6 +3,7 @@
             [clojure.tools.logging :as log]
             [hiccup.core :as hiccup]
             [hiccup.page :as hiccup.page]
+            [reitit.ring :as reitit]
             [slipway.user :as user]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
@@ -220,6 +221,23 @@
    :headers {"Content-Type" "text/html"}
    :body    hello-html})
 
+(def routes
+  [""
+   ["/up" {:get {:handler up}}]
+   ["/login" {:get {:handler login}}]
+   ["/login-retry" {:get {:handler login-retry}}]
+   ["/logout" {:get {:handler logout}}]
+   ["/" {:get {:handler home}}]
+   ["/user" {:get {:handler user}}]
+   ["/405" {:get {:handler error-405}}]
+   ["/406" {:get {:handler error-406}}]
+   ["/500" {:get {:handler error-route}}]])
+
+(def error-handlers
+  {:not-found          error-404
+   :method-not-allowed error-405
+   :not-acceptable     error-406})
+
 (defn wrap-errors
   [handler]
   (fn [req]
@@ -227,3 +245,12 @@
          (catch Throwable ex
            (log/errorf ex "application error %s" (:uri req))
            (error-application ex)))))
+
+(defn ring-handler
+  []
+  (-> (reitit/ring-handler
+       (reitit/router routes)
+       (reitit/routes
+        (reitit/create-resource-handler {:path "/"})
+        (reitit/create-default-handler error-handlers)))
+      (wrap-errors)))

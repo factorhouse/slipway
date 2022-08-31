@@ -15,11 +15,9 @@
                                        [metosin/reitit-ring "0.5.18"]]
                       :resource-paths ["dev-resources" "common/dev-resources"]
                       :plugins        [[lein-cljfmt "0.8.2"]]}
-             :kaocha {:dependencies [[lambdaisland/kaocha "1.69.1069"]]}
              :smoke  {:pedantic? :abort}}
 
   :aliases {"check"  ["with-profile" "+smoke" "check"]
-            "kaocha" ["with-profile" "+kaocha,+smoke" "run" "-m" "kaocha.runner"]
             "kondo"  ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
             "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}

@@ -48,9 +48,9 @@ jobs:
         working-directory: ./${{ matrix.project }}
         run: lein kondo
 
-      - name: Kaocha
+      - name: Test 
         working-directory: ./${{ matrix.project }}
-        run: lein kaocha
+        run: lein test
 
       - name: Uberjar
         working-directory: ./${{ matrix.project }}
