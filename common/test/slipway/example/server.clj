@@ -15,6 +15,17 @@
                   ["/favicon.ico" (constraints/no-auth)]
                   ["/*" (constraints/form-auth-any-constraint)]))
 
+(def ssl-opts
+  {:ssl?            true
+   :http?           false
+   :ssl-port        3000
+   :keystore        "dev-resources/my-keystore.jks"
+   :keystore-type   "PKCS12"
+   :key-password    "password"
+   :truststore      "dev-resources/my-truststore.jks"
+   :trust-password  "password"
+   :truststore-type "PKCS12"})
+
 (def jaas-opts
   {:error-handler (SimpleErrorHandler. (handler/error-html 500 "Server Error"))
    :auth          {:realm               "slipway"
@@ -41,6 +52,16 @@
   []
   (when-let [server @state]
     (slipway/stop-jetty server)))
+
+(defn basic-http!
+  []
+  (stop!)
+  (reset! state (slipway/start-jetty handler/hello {})))
+
+(defn basic-https!
+  []
+  (stop!)
+  (reset! state (slipway/start-jetty handler/hello ssl-opts)))
 
 (defn jaas-form-auth!
   "Start a REPL with the following JVM JAAS parameter:
