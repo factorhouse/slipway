@@ -1,8 +1,8 @@
 (ns slipway.server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
-            [slipway.example.handler :as handler]
-            [slipway.example.server :as server])
+            [slipway.example :as example]
+            [slipway.example.handler :as handler])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
@@ -11,7 +11,7 @@
 (deftest basic-http
 
   (try
-    (server/basic-http!)
+    (example/http-server)
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -21,12 +21,12 @@
            (-> (client/do-get "http://localhost:3000/" {})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (example/stop-server!))))
 
 (deftest basic-https
 
   (try
-    (server/basic-https!)
+    (example/https-server)
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -38,12 +38,12 @@
 
     (is (thrown? Exception (client/do-get "http://localhost:3000/" {})))
 
-    (finally (server/stop!))))
+    (finally (example/stop-server!))))
 
 (deftest compression
 
   (try
-    (server/start! (assoc server/hash-opts :gzip? nil))
+    (example/start-server! (assoc example/hash-opts :gzip? nil))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -53,10 +53,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (example/stop-server!)))
 
   (try
-    (server/start! (assoc server/hash-opts :gzip? true))
+    (example/start-server! (assoc example/hash-opts :gzip? true))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -66,10 +66,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (example/stop-server!)))
 
   (try
-    (server/start! (assoc server/hash-opts :gzip? false))
+    (example/start-server! (assoc example/hash-opts :gzip? false))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -79,12 +79,12 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (example/stop-server!))))
 
 (deftest authentication
 
   (try
-    (server/hash-form-auth!)
+    (example/hash-server)
 
     (testing "constraints"
 
@@ -93,11 +93,11 @@
       (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
-      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-              :status                200
-              :reason-phrase         "OK"
+      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+              :status           200
+              :reason-phrase    "OK"
               ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body                  ""}
+              :body             ""}
              (-> (client/do-get "http" "localhost" 3000 "/up")
                  (select-keys (vec (butlast of-interest))))))
 
@@ -206,4 +206,4 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (server/stop!))))
+    (finally (example/stop-server!))))

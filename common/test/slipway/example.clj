@@ -1,4 +1,4 @@
-(ns slipway.example.server
+(ns slipway.example
   (:require [clojure.test :refer :all]
             [slipway.common.auth.constraints :as constraints]
             [slipway.example.handler :as handler]
@@ -48,40 +48,40 @@
                    :session             {:max-inactive-interval 20}
                    :constraint-mappings constraints}})
 
-(defn stop!
+(defn stop-server!
   []
   (when-let [server @state]
     (slipway/stop-jetty server)))
 
-(defn start!
+(defn start-server!
   ([opts]
-   (start! (handler/ring-handler) opts))
+   (start-server! (handler/ring-handler) opts))
   ([handler opts]
-   (stop!)
+   (stop-server!)
    (reset! state (slipway/start-jetty handler opts))))
 
-(defn basic-http!
+(defn http-server
   []
-  (start! handler/hello {}))
+  (start-server! handler/hello {}))
 
-(defn basic-https!
+(defn https-server
   []
-  (start! handler/hello ssl-opts))
+  (start-server! handler/hello ssl-opts))
 
-(defn jaas-form-auth!
+(defn jaas-server
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start! jaas-opts))
+  (start-server! jaas-opts))
 
-(defn jaas-basic-auth!
+(defn jaas-basic-server
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start! (assoc-in jaas-opts [:auth :auth-method] "basic")))
+  (start-server! (assoc-in jaas-opts [:auth :auth-method] "basic")))
 
-(defn hash-form-auth!
+(defn hash-server
   []
-  (start! hash-opts))
+  (start-server! hash-opts))
