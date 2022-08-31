@@ -61,31 +61,18 @@
 (defn start-jetty
   "Starts a Jetty server.
    See https://github.com/factorhouse/slipway#usage for list of options"
-  ^Server [handler {:as   options
-                    :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-                    :or   {gzip? true}}]
+  ^Server [handler {:keys [join? auth] :as opts}]
   (log/info "configuring Jetty9")
-  (let [server           (common.server/create-server options)
-        ring-app-handler (proxy-handler handler)
-        ws-handler       (ws/proxy-ws-handler handler options)
-        contexts         (doto (HandlerList.)
-                           (.setHandlers (into-array Handler [ring-app-handler ws-handler])))]
-    (.setHandler server contexts)
-    (when configurator (configurator server))
-    (when http-forwarded? (common.server/add-forward-request-customizer server))
-    (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
-    (when error-handler (.setErrorHandler server error-handler))
+  (let [server (common.server/create-server opts)]
+    (.setHandler server (doto (HandlerList.)
+                          (.setHandlers (into-array Handler [(proxy-handler handler) (ws/proxy-ws-handler handler opts)]))))
     (when auth (common.auth/configure server auth))
-
-    ;; TODO invert the above functions to work on handlers not servers
-    ;; TODO figure out importance of order of handlers
-    ;; TODO consider configurable explicit post-login landing page when no FormAuthenticator/__J_URI set
     (let [handler (.getHandler server)]
       (.setHandler server (doto (ContextHandler.)
                             (.setContextPath "/")
                             (.setAllowNullPathInfo true)
                             (.setHandler handler))))
-
+    (common.server/enable-gzip-compression server opts)
     (.start server)
     (when join? (.join server))
     server))

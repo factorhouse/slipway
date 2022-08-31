@@ -120,22 +120,23 @@
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
 (defn enable-gzip-compression
-  [^Server server gzip-content-types min-gzip-size]
-  (let [gzip-handler (GzipHandler.)]
-    (log/info "enabling gzip compression")
-    (when (seq gzip-content-types)
-      (log/infof "setting gzip included mime types: %s" gzip-content-types)
-      (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
-    (when min-gzip-size
-      (log/infof "setting gzip min size: %s" min-gzip-size)
-      (.setMinGzipSize min-gzip-size))
-    (.setHandler gzip-handler (.getHandler server))
-    (.setHandler server gzip-handler)))
+  [^Server server {:keys [gzip? gzip-content-types gzip-min-size]}]
+  (when (not (false? gzip?))
+    (let [gzip-handler (GzipHandler.)]
+      (log/info "enabling gzip compression")
+      (when (seq gzip-content-types)
+        (log/infof "setting gzip included mime types: %s" gzip-content-types)
+        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
+      (when gzip-min-size
+        (log/infof "setting gzip min size: %s" gzip-min-size)
+        (.setMinGzipSize gzip-min-size))
+      (.setHandler gzip-handler (.getHandler server))
+      (.setHandler server gzip-handler))))
 
 (defn create-server ^Server
   [{:as   options
     :keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?
-           proxy? thread-pool]
+           proxy? thread-pool http-forwarded? error-handler]
     :or   {port                    3000
            max-threads             50
            min-threads             8
@@ -162,4 +163,9 @@
                                                          ssl-port host max-idle-time))
                              http? (conj (http-connector server http-configuration port host max-idle-time proxy?)))]
     (.setConnectors server (into-array connectors))
+
+    ;; TODO: push this back up into creation of connectors rather than after the fact
+    (when http-forwarded? (add-forward-request-customizer server))
+    (when error-handler (.setErrorHandler server error-handler))
+
     server))

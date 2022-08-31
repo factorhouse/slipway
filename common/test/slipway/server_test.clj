@@ -13,9 +13,14 @@
   (try
     (server/basic-http!)
 
-    (let [resp (client/do-get "http://localhost:3000/" {})]
-      (is (= 200 (:status resp)))
-      (is (= handler/hello-html (:body resp))))
+    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+            :status                200
+            :reason-phrase         "OK"
+            :orig-content-encoding "gzip"
+            :body                  "<html><h1>Hello world</h1></html>"
+            :length                48}
+           (-> (client/do-get "http://localhost:3000/" {})
+               (select-keys of-interest))))
 
     (finally (server/stop!))))
 
@@ -24,11 +29,60 @@
   (try
     (server/basic-https!)
 
-    (let [resp (client/do-get "https://localhost:3000/" {:insecure? true})]
-      (is (= 200 (:status resp)))
-      (is (= handler/hello-html (:body resp))))
+    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+            :status                200
+            :reason-phrase         "OK"
+            :orig-content-encoding "gzip"
+            :body                  "<html><h1>Hello world</h1></html>"
+            :length                48}
+           (-> (client/do-get "https://localhost:3000/" {:insecure? true})
+               (select-keys of-interest))))
 
     (is (thrown? Exception (client/do-get "http://localhost:3000/" {})))
+
+    (finally (server/stop!))))
+
+(deftest compression
+
+  (try
+    (server/start! (assoc server/hash-opts :gzip? nil))
+
+    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+            :status                200
+            :reason-phrase         "OK"
+            :orig-content-encoding "gzip"
+            :body                  (handler/login-html false)
+            :length                1134}
+           (-> (client/do-get "http" "localhost" 3000 "/login")
+               (select-keys of-interest))))
+
+    (finally (server/stop!)))
+
+  (try
+    (server/start! (assoc server/hash-opts :gzip? true))
+
+    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+            :status                200
+            :reason-phrase         "OK"
+            :orig-content-encoding "gzip"
+            :body                  (handler/login-html false)
+            :length                1134}
+           (-> (client/do-get "http" "localhost" 3000 "/login")
+               (select-keys of-interest))))
+
+    (finally (server/stop!)))
+
+  (try
+    (server/start! (assoc server/hash-opts :gzip? false))
+
+    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+            :status                200
+            :reason-phrase         "OK"
+            :orig-content-encoding nil
+            :body                  (handler/login-html false)
+            :length                2606}
+           (-> (client/do-get "http" "localhost" 3000 "/login")
+               (select-keys of-interest))))
 
     (finally (server/stop!))))
 
@@ -139,18 +193,18 @@
                  :ring
                  (select-keys of-interest)))))
 
-    (testing "session"
+    (testing "session-continuation"
 
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :length                764
-              :body                  handler/home-html}
-             (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
+              :length                865
+              :body                  (handler/user-html {:slipway.user/credentials {:name "user" :roles #{"user"}}})}
+             (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                :jetty
                                (select-keys [:cookies]))]
-               (-> (client/do-get "http" "localhost" 3000 "/" session)
+               (-> (client/do-get "http" "localhost" 3000 "/user" session)
                    (select-keys of-interest))))))
 
     (testing "logout"

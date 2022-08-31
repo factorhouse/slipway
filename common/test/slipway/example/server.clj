@@ -45,7 +45,7 @@
                    :auth-method         "form"
                    :auth-type           "hash"
                    :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                   :session             {:max-inactive-interval 10}
+                   :session             {:max-inactive-interval 20}
                    :constraint-mappings constraints}})
 
 (defn stop!
@@ -53,33 +53,35 @@
   (when-let [server @state]
     (slipway/stop-jetty server)))
 
+(defn start!
+  ([opts]
+   (start! (handler/ring-handler) opts))
+  ([handler opts]
+   (stop!)
+   (reset! state (slipway/start-jetty handler opts))))
+
 (defn basic-http!
   []
-  (stop!)
-  (reset! state (slipway/start-jetty handler/hello {})))
+  (start! handler/hello {}))
 
 (defn basic-https!
   []
-  (stop!)
-  (reset! state (slipway/start-jetty handler/hello ssl-opts)))
+  (start! handler/hello ssl-opts))
 
 (defn jaas-form-auth!
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (stop!)
-  (reset! state (slipway/start-jetty (handler/ring-handler) jaas-opts)))
+  (start! jaas-opts))
 
 (defn jaas-basic-auth!
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (stop!)
-  (reset! state (slipway/start-jetty (handler/ring-handler) (assoc-in jaas-opts [:auth :auth-method] "basic"))))
+  (start! (assoc-in jaas-opts [:auth :auth-method] "basic")))
 
 (defn hash-form-auth!
   []
-  (stop!)
-  (reset! state (slipway/start-jetty (handler/ring-handler) hash-opts)))
+  (start! hash-opts))

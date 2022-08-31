@@ -32,32 +32,19 @@
         (finally
           (.setHandled base-request true))))))
 
-(defn start-jetty
-  "Starts a Jetty server.
-   See https://github.com/factorhouse/slipway#usage for list of options"
-  ^Server [handler {:as   options
-                    :keys [configurator join? auth gzip? gzip-content-types gzip-min-size http-forwarded? error-handler]
-                    :or   {gzip? true}}]
-  (log/info "configuring Jetty11")
-  (let [server (common.server/create-server options)]
-    (.setHandler server (proxy-handler handler options))
-    (when configurator (configurator server))
-    (when http-forwarded? (common.server/add-forward-request-customizer server))
-    (when error-handler (.setErrorHandler server error-handler))
+(defn start-jetty ^Server
+  [handler {:keys [join? auth] :as opts}]
+  (log/info "configuring Jetty10")
+  (let [server (common.server/create-server opts)]
+    (.setHandler server (-> (proxy-handler handler opts)))
     (when auth (common.auth/configure server auth))
-
-    ;; TODO invert the above functions to work on handlers not servers
-    ;; TODO figure out importance of order of handlers
-    ;; TODO consider configurable explicit post-login landing page when no FormAuthenticator/__J_URI set
     (let [handler (.getHandler server)]
       (.setHandler server (doto (ServletContextHandler.)
                             (.setContextPath "/")
                             (.setAllowNullPathInfo true)
                             (JettyWebSocketServletContainerInitializer/configure nil)
                             (.setHandler handler))))
-
-    (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
-
+    (common.server/enable-gzip-compression server opts)
     (.start server)
     (when join? (.join server))
     server))
