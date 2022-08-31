@@ -44,7 +44,6 @@
     (.setHandler server (proxy-handler handler options))
     (when configurator (configurator server))
     (when http-forwarded? (common.server/add-forward-request-customizer server))
-    (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
     (when error-handler (.setErrorHandler server error-handler))
     (when auth (common.auth/configure server auth))
 
@@ -57,6 +56,8 @@
                             (.setAllowNullPathInfo true)
                             (JettyWebSocketServletContainerInitializer/configure nil)
                             (.setHandler handler))))
+
+    (when gzip? (common.server/enable-gzip-compression server gzip-content-types gzip-min-size))
 
     (.start server)
     (when join? (.join server))
