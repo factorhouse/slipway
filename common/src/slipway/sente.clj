@@ -1,4 +1,4 @@
-(ns slipway.common.sente
+(ns slipway.sente
   (:require [clojure.tools.logging :as log]
             [slipway.common.websockets :as common.websockets]
             [taoensso.sente.interfaces :as i])
@@ -26,7 +26,7 @@
       ;;       in normal operation and this is not supported by the WS protocol. With sync send that results in the
       ;;       'Blocking message pending 10000 for BLOCKING' error that we see frequently where any client has
       ;;       a reasonable amount of snapshots / any network latency at all. This can lead to dropped messages,
-      ;;       which in turn can be mildly problematic with our more complex UI (Data Inspect)
+      ;;       which in turn can be mildly problematic with our more fairly complex UI.
       ;;       jetty websockets maintain an internal queue per RemoteEndpoint that can be bounded from 9.4.32
       ;;         - see last comment: https://github.com/eclipse/jetty.project/issues/4824
       ;;       regardless it's fine to fire and forget as Sente has internal ws keepalive heartbeat implemented at 25s
