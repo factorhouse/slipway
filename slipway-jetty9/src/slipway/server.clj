@@ -12,14 +12,20 @@
            (org.eclipse.jetty.server Handler Request Server)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
+;(defn uri-without-chsk
+;  [url]
+;  (subs url 0 (- (count url) 4)))
+;
+;;; TODO: consider configurable 'chsk' endpoint for websockets as we're assuming our normal setup here
 ;(defn safe-login-redirect
-;  "When logging in we have some special cases to consider with the post-login uri"
-;  [target request {:keys [login-uri login-retry-uri]}]
-;  (when (#{login-uri login-retry-uri} target)
-;    (let [post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
-;      (when (.contains post-login-uri "/chsk")
-;        (log/info "avoiding /chsk post-login, setting post-login uri to '/'")
-;        (.setAttribute (.getSession request) FormAuthenticator/__J_URI "/")))))
+;  "With dual http/ws handlers it is possible that the websocket initialization request to {..}/chsk trigers a login
+;   redirection and we don't want to post-login http redirect to {..}/chsk. Dropping back to {..}/ is better"
+;  [^Request request]
+;  (when-let [^String post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
+;    (when (.endsWith post-login-uri "/chsk")
+;      (let [new-uri (uri-without-chsk post-login-uri)]
+;        (log/infof "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
+;        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
 
 (defn handle-http
   [handler request-map base-request response]
@@ -73,6 +79,7 @@
 
     ;; TODO invert the above functions to work on handlers not servers
     ;; TODO figure out importance of order of handlers
+    ;; TODO consider configurable explicit post-login landing page when no FormAuthenticator/__J_URI set
     (let [handler (.getHandler server)]
       (.setHandler server (doto (ContextHandler.)
                             (.setContextPath "/")

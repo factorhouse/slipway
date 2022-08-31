@@ -50,6 +50,7 @@
 
     ;; TODO invert the above functions to work on handlers not servers
     ;; TODO figure out importance of order of handlers
+    ;; TODO consider configurable explicit post-login landing page when no FormAuthenticator/__J_URI set
     (let [handler (.getHandler server)]
       (.setHandler server (doto (ServletContextHandler.)
                             (.setContextPath "/")

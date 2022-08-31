@@ -18,8 +18,8 @@
 
 (defn credentials
   "Derive user credentials (name + roles) from a base jetty request"
-  [^Request req]
-  (when-let [authentication (.getAuthentication req)]
+  [^Request base-request]
+  (when-let [authentication (.getAuthentication base-request)]
     (when (instance? Authentication$User authentication)
       (p/datafy authentication))))
 

@@ -7,6 +7,8 @@
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
+(def of-interest [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])
+
 (deftest authentication
 
   (let [server (jaas/server)]
@@ -18,10 +20,25 @@
       (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
-      (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/up"))))
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :body                  ""
+              :length                0}
+             (-> (client/do-get "http" "localhost" 3000 "/up")
+                 (select-keys of-interest))))
 
       ;; requires authentication
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 ""))))
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                303
+              :reason-phrase         "See Other"
+              :orig-content-encoding nil
+              :body                  ""
+              :length                -1}
+             (-> (client/do-get "http" "localhost" 3000 "")
+                 (select-keys of-interest))))
+
       (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/"))))
       (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/user"))))
 
@@ -29,7 +46,15 @@
       (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "") [:headers "Location"])))
 
       ;; login / login-retry don't redirect
-      (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/login"))))
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :body                  (handler/login-html false)
+              :length                1134}
+             (-> (client/do-get "http" "localhost" 3000 "/login")
+                 (select-keys of-interest))))
+
       (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/login-retry"))))
 
       ;; jetty nukes session and redirects to /login regardless
@@ -46,7 +71,7 @@
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding]))))
+                 (select-keys of-interest))))
 
       ;; root with '/' (tests jetty nullPathInfo)
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
@@ -57,7 +82,7 @@
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
+                 (select-keys of-interest)))))
 
     (testing "post-login-redirect"
 
@@ -74,7 +99,7 @@
                                                                    "user"}}})}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
+                 (select-keys of-interest)))))
 
     (testing "post-login-redirect-null-request-context"
 
@@ -89,7 +114,7 @@
               :body                  handler/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
                  :ring
-                 (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding])))))
+                 (select-keys of-interest)))))
 
     (testing "cookie-session"
 
@@ -103,7 +128,7 @@
                                :jetty
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/" session)
-                   (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding]))))))
+                   (select-keys of-interest))))))
 
     (testing "logout"
 
