@@ -24,7 +24,6 @@
                    :login-uri           "/login"
                    :logout-uri          "/logout"
                    :login-retry-uri     "/login-retry"
-                   :post-login-uri-attr "org.eclipse.jetty.security.form_URI"
                    :auth-method         "form"
                    :auth-type           "jaas"
                    :session             {:max-inactive-interval 30}
