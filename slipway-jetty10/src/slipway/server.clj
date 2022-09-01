@@ -8,6 +8,7 @@
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
+           (org.eclipse.jetty.server.handler ContextHandler)
            (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
 
@@ -34,21 +35,26 @@
         (finally
           (.setHandled base-request true))))))
 
-(defn start ^Server
-  [ring-handler {:keys [join? auth context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "start slipway > Jetty 10")
-  (let [server  (common.server/create-server opts)
-        context (doto (ServletContextHandler.)
+(defn context-handler ^ContextHandler
+  [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
+  (let [context (doto (ServletContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
                   (.setServletHandler (handler ring-handler opts))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
-    (when-let [login-service (some-> auth auth/login-service)]
+    (when login-service
       (.setSecurityHandler context (auth/handler login-service auth))
-      (.setSessionHandler context (session/handler auth))
-      (.addBean server login-service))
+      (.setSessionHandler context (session/handler auth)))
     (some->> (common.server/gzip-handler opts) (.insertHandler context))
-    (.setHandler server context)
+    context))
+
+(defn start ^Server
+  [ring-handler {:keys [join? auth] :as opts}]
+  (log/info "start slipway > Jetty 10")
+  (let [server        (common.server/create-server opts)
+        login-service (some-> auth auth/login-service)]
+    (.setHandler server (context-handler ring-handler login-service opts))
+    (some->> login-service (.addBean server))
     (.start server)
     (when join? (.join server))
     server))

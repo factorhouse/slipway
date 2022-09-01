@@ -118,21 +118,6 @@
           ^HttpConnectionFactory (.getConnectionFactory "HTTP/1.1")
           (.getHttpConfiguration)
           (.addCustomizer (ForwardedRequestCustomizer.))))
-
-(defn enable-gzip-compression
-  [^Server server {:keys [gzip? gzip-content-types gzip-min-size]}]
-  (when (not (false? gzip?))
-    (let [gzip-handler (GzipHandler.)]
-      (log/info "enabling gzip compression")
-      (when (seq gzip-content-types)
-        (log/infof "setting gzip included mime types: %s" gzip-content-types)
-        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
-      (when gzip-min-size
-        (log/infof "setting gzip min size: %s" gzip-min-size)
-        (.setMinGzipSize gzip-min-size))
-      (.setHandler gzip-handler (.getHandler server))
-      (.setHandler server gzip-handler))))
-
 (defn gzip-handler
   [{:keys [gzip? gzip-content-types gzip-min-size]}]
   (when (not (false? gzip?))

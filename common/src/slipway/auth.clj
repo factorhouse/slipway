@@ -1,15 +1,13 @@
 (ns slipway.auth
   (:require [clojure.core.protocols :as p]
-            [clojure.tools.logging :as log]
-            [slipway.session :as session])
+            [clojure.tools.logging :as log])
   (:import (java.util List)
            (org.eclipse.jetty.server Authentication$User)
            (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this specific case.
            (org.eclipse.jetty.jaas JAASLoginService)
            (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService LoginService)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
-           (org.eclipse.jetty.server Authentication$User Handler Request Server)
-           (org.eclipse.jetty.server.handler HandlerCollection)))
+           (org.eclipse.jetty.server Authentication$User Request)))
 
 (defmulti login-service :auth-type)
 
@@ -46,26 +44,6 @@
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))
     (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
-
-(defn configure
-  [^Server server
-   {:keys [auth-method login-uri login-retry-uri constraint-mappings session cookie]
-    :as   opts}]
-  (let [login            (login-service opts)
-        security-handler (doto (ConstraintSecurityHandler.)
-                           (.setConstraintMappings ^List constraint-mappings)
-                           (.setAuthenticator (if (= "basic" auth-method)
-                                                (BasicAuthenticator.)
-                                                (FormAuthenticator. login-uri login-retry-uri false)))
-                           (.setLoginService login)
-                           (.setHandler (.getHandler server)))]
-    (.addBean server login)
-    (if (= "basic" auth-method)
-      (.setHandler server security-handler)
-      (.setHandler server (HandlerCollection.
-                           (into-array Handler [(session/handler (or session cookie))
-                                                security-handler]))))
-    server))
 
 (defn handler
   [^LoginService login-service {:keys [auth-method login-uri login-retry-uri constraint-mappings]}]

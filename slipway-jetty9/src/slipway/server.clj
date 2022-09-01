@@ -4,6 +4,7 @@
             [slipway.common.server :as common.server]
             [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet]
+            [slipway.session :as session]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Handler Request Server)
@@ -58,19 +59,29 @@
           (.sendError response 500 (.getMessage e))
           (.setHandled base-request true))))))
 
+(defn handler-list
+  [ring-handler opts]
+  (HandlerList. (into-array Handler [(handler ring-handler) (ws/handler ring-handler opts)])))
+
+(defn context-handler ^ContextHandler
+  [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
+  (let [context (doto (ContextHandler.)
+                  (.setContextPath context-path)
+                  (.setAllowNullPathInfo (not (false? null-path-info?)))
+                  (.setHandler (handler-list ring-handler opts)))]
+    (when login-service
+      (.insertHandler context (auth/handler login-service auth))
+      (.insertHandler context (session/handler auth)))
+    (some->> (common.server/gzip-handler opts) (.insertHandler context))
+    context))
+
 (defn start ^Server
   [ring-handler {:keys [join? auth] :as opts}]
   (log/info "start slipway > Jetty 9")
-  (let [server (common.server/create-server opts)]
-    (.setHandler server (doto (HandlerList.)
-                          (.setHandlers (into-array Handler [(handler ring-handler) (ws/handler ring-handler opts)]))))
-    (when auth (auth/configure server auth))
-    (let [handler (.getHandler server)]
-      (.setHandler server (doto (ContextHandler.)
-                            (.setContextPath "/")
-                            (.setAllowNullPathInfo true)
-                            (.setHandler handler))))
-    (common.server/enable-gzip-compression server opts)
+  (let [server        (common.server/create-server opts)
+        login-service (some-> auth auth/login-service)]
+    (.setHandler server (context-handler ring-handler login-service opts))
+    (some->> login-service (.addBean server))
     (.start server)
     (when join? (.join server))
     server))
