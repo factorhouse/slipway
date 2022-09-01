@@ -1,6 +1,6 @@
 (ns slipway.sente
   (:require [clojure.tools.logging :as log]
-            [slipway.common.websockets :as common.websockets]
+            [slipway.common.websockets :as common.ws]
             [taoensso.sente.interfaces :as i])
   (:import (org.eclipse.jetty.websocket.api WebSocketAdapter)))
 
@@ -9,16 +9,16 @@
    :write-success (fn [] (log/debug "websocket send success"))})
 
 (defn ajax-cbs [ws]
-  {:write-failed  (fn [_] (common.websockets/close! ws))
-   :write-success (fn [] (common.websockets/close! ws))})
+  {:write-failed  (fn [_] (common.ws/close! ws))
+   :write-success (fn [] (common.ws/close! ws))})
 
 (extend-protocol i/IServerChan
   WebSocketAdapter
   (sch-open? [ws]
-    (common.websockets/connected? ws))
+    (common.ws/connected? ws))
 
   (sch-close! [ws]
-    (common.websockets/close! ws))
+    (common.ws/close! ws))
 
   (sch-send! [ws ws? msg]
     (if ws?
@@ -33,13 +33,13 @@
       ;;         - see :ws-kalive-ms configuration
       ;;       so all ws channels are bounded in terms of our attempts to send, regardless if hard/half closed
       ;;       though we should bound the RemoteEndpoint queue on 9.4 availability all the same
-      (common.websockets/send! ws msg ws-cbs)
-      (common.websockets/send! ws msg (ajax-cbs ws)))))
+      (common.ws/send! ws msg ws-cbs)
+      (common.ws/send! ws msg (ajax-cbs ws)))))
 
 (defn server-ch-resp
   [ws? {:keys [on-open on-close on-msg on-error]}]
   (if ws?
-    (common.websockets/upgrade-response
+    (common.ws/upgrade-response
      {:on-connect (fn [ws]
                     (on-open ws ws?))
       :on-text    (fn [ws msg]
@@ -55,7 +55,7 @@
 (deftype JettyServerChanAdapter []
   i/IServerChanAdapter
   (ring-req->server-ch-resp [_ req callbacks-map]
-    (server-ch-resp (common.websockets/upgrade-request? req) callbacks-map)))
+    (server-ch-resp (common.ws/upgrade-request? req) callbacks-map)))
 
 (defn get-sch-adapter []
   (JettyServerChanAdapter.))
