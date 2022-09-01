@@ -22,7 +22,7 @@
            cookie-name           "JSESSIONID"
            tracking-modes        #{:cookie}}}]
   (let [same-site      (cookie-same-site same-site)
-        tracking-modes (into #{} (map session-tracking-mode) tracking-modes)]
+        tracking-modes (into #{} (map tracking-mode) tracking-modes)]
     (doto (SessionHandler.)
       (.setSessionTrackingModes tracking-modes)
       (.setMaxInactiveInterval max-inactive-interval)

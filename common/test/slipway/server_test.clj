@@ -81,7 +81,7 @@
 
     (finally (example/stop-server!))))
 
-(deftest authentication
+(deftest form-authentication
 
   (try
     (example/hash-server)
@@ -205,5 +205,47 @@
                (client/do-get "http" "localhost" 3000 "/logout" session)
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
+
+    (finally (example/stop-server!))))
+
+(deftest basic-authentication
+
+  (try
+    (example/hash-basic-server)
+
+    (testing "constraints"
+
+      ;; wrong port / scheme
+      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
+      (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
+
+      ;; does not require authentication
+      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+              :status           200
+              :reason-phrase    "OK"
+              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
+              :body             ""}
+             (-> (client/do-get "http" "localhost" 3000 "/up")
+                 (select-keys (vec (butlast of-interest))))))
+
+      ;; requires authentication
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                401
+              :reason-phrase         "Unauthorized"
+              :orig-content-encoding nil
+              :body                  ""}
+             (-> (client/do-get "http" "localhost" 3000 "")
+                 (select-keys of-interest))))
+
+      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/"))))
+      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user"))))
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :body                  handler/home-html}
+             (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
+                 (select-keys of-interest)))))
 
     (finally (example/stop-server!))))

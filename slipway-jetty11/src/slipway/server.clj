@@ -4,6 +4,7 @@
             [slipway.common.server :as common.server]
             [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet]
+            [slipway.session :as session]
             [slipway.websockets :as ws])
   (:import (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
