@@ -1,12 +1,10 @@
 (ns slipway.server
-  "A Jetty10 server that conforms to the slipway API, inspired by:
-    * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
-    * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
             [slipway.auth :as auth]
             [slipway.common.server :as common.server]
             [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet]
+            [slipway.session :as session]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.server Request Server)
@@ -37,18 +35,21 @@
           (.setHandled base-request true))))))
 
 (defn start-jetty ^Server
-  [handler {:keys [join? auth] :as opts}]
-  (log/info "configuring Jetty10")
-  (let [server (common.server/create-server opts)]
-    (.setHandler server (-> (proxy-handler handler opts)))
-    (when auth (auth/configure server auth))
-    (let [handler (.getHandler server)]
-      (.setHandler server (doto (ServletContextHandler.)
-                            (.setContextPath "/")
-                            (.setAllowNullPathInfo true)
-                            (JettyWebSocketServletContainerInitializer/configure nil)
-                            (.setHandler handler))))
-    (common.server/enable-gzip-compression server opts)
+  [ring-handler {:keys [join? auth context-path null-path-info?] :or {context-path "/"} :as opts}]
+  (log/info "start slipway > Jetty 10")
+  (let [server  (common.server/create-server opts)
+        context (doto (ServletContextHandler.)
+                  (.setContextPath context-path)
+                  (.setAllowNullPathInfo (not (false? null-path-info?)))
+                  (.setServletHandler (proxy-handler ring-handler opts))
+                  (JettyWebSocketServletContainerInitializer/configure nil))]
+    (when-let [login-service (some-> auth auth/login-service)]
+      (.setSecurityHandler context (auth/handler login-service auth))
+      (.setSessionHandler context (session/handler auth))
+      (.addBean server login-service))
+    (when-let [gzip-handler (common.server/gzip-handler opts)]
+      (.insertHandler context gzip-handler))
+    (.setHandler server context)
     (.start server)
     (when join? (.join server))
     server))

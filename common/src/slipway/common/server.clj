@@ -133,6 +133,19 @@
       (.setHandler gzip-handler (.getHandler server))
       (.setHandler server gzip-handler))))
 
+(defn gzip-handler
+  [{:keys [gzip? gzip-content-types gzip-min-size]}]
+  (when (not (false? gzip?))
+    (let [gzip-handler (GzipHandler.)]
+      (log/info "enabling gzip compression")
+      (when (seq gzip-content-types)
+        (log/infof "setting gzip included mime types: %s" gzip-content-types)
+        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
+      (when gzip-min-size
+        (log/infof "setting gzip min size: %s" gzip-min-size)
+        (.setMinGzipSize gzip-min-size))
+      gzip-handler)))
+
 (defn create-server ^Server
   [{:as   options
     :keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?

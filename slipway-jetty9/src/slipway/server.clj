@@ -1,7 +1,4 @@
 (ns slipway.server
-  "A Jetty9 server that conforms to the slipway API, inspired by:
-    * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
-    * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
             [slipway.auth :as auth]
             [slipway.common.server :as common.server]
@@ -61,11 +58,9 @@
           (.sendError response 500 (.getMessage e))
           (.setHandled base-request true))))))
 
-(defn start-jetty
-  "Starts a Jetty server.
-   See https://github.com/factorhouse/slipway#usage for list of options"
-  ^Server [handler {:keys [join? auth] :as opts}]
-  (log/info "configuring Jetty9")
+(defn start-jetty ^Server
+  [handler {:keys [join? auth] :as opts}]
+  (log/info "start slipway > Jetty 9")
   (let [server (common.server/create-server opts)]
     (.setHandler server (doto (HandlerList.)
                           (.setHandlers (into-array Handler [(proxy-handler handler) (ws/proxy-ws-handler handler opts)]))))

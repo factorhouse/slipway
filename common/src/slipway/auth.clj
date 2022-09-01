@@ -1,20 +1,17 @@
 (ns slipway.auth
   (:require [clojure.core.protocols :as p]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [slipway.session :as session])
   (:import (java.util List)
            (org.eclipse.jetty.server Authentication$User)
-           (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this case.
-           (org.eclipse.jetty.http HttpCookie$SameSite)
+           (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this specific case.
            (org.eclipse.jetty.jaas JAASLoginService)
-           (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService)
+           (org.eclipse.jetty.security ConstraintSecurityHandler HashLoginService LoginService)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (org.eclipse.jetty.server Authentication$User Handler Request Server)
-           (org.eclipse.jetty.server.handler HandlerCollection)
-           (org.eclipse.jetty.server.session SessionHandler)))
+           (org.eclipse.jetty.server.handler HandlerCollection)))
 
 (defmulti login-service :auth-type)
-
-(defmulti session-tracking-mode identity)
 
 (defn user
   "Derive user identity from a jetty base request"
@@ -50,33 +47,6 @@
       (HashLoginService. realm hash-user-file))
     (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
 
-(defn cookie-same-site
-  [same-site]
-  (case same-site
-    :none HttpCookie$SameSite/NONE
-    :lax HttpCookie$SameSite/LAX
-    :strict HttpCookie$SameSite/STRICT))
-
-(defn session-handler ^SessionHandler
-  ;; Apply sensible defaults in-line with ring-defaults:
-  ;; https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
-  [{:keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
-    :or   {max-inactive-interval -1
-           secure-request-only?  true
-           http-only?            true
-           same-site             :strict
-           cookie-name           "JSESSIONID"
-           tracking-modes        #{:cookie}}}]
-  (let [same-site      (cookie-same-site same-site)
-        tracking-modes (into #{} (map session-tracking-mode) tracking-modes)]
-    (doto (SessionHandler.)
-      (.setSessionTrackingModes tracking-modes)
-      (.setMaxInactiveInterval max-inactive-interval)
-      (.setSecureRequestOnly secure-request-only?)
-      (.setHttpOnly http-only?)
-      (.setSameSite same-site)
-      (.setSessionCookie cookie-name))))
-
 (defn configure
   [^Server server
    {:keys [auth-method login-uri login-retry-uri constraint-mappings session cookie]
@@ -93,6 +63,15 @@
     (if (= "basic" auth-method)
       (.setHandler server security-handler)
       (.setHandler server (HandlerCollection.
-                           (into-array Handler [(session-handler (or session cookie))
+                           (into-array Handler [(session/handler (or session cookie))
                                                 security-handler]))))
     server))
+
+(defn handler
+  [^LoginService login-service {:keys [auth-method login-uri login-retry-uri constraint-mappings]}]
+  (doto (ConstraintSecurityHandler.)
+    (.setConstraintMappings ^List constraint-mappings)
+    (.setAuthenticator (if (= "basic" auth-method)
+                         (BasicAuthenticator.)
+                         (FormAuthenticator. login-uri login-retry-uri false)))
+    (.setLoginService login-service)))

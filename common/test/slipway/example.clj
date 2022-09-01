@@ -68,6 +68,14 @@
   []
   (start-server! handler/hello ssl-opts))
 
+(defn hash-server
+  []
+  (start-server! hash-opts))
+
+(defn hash-basic-server
+  []
+  (start-server! (assoc-in hash-opts [:auth :auth-method] "basic")))
+
 (defn jaas-server
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
@@ -81,7 +89,3 @@
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
   (start-server! (assoc-in jaas-opts [:auth :auth-method] "basic")))
-
-(defn hash-server
-  []
-  (start-server! hash-opts))
