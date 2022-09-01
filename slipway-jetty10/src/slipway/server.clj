@@ -34,7 +34,7 @@
         (finally
           (.setHandled base-request true))))))
 
-(defn start-jetty ^Server
+(defn start ^Server
   [ring-handler {:keys [join? auth context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/info "start slipway > Jetty 10")
   (let [server  (common.server/create-server opts)
@@ -53,6 +53,6 @@
     (when join? (.join server))
     server))
 
-(defn stop-jetty
+(defn stop
   [^Server server]
   (.stop server))

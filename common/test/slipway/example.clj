@@ -51,14 +51,14 @@
 (defn stop-server!
   []
   (when-let [server @state]
-    (slipway/stop-jetty server)))
+    (slipway/stop server)))
 
 (defn start-server!
   ([opts]
    (start-server! (handler/ring-handler) opts))
   ([handler opts]
    (stop-server!)
-   (reset! state (slipway/start-jetty handler opts))))
+   (reset! state (slipway/start handler opts))))
 
 (defn http-server
   []

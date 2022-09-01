@@ -34,26 +34,25 @@
         (finally
           (.setHandled base-request true))))))
 
-(defn start-jetty ^Server
+(defn start ^Server
   [ring-handler {:keys [join? auth context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/info "start slipway > Jetty 11")
   (let [server  (common.server/create-server opts)
         context (doto (ServletContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
+                  (.setServletHandler (handler ring-handler opts))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
-    (.setServletHandler context (handler ring-handler opts))
     (when-let [login-service (some-> auth auth/login-service)]
       (.setSecurityHandler context (auth/handler login-service auth))
       (.setSessionHandler context (session/handler auth))
       (.addBean server login-service))
-    (when-let [gzip-handler (common.server/gzip-handler opts)]
-      (.insertHandler context gzip-handler))
+    (some->> (common.server/gzip-handler opts) (.insertHandler context))
     (.setHandler server context)
     (.start server)
     (when join? (.join server))
     server))
 
-(defn stop-jetty
+(defn stop
   [^Server server]
   (.stop server))
