@@ -1,6 +1,6 @@
-(defproject io.factorhouse/slipway-jetty11 "1.0.7"
+(defproject io.factorhouse/slipway-jetty11 "1.0.8"
 
-  :description "A Clojure companion for Jetty and Websockets"
+  :description "A Clojure Companion for Embedded Jetty"
 
   :url "https://github.com/factorhouse/slipway"
 

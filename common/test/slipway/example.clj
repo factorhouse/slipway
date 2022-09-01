@@ -4,6 +4,7 @@
             [slipway.server :as server])
   (:import (io.factorhouse.slipway SimpleErrorHandler)
            (org.eclipse.jetty.security ConstraintMapping)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (org.eclipse.jetty.util.security Constraint)))
 
 (def state (atom nil))
@@ -30,22 +31,18 @@
 (def jaas-opts
   {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
    :auth          {:realm               "slipway"
-                   :login-uri           "/login"
-                   :logout-uri          "/logout"
-                   :login-retry-uri     "/login-retry"
-                   :auth-method         "form"
-                   :auth-type           "jaas"
+                   :login-service       "jaas"
+                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                   :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                   :session             {:max-inactive-interval 20}
                    :constraint-mappings constraints}})
 
 (def hash-opts
   {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
    :auth          {:realm               "slipway"
-                   :login-uri           "/login"
-                   :logout-uri          "/logout"
-                   :login-retry-uri     "/login-retry"
-                   :auth-method         "form"
-                   :auth-type           "hash"
+                   :login-service       "hash"
                    :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                   :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
                    :session             {:max-inactive-interval 20}
                    :constraint-mappings constraints}})
 
@@ -75,7 +72,7 @@
 
 (defn hash-basic-server
   []
-  (start-server! (assoc-in hash-opts [:auth :auth-method] "basic")))
+  (start-server! (assoc-in hash-opts [:auth :authenticator] (BasicAuthenticator.))))
 
 (defn jaas-server
   "Start a REPL with the following JVM JAAS parameter:
@@ -89,4 +86,4 @@
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start-server! (assoc-in jaas-opts [:auth :auth-method] "basic")))
+  (start-server! (assoc-in jaas-opts [:auth :authenticator] (BasicAuthenticator.))))

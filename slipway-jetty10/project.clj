@@ -1,6 +1,6 @@
-(defproject io.factorhouse/slipway-jetty10 "1.0.7"
+(defproject io.factorhouse/slipway-jetty10 "1.0.8"
 
-  :description "A Clojure companion for Jetty by Factor House"
+  :description "A Clojure Companion for Embedded Jetty"
 
   :url "https://github.com/factorhouse/slipway"
 
@@ -9,11 +9,9 @@
 
   :profiles {:dev   {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
-                                      [org.slf4j/slf4j-api "1.7.36"]
                                       [ch.qos.logback/logback-classic "1.2.11"]
                                       [hiccup "1.0.5"]
-                                      [metosin/reitit-ring "0.5.18"]
-                                      [ring/ring-defaults "0.3.3" :exclusions [javax.servlet/javax.servlet-api]]]
+                                      [metosin/reitit-ring "0.5.18"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
                      :plugins        [[lein-cljfmt "0.8.2"]]}
              :smoke {:pedantic? :abort}}
