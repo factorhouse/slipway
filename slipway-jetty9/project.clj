@@ -9,7 +9,6 @@
 
   :profiles {:dev    {:dependencies   [[clj-kondo "2022.08.03"]
                                        [clj-http "3.12.3" :exclusions [commons-io]]
-                                       [org.slf4j/slf4j-api "1.7.36"]
                                        [ch.qos.logback/logback-classic "1.2.11"]
                                        [hiccup "1.0.5"]
                                        [metosin/reitit-ring "0.5.18"]
@@ -29,7 +28,8 @@
                  [org.eclipse.jetty/jetty-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]
-                 [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]]
+                 [org.eclipse.jetty/jetty-jaas "9.4.48.v20220622"]
+                 [org.slf4j/slf4j-api "1.7.36"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
   :java-source-paths ["common-javax/src-java"]
