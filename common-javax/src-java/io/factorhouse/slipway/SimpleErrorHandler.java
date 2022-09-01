@@ -21,7 +21,7 @@ public class SimpleErrorHandler extends ErrorHandler {
 
     protected void writeErrorPage(HttpServletRequest request, Writer writer, int code, String message, boolean showStacks) throws IOException {
         // We expect to handle all error codes bar unexpected server error (presume 500) in reitit ring, so we return
-        // static error content here. The super class manages the remained of the response (code, setHandled, etc).
+        // static error content here. The super class manages the remainer of the response (code, setHandled, etc).
         if (code != 401) { // basic auth 401s pass through here, we don't write a body for those
             Throwable th = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
             if (th != null) {
