@@ -27,13 +27,16 @@
 ;        (log/infof "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
 ;        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
 
+(defn request-map
+  [^Request base-request ^HttpServletRequest request]
+  (merge (servlet/build-request-map request)
+         (auth/user base-request)
+         {::base-request base-request}))
+
 (defn handle-http
   [handler request-map base-request response]
   (try
-    (let [request-map  (merge request-map
-                              (auth/credentials base-request)
-                              {::request base-request})
-          response-map (handler request-map)]
+    (let [response-map (handler request-map)]
       (when response-map
         (if (common.ws/upgrade-response? response-map)
           (servlet/update-servlet-response response {:status 406})
@@ -49,7 +52,7 @@
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (let [request-map (servlet/build-request-map request)]
+        (let [request-map (request-map base-request request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)
             (handle-http handler request-map base-request response)))

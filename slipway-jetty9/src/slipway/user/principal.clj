@@ -1,4 +1,4 @@
-(ns slipway.user.jetty
+(ns slipway.user.principal
   (:require [clojure.core.protocols :as p])
   (:import (org.eclipse.jetty.security AbstractLoginService$RolePrincipal AbstractLoginService$UserPrincipal)))
 

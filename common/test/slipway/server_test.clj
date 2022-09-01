@@ -158,7 +158,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/user-html {:slipway.user/credentials
+              :body                  (handler/user-html {:slipway.user/identity
                                                          {:name  "admin"
                                                           :roles #{"admin"
                                                                    "content-administrator"
@@ -187,7 +187,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/user-html {:slipway.user/credentials {:name "user" :roles #{"user"}}})}
+              :body                  (handler/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                :jetty
                                (select-keys [:cookies]))]

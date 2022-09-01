@@ -1,38 +1,29 @@
 (ns slipway.user
-  (:refer-clojure :exclude [name])
+  (:refer-clojure :exclude [identity name])
   (:require [clojure.core.protocols :as p]
             [slipway.auth :as auth]
+            [slipway.user.identity]
             [slipway.user.jaas]
-            [slipway.user.jetty])
-  (:import (org.eclipse.jetty.server Authentication$User UserIdentity)))
+            [slipway.user.principal])
+  (:import (org.eclipse.jetty.server Authentication$User)))
 
 (extend-protocol p/Datafiable
 
-  UserIdentity
-  (datafy [identity]
-    {:name  (:name (p/datafy (.getUserPrincipal identity)))
-     :roles (->> (.getSubject identity)
-                 (.getPrincipals)
-                 (map p/datafy)
-                 (filter #(= :role (:type %)))
-                 (map :name)
-                 set)})
-
   Authentication$User
   (datafy [user]
-    {::credentials (p/datafy (.getUserIdentity ^Authentication$User user))}))
+    {::identity (p/datafy (.getUserIdentity ^Authentication$User user))}))
 
-(defn credentials
+(defn identity
   [req]
-  (::credentials req))
+  (::identity req))
 
 (defn name
   [req]
-  (-> req credentials :name))
+  (-> req identity :name))
 
 (defn roles
   [req]
-  (-> req credentials :roles))
+  (-> req identity :roles))
 
 (defn logout
   [req]

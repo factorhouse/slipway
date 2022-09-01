@@ -13,14 +13,18 @@
            (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
 
+(defn request-map
+  [^Request base-request ^HttpServletRequest request]
+  (merge (servlet/build-request-map request)
+         (auth/user base-request)
+         {::base-request base-request}))
+
 (defn proxy-handler
   [handler opts]
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (let [request-map  (merge (servlet/build-request-map request)
-                                  (auth/credentials base-request)
-                                  {::request base-request})
+        (let [request-map  (request-map base-request request)
               response-map (handler request-map)]
           (when response-map
             (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
