@@ -1,16 +1,30 @@
-(ns slipway.server
+(ns slipway.handler
   (:require [clojure.tools.logging :as log]
             [slipway.auth :as auth]
-            [slipway.common.server :as common.server]
             [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet]
             [slipway.session :as session]
             [slipway.websockets :as ws])
   (:import (jakarta.servlet.http HttpServletRequest HttpServletResponse)
-           (org.eclipse.jetty.server Request Server)
-           (org.eclipse.jetty.server.handler ContextHandler)
+           (org.eclipse.jetty.server Request)
+           (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.servlet ServletContextHandler ServletHandler)
            (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer)))
+
+(defmulti root (fn [_ _ opts] (::root opts)))
+
+(defn gzip-handler
+  [{:keys [gzip? gzip-content-types gzip-min-size]}]
+  (when (not (false? gzip?))
+    (let [gzip-handler (GzipHandler.)]
+      (log/info "enabling gzip compression")
+      (when (seq gzip-content-types)
+        (log/infof "setting gzip included mime types: %s" gzip-content-types)
+        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
+      (when gzip-min-size
+        (log/infof "setting gzip min size: %s" gzip-min-size)
+        (.setMinGzipSize gzip-min-size))
+      gzip-handler)))
 
 (defn request-map
   [^Request base-request ^HttpServletRequest request]
@@ -18,7 +32,7 @@
          (auth/user base-request)
          {::base-request base-request}))
 
-(defn handler
+(defn proxy-handler
   [handler opts]
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
@@ -35,30 +49,16 @@
         (finally
           (.setHandled base-request true))))))
 
-(defn context-handler ^ContextHandler
+(defmethod root :default
   [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/info "slipway Jetty 11 > default handler")
   (let [context (doto (ServletContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
-                  (.setServletHandler (handler ring-handler opts))
+                  (.setServletHandler (proxy-handler ring-handler opts))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
     (when login-service
       (.setSecurityHandler context (auth/handler login-service auth))
       (.setSessionHandler context (session/handler auth)))
-    (some->> (common.server/gzip-handler opts) (.insertHandler context))
+    (some->> (gzip-handler opts) (.insertHandler context))
     context))
-
-(defn start ^Server
-  [ring-handler {:keys [join? auth] :as opts}]
-  (let [server        (common.server/create-server opts)
-        login-service (some-> auth auth/login-service)]
-    (.setHandler server (context-handler ring-handler login-service opts))
-    (some->> login-service (.addBean server))
-    (.start server)
-    (when join? (.join server))
-    server))
-
-(defn stop
-  [^Server server]
-  (.stop server))

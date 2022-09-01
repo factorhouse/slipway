@@ -20,7 +20,7 @@
 
 (defn logout
   "Logout user and invalidate the session"
-  [{:keys [slipway.user/identity ^Request slipway.server/base-request]}]
+  [{:keys [slipway.user/identity ^Request slipway.handler/base-request]}]
   (try
     (log/debug "logout" identity)
     (.logout base-request)

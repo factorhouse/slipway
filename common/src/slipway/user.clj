@@ -1,11 +1,11 @@
 (ns slipway.user
   (:refer-clojure :exclude [identity name])
   (:require [clojure.core.protocols :as p]
-            [slipway.auth :as auth]
+            [clojure.tools.logging :as log]
             [slipway.user.identity]
             [slipway.user.jaas]
             [slipway.user.principal])
-  (:import (org.eclipse.jetty.server Authentication$User)))
+  (:import (org.eclipse.jetty.server Authentication$User Request)))
 
 (extend-protocol p/Datafiable
 
@@ -26,5 +26,12 @@
   (-> req identity :roles))
 
 (defn logout
-  [req]
-  (auth/logout req))
+  "Logout user and invalidate the session"
+  [{:keys [^Request slipway.handler/base-request ::identity]}]
+  (when base-request
+    (try
+      (log/info "logout" identity)
+      (.logout base-request)
+      (.invalidate (.getSession base-request))
+      (catch Exception ex
+        (log/error ex "logout error")))))

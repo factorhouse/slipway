@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [slipway.common.auth.constraints :as constraints]
             [slipway.example.handler :as handler]
-            [slipway.server :as slipway])
+            [slipway.server :as server])
   (:import (io.factorhouse.slipway SimpleErrorHandler)))
 
 (def state (atom nil))
@@ -51,14 +51,14 @@
 (defn stop-server!
   []
   (when-let [server @state]
-    (slipway/stop server)))
+    (server/stop server)))
 
 (defn start-server!
   ([opts]
    (start-server! (handler/ring-handler) opts))
   ([handler opts]
    (stop-server!)
-   (reset! state (slipway/start handler opts))))
+   (reset! state (server/start handler opts))))
 
 (defn http-server
   []

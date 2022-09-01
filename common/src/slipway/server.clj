@@ -1,12 +1,14 @@
-(ns slipway.common.server
+(ns slipway.server
   "Fns to create an org.eclipse.jetty.server.Server instance that conforms to the options map specified in the slipway README.
 
   Derived from:
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
-  (:require [clojure.tools.logging :as log])
+  (:require [clojure.tools.logging :as log]
+            [slipway.auth :as auth]
+            [slipway.handler :as handler])
   (:import (java.security KeyStore)
-           (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer HttpConfiguration
+           (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer Handler HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
            (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Server)
@@ -118,18 +120,6 @@
           ^HttpConnectionFactory (.getConnectionFactory "HTTP/1.1")
           (.getHttpConfiguration)
           (.addCustomizer (ForwardedRequestCustomizer.))))
-(defn gzip-handler
-  [{:keys [gzip? gzip-content-types gzip-min-size]}]
-  (when (not (false? gzip?))
-    (let [gzip-handler (GzipHandler.)]
-      (log/info "enabling gzip compression")
-      (when (seq gzip-content-types)
-        (log/infof "setting gzip included mime types: %s" gzip-content-types)
-        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
-      (when gzip-min-size
-        (log/infof "setting gzip min size: %s" gzip-min-size)
-        (.setMinGzipSize gzip-min-size))
-      gzip-handler)))
 
 (defn create-server ^Server
   [{:as   options
@@ -167,3 +157,18 @@
     (when error-handler (.setErrorHandler server error-handler))
 
     server))
+
+
+(defn start ^Server
+  [ring-handler {:keys [join? auth] :as opts}]
+  (let [server        (create-server opts)
+        login-service (some-> auth auth/login-service)]
+    (.setHandler server ^Handler (handler/root ring-handler login-service opts))
+    (some->> login-service (.addBean server))
+    (.start server)
+    (when join? (.join server))
+    server))
+
+(defn stop
+  [^Server server]
+  (.stop server))
