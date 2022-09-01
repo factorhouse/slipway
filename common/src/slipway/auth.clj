@@ -20,7 +20,7 @@
 (defmethod login-service "jaas"
   [{:keys [realm]}]
   (let [config (System/getProperty "java.security.auth.login.config")]
-    (log/infof "initializing JAASLoginService -> realm: %s, java.security.auth.login.config: %s " realm config)
+    (log/infof "initializing JAASLoginService - realm: %s, java.security.auth.login.config: %s " realm config)
     (if config
       (when (slurp config)
         (doto (JAASLoginService. realm) (.setConfiguration (Configuration/getConfiguration))))
@@ -28,7 +28,7 @@
 
 (defmethod login-service "hash"
   [{:keys [realm hash-user-file]}]
-  (log/infof "initializing HashLoginService -> realm: %s, realm file: %s" realm hash-user-file)
+  (log/infof "initializing HashLoginService - realm: %s, realm file: %s" realm hash-user-file)
   (if hash-user-file
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))

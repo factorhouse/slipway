@@ -34,7 +34,6 @@
                    :login-service       "jaas"
                    :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
                    :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-                   :session             {:max-inactive-interval 20}
                    :constraint-mappings constraints}})
 
 (def hash-opts

@@ -80,13 +80,13 @@
 
 (defmethod root :default
   [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "slipway Jetty 9 > default handler")
+  (log/info "slipway Jetty 9, default handler")
   (let [context (doto (ContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
                   (.setHandler (handler-list ring-handler opts)))]
     (when login-service
       (.insertHandler context (auth/handler login-service auth))
-      (.insertHandler context (session/handler auth)))
+      (.insertHandler context (session/handler (:session auth))))
     (some->> (gzip-handler opts) (.insertHandler context))
     context))

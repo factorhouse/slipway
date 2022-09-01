@@ -51,7 +51,7 @@
 
 (defmethod root :default
   [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "slipway Jetty 11 > default handler")
+  (log/info "slipway Jetty 10, default handler")
   (let [context (doto (ServletContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
@@ -59,6 +59,6 @@
                   (JettyWebSocketServletContainerInitializer/configure nil))]
     (when login-service
       (.setSecurityHandler context (auth/handler login-service auth))
-      (.setSessionHandler context (session/handler auth)))
+      (.setSessionHandler context (session/handler (:session auth))))
     (some->> (gzip-handler opts) (.insertHandler context))
     context))
