@@ -47,8 +47,7 @@
       (.setSecurityHandler context (auth/handler login-service auth))
       (.setSessionHandler context (session/handler auth))
       (.addBean server login-service))
-    (when-let [gzip-handler (common.server/gzip-handler opts)]
-      (.insertHandler context gzip-handler))
+    (some->> (common.server/gzip-handler opts) (.insertHandler context))
     (.setHandler server context)
     (.start server)
     (when join? (.join server))

@@ -4,7 +4,7 @@
    Once a jakarta compatible version of ring is available this ns can model the javax/slipway.servlet ns."
   (:require [clojure.string :as string]
             [ring.core.protocols :as protocols]
-            [slipway.auth :as auth])
+            [slipway.session :as session])
   (:import (jakarta.servlet AsyncContext SessionTrackingMode)
            (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (java.io FilterOutputStream)
@@ -111,14 +111,14 @@
      :ssl-client-cert    (get-client-cert request)
      :body               (.getInputStream request)}))
 
-(defmethod auth/session-tracking-mode :cookie
+(defmethod session/tracking-mode :cookie
   [_]
   SessionTrackingMode/COOKIE)
 
-(defmethod auth/session-tracking-mode :url
+(defmethod session/tracking-mode :url
   [_]
   SessionTrackingMode/URL)
 
-(defmethod auth/session-tracking-mode :ssl
+(defmethod session/tracking-mode :ssl
   [_]
   SessionTrackingMode/SSL)

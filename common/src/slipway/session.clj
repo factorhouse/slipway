@@ -2,7 +2,7 @@
   (:import (org.eclipse.jetty.http HttpCookie$SameSite)
            (org.eclipse.jetty.server.session SessionHandler)))
 
-(defmulti session-tracking-mode identity)
+(defmulti tracking-mode identity)
 
 (defn cookie-same-site
   [same-site]
