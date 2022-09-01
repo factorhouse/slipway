@@ -1,11 +1,11 @@
 (ns slipway.server-ext-test
   (:require [clojure.test :refer :all]
-            [slipway.example.server :as server]
-            [slipway.server :as slipway]))
+            [slipway.example :as example]))
 
 (deftest authentication
 
-  (let [server (server/hash-form-auth!)]
+  (try
+    (example/hash-server)
 
     (testing "post-login-redirect-chsk"
 
@@ -24,4 +24,4 @@
       ;           (select-keys [:protocol-version :status :reason-phrase :length :body :orig-content-encoding]))))
       )
 
-    (slipway/stop-jetty server)))
+    (finally (example/stop-server!))))
