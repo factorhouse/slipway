@@ -18,16 +18,6 @@
     (when (instance? Authentication$User authentication)
       (p/datafy authentication))))
 
-(defn logout
-  "Logout user and invalidate the session"
-  [{:keys [slipway.user/identity ^Request slipway.handler/base-request]}]
-  (try
-    (log/debug "logout" identity)
-    (.logout base-request)
-    (.invalidate (.getSession base-request))
-    (catch Exception ex
-      (log/error ex "logout error"))))
-
 (defmethod login-service "jaas"
   [{:keys [realm]}]
   (let [config (System/getProperty "java.security.auth.login.config")]
