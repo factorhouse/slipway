@@ -1,19 +1,20 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
-            [slipway.common.auth.constraints :as constraints]
             [slipway.example.app :as app]
             [slipway.server :as server])
-  (:import (io.factorhouse.slipway SimpleErrorHandler)))
+  (:import (io.factorhouse.slipway SimpleErrorHandler)
+           (org.eclipse.jetty.security ConstraintMapping)
+           (org.eclipse.jetty.util.security Constraint)))
 
 (def state (atom nil))
 
-;; first constraint wins, so this applies auth to anything not explicitly listed prior
-(def constraints (constraints/constraint-mappings
-                  ["/up" (constraints/no-auth)]
-                  ["/css/*" (constraints/no-auth)]
-                  ["/img/*" (constraints/no-auth)]
-                  ["/favicon.ico" (constraints/no-auth)]
-                  ["/*" (constraints/form-auth-any-constraint)]))
+(def constraints
+  (let [require-auth (doto (Constraint. "auth" Constraint/ANY_AUTH) (.setAuthenticate true))
+        none         (doto (Constraint.) (.setName "no-auth"))]
+    [(doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/up"))
+     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/css/*"))
+     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/img/*"))
+     (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
 
 (def ssl-opts
   {:ssl?            true
