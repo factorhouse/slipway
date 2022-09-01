@@ -6,6 +6,7 @@
             [slipway.session :as session]
             [slipway.websockets :as ws])
   (:import (javax.servlet.http HttpServletRequest HttpServletResponse)
+           (org.eclipse.jetty.security.authentication FormAuthenticator)
            (org.eclipse.jetty.server Handler Request)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)
            (org.eclipse.jetty.server.handler.gzip GzipHandler)))
@@ -25,20 +26,20 @@
         (.setMinGzipSize gzip-min-size))
       gzip-handler)))
 
-;(defn uri-without-chsk
-;  [url]
-;  (subs url 0 (- (count url) 4)))
-;
+(defn uri-without-chsk
+  [url]
+  (subs url 0 (- (count url) 4)))
+
 ;;; TODO: consider configurable 'chsk' endpoint for websockets as we're assuming our normal setup here
-;(defn safe-login-redirect
-;  "With dual http/ws handlers it is possible that the websocket initialization request to {..}/chsk trigers a login
-;   redirection and we don't want to post-login http redirect to {..}/chsk. Dropping back to {..}/ is better"
-;  [^Request request]
-;  (when-let [^String post-login-uri (.getAttribute (.getSession request) FormAuthenticator/__J_URI)]
-;    (when (.endsWith post-login-uri "/chsk")
-;      (let [new-uri (uri-without-chsk post-login-uri)]
-;        (log/infof "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
-;        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
+(defn safe-login-redirect
+  "With dual http/ws handlers it is possible that the websocket initialization request to {..}/chsk trigers a login
+   redirection and we don't want to post-login http redirect to {..}/chsk. Dropping back to {..}/ is better"
+  [^Request request]
+  (when-let [^String post-login-uri (some-> (.getSession request false) (.getAttribute FormAuthenticator/__J_URI))]
+    (when (.endsWith post-login-uri "/chsk")
+      (let [new-uri (uri-without-chsk post-login-uri)]
+        (log/debugf "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
+        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
 
 (defn request-map
   [^Request base-request ^HttpServletRequest request]
@@ -65,6 +66,7 @@
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
+        (safe-login-redirect request)
         (let [request-map (request-map base-request request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)
