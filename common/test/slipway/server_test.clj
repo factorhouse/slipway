@@ -8,7 +8,7 @@
 
 (def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
 
-(deftest basic-http
+(deftest simple-http
 
   (try
     (example/http-server)
@@ -23,7 +23,7 @@
 
     (finally (example/stop-server!))))
 
-(deftest basic-https
+(deftest simple-https
 
   (try
     (example/https-server)
