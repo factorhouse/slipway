@@ -10,7 +10,6 @@
   (:import (java.security KeyStore)
            (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer Handler HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
-           (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Server)
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
@@ -157,7 +156,6 @@
     (when error-handler (.setErrorHandler server error-handler))
 
     server))
-
 
 (defn start ^Server
   [ring-handler {:keys [join? auth] :as opts}]
