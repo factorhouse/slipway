@@ -65,6 +65,7 @@
 
 (defn context-handler ^ContextHandler
   [ring-handler login-service {:keys [auth context-path null-path-info?] :or {context-path "/"} :as opts}]
+  (log/info "slipway Jetty 9 > default handler")
   (let [context (doto (ContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
@@ -77,7 +78,6 @@
 
 (defn start ^Server
   [ring-handler {:keys [join? auth] :as opts}]
-  (log/info "start slipway > Jetty 9")
   (let [server        (common.server/create-server opts)
         login-service (some-> auth auth/login-service)]
     (.setHandler server (context-handler ring-handler login-service opts))
