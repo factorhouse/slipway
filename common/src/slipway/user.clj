@@ -30,7 +30,7 @@
   [{:keys [^Request slipway.handler/base-request ::identity]}]
   (when base-request
     (try
-      (log/info "logout" identity)
+      (log/debug "logout" identity)
       (.logout base-request)
       (.invalidate (.getSession base-request))
       (catch Exception ex
