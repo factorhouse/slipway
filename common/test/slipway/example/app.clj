@@ -1,4 +1,5 @@
-(ns slipway.example.handler
+(ns slipway.example.app
+  (:refer-clojure :exclude [error-handler])
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [hiccup.core :as hiccup]
@@ -156,66 +157,66 @@
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
 
-(defn login
+(defn login-handler
   [_]
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    (login-html false)})
 
-(defn login-retry
+(defn login-retry-handler
   [_]
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    (login-html true)})
 
-(defn logout
+(defn logout-handler
   [req]
   (user/logout req)
   {:status  302
    :headers {"location" "/"}
    :session nil})
 
-(defn home
+(defn home-handler
   [_]
   {:status  200
    :headers {"content-type" "text/html"}
    :body    home-html})
 
-(defn user
+(defn user-handler
   [req]
   {:status  200
    :headers {"content-type" "text/html"}
    :body    (user-html req)})
 
-(defn error-404
+(defn error-404-handler
   [_]
   {:status  404
    :headers {"content-type" "text/html"}
    :body    (error-html 404 "Page Not Found")})
 
-(defn error-405
+(defn error-405-handler
   [_]
   {:status  405
    :headers {"content-type" "text/html"}
    :body    (error-html 405 "Method Not Allowed")})
 
-(defn error-406
+(defn error-406-handler
   [_]
   {:status  406
    :headers {"content-type" "text/html"}
    :body    (error-html 406 "Not Acceptable")})
 
-(defn error-application
+(defn error-handler
   [_]
   {:status  500
    :headers {"content-type" "text/html"}
    :body    (error-html 500 "Application Error")})
 
-(defn error-route
+(defn error-route-handler
   [_]
   (throw (RuntimeException. "Error Route")))
 
-(defn hello
+(defn hello-handler
   [_]
   {:status  200
    :headers {"Content-Type" "text/html"}
@@ -224,19 +225,19 @@
 (def routes
   [""
    ["/up" {:get {:handler up}}]
-   ["/login" {:get {:handler login}}]
-   ["/login-retry" {:get {:handler login-retry}}]
-   ["/logout" {:get {:handler logout}}]
-   ["/" {:get {:handler home}}]
-   ["/user" {:get {:handler user}}]
-   ["/405" {:get {:handler error-405}}]
-   ["/406" {:get {:handler error-406}}]
-   ["/500" {:get {:handler error-route}}]])
+   ["/login" {:get {:handler login-handler}}]
+   ["/login-retry" {:get {:handler login-retry-handler}}]
+   ["/logout" {:get {:handler logout-handler}}]
+   ["/" {:get {:handler home-handler}}]
+   ["/user" {:get {:handler user-handler}}]
+   ["/405" {:get {:handler error-405-handler}}]
+   ["/406" {:get {:handler error-406-handler}}]
+   ["/500" {:get {:handler error-route-handler}}]])
 
 (def error-handlers
-  {:not-found          error-404
-   :method-not-allowed error-405
-   :not-acceptable     error-406})
+  {:not-found          error-404-handler
+   :method-not-allowed error-405-handler
+   :not-acceptable     error-406-handler})
 
 (defn wrap-errors
   [handler]
@@ -244,9 +245,9 @@
     (try (handler req)
          (catch Throwable ex
            (log/errorf ex "application error %s" (:uri req))
-           (error-application ex)))))
+           (error-handler ex)))))
 
-(defn ring-handler
+(defn handler
   []
   (-> (reitit/ring-handler
        (reitit/router routes)

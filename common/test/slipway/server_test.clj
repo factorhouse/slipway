@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
             [slipway.example :as example]
-            [slipway.example.handler :as handler])
+            [slipway.example.app :as ring])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
@@ -49,7 +49,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (handler/login-html false)}
+            :body                  (ring/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -62,7 +62,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (handler/login-html false)}
+            :body                  (ring/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -75,7 +75,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
-            :body                  (handler/login-html false)}
+            :body                  (ring/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -121,7 +121,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/login-html false)}
+              :body                  (ring/login-html false)}
              (-> (client/do-get "http" "localhost" 3000 "/login")
                  (select-keys of-interest))))
 
@@ -137,7 +137,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  handler/home-html}
+              :body                  ring/home-html}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
                  (select-keys of-interest))))
@@ -147,7 +147,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  handler/home-html}
+              :body                  ring/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
                  (select-keys of-interest)))))
@@ -158,12 +158,12 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/user-html {:slipway.user/identity
-                                                         {:name  "admin"
-                                                          :roles #{"admin"
-                                                                   "content-administrator"
-                                                                   "server-administrator"
-                                                                   "user"}}})}
+              :body                  (ring/user-html {:slipway.user/identity
+                                                      {:name  "admin"
+                                                       :roles #{"admin"
+                                                                "content-administrator"
+                                                                "server-administrator"
+                                                                "user"}}})}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
                  (select-keys of-interest)))))
@@ -176,7 +176,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  handler/home-html}
+              :body                  ring/home-html}
              (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
                  :ring
                  (select-keys of-interest)))))
@@ -187,7 +187,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (handler/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (ring/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                :jetty
                                (select-keys [:cookies]))]
@@ -244,7 +244,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  handler/home-html}
+              :body                  ring/home-html}
              (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
                  (select-keys of-interest)))))
 

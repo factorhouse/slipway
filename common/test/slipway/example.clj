@@ -1,7 +1,7 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
             [slipway.common.auth.constraints :as constraints]
-            [slipway.example.handler :as handler]
+            [slipway.example.app :as app]
             [slipway.server :as server])
   (:import (io.factorhouse.slipway SimpleErrorHandler)))
 
@@ -27,7 +27,7 @@
    :truststore-type "PKCS12"})
 
 (def jaas-opts
-  {:error-handler (SimpleErrorHandler. (handler/error-html 500 "Server Error"))
+  {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
    :auth          {:realm               "slipway"
                    :login-uri           "/login"
                    :logout-uri          "/logout"
@@ -37,7 +37,7 @@
                    :constraint-mappings constraints}})
 
 (def hash-opts
-  {:error-handler (SimpleErrorHandler. (handler/error-html 500 "Server Error"))
+  {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
    :auth          {:realm               "slipway"
                    :login-uri           "/login"
                    :logout-uri          "/logout"
@@ -55,18 +55,18 @@
 
 (defn start-server!
   ([opts]
-   (start-server! (handler/ring-handler) opts))
+   (start-server! (app/handler) opts))
   ([handler opts]
    (stop-server!)
    (reset! state (server/start handler opts))))
 
 (defn http-server
   []
-  (start-server! handler/hello {}))
+  (start-server! app/hello-handler {}))
 
 (defn https-server
   []
-  (start-server! handler/hello ssl-opts))
+  (start-server! app/hello-handler ssl-opts))
 
 (defn hash-server
   []
