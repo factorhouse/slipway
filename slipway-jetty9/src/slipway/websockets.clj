@@ -148,12 +148,10 @@
           ;; This should be handled by the ring-app-handler handler, but be extra defensive anyway
           (.sendError resp 406 "Unable to process request"))))))
 
-(defn proxy-ws-handler
-  [handler
-   {:keys [ws-max-idle-time
-           ws-max-text-message-size]
-    :or   {ws-max-idle-time         500000
-           ws-max-text-message-size 65536}}]
+(defn handler
+  [handler {:keys [ws-max-idle-time ws-max-text-message-size]
+            :or   {ws-max-idle-time         500000
+                   ws-max-text-message-size 65536}}]
   (proxy [WebSocketHandler] []
     (configure [^WebSocketServletFactory factory]
       (doto (.getPolicy factory)

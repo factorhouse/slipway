@@ -2,7 +2,6 @@ package io.factorhouse.slipway;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,7 @@ import java.io.Writer;
 
 public class SimpleErrorHandler extends ErrorHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Server.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleErrorHandler.class);
 
     private final String content;
 

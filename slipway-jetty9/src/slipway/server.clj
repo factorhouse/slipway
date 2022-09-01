@@ -30,7 +30,7 @@
          (auth/user base-request)
          {::base-request base-request}))
 
-(defn handle-http
+(defn handle-request
   [handler request-map base-request response]
   (try
     (let [response-map (handler request-map)]
@@ -44,7 +44,7 @@
     (finally
       (.setHandled base-request true))))
 
-(defn proxy-handler
+(defn handler
   [handler]
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
@@ -52,18 +52,18 @@
         (let [request-map (request-map base-request request)]
           (if (common.ws/upgrade-request? request-map)
             (.setHandled base-request false)
-            (handle-http handler request-map base-request response)))
+            (handle-request handler request-map base-request response)))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))
           (.setHandled base-request true))))))
 
 (defn start-jetty ^Server
-  [handler {:keys [join? auth] :as opts}]
+  [ring-handler {:keys [join? auth] :as opts}]
   (log/info "start slipway > Jetty 9")
   (let [server (common.server/create-server opts)]
     (.setHandler server (doto (HandlerList.)
-                          (.setHandlers (into-array Handler [(proxy-handler handler) (ws/proxy-ws-handler handler opts)]))))
+                          (.setHandlers (into-array Handler [(handler ring-handler) (ws/handler ring-handler opts)]))))
     (when auth (auth/configure server auth))
     (let [handler (.getHandler server)]
       (.setHandler server (doto (ContextHandler.)

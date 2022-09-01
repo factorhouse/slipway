@@ -17,7 +17,7 @@
          (auth/user base-request)
          {::base-request base-request}))
 
-(defn proxy-handler
+(defn handler
   [handler opts]
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
@@ -42,7 +42,7 @@
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
-    (.setServletHandler context (proxy-handler ring-handler opts))
+    (.setServletHandler context (handler ring-handler opts))
     (when-let [login-service (some-> auth auth/login-service)]
       (.setSecurityHandler context (auth/handler login-service auth))
       (.setSessionHandler context (session/handler auth))
