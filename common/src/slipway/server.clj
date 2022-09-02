@@ -5,7 +5,7 @@
     * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9.clj
     * https://github.com/ring-clojure/ring/blob/master/ring-jetty-adapter/src/ring/adapter/jetty.clj"
   (:require [clojure.tools.logging :as log]
-            [slipway.auth :as auth]
+            [slipway.authz :as authz]
             [slipway.handler :as handler])
   (:import (java.security KeyStore)
            (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer Handler HttpConfiguration
@@ -14,19 +14,19 @@
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
 (defn http-config
-  [{:keys [ssl-port secure-scheme output-buffer-size request-header-size
-           response-header-size send-server-version? send-date-header?
-           header-cache-size sni-required? sni-host-check?]
-    :or   {ssl-port             443
-           secure-scheme        "https"
-           output-buffer-size   32768
-           request-header-size  8192
-           response-header-size 8192
-           send-server-version? false
-           send-date-header?    false
-           header-cache-size    512
-           sni-required?        false
-           sni-host-check?      true}}]
+  [{::keys [ssl-port secure-scheme output-buffer-size request-header-size
+            response-header-size send-server-version? send-date-header?
+            header-cache-size sni-required? sni-host-check?]
+    :or    {ssl-port             443
+            secure-scheme        "https"
+            output-buffer-size   32768
+            request-header-size  8192
+            response-header-size 8192
+            send-server-version? false
+            send-date-header?    false
+            header-cache-size    512
+            sni-required?        false
+            sni-host-check?      true}}]
   (doto (HttpConfiguration.)
     (.setSecureScheme secure-scheme)
     (.setSecurePort ssl-port)
@@ -41,10 +41,10 @@
                       (.setSniHostCheck sni-host-check?)))))
 
 (defn ssl-context-factory ^SslContextFactory$Server
-  [{:keys [keystore keystore-type key-password client-auth key-manager-password
-           truststore trust-password truststore-type ssl-protocols ssl-provider
-           exclude-ciphers replace-exclude-ciphers? exclude-protocols replace-exclude-protocols?
-           ssl-context]}]
+  [{::keys [keystore keystore-type key-password client-auth key-manager-password
+            truststore trust-password truststore-type ssl-protocols ssl-provider
+            exclude-ciphers replace-exclude-ciphers? exclude-protocols replace-exclude-protocols?
+            ssl-context]}]
   (let [context-server (SslContextFactory$Server.)]
     ;;(.setCipherComparator context-server HTTP2Cipher/COMPARATOR)
     (.setProvider context-server ssl-provider)
@@ -120,19 +120,19 @@
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
 (defn create-server ^Server
-  [{:as   options
-    :keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?
-           proxy? thread-pool http-forwarded? error-handler]
-    :or   {port                    3000
-           max-threads             50
-           min-threads             8
-           threadpool-idle-timeout 60000
-           job-queue               nil
-           daemon?                 false
-           max-idle-time           200000
-           ssl?                    false
-           http?                   true
-           proxy?                  false}}]
+  [{::keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?
+            proxy? thread-pool http-forwarded? error-handler]
+    :or    {port                    3000
+            max-threads             50
+            min-threads             8
+            threadpool-idle-timeout 60000
+            job-queue               nil
+            daemon?                 false
+            max-idle-time           200000
+            ssl?                    false
+            http?                   true
+            proxy?                  false}
+    :as    options}]
   {:pre [(or http? ssl? ssl-port)]}
   (let [pool               (or thread-pool
                                (doto (QueuedThreadPool. (int max-threads)
@@ -212,10 +212,13 @@
 ;:auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
 ;;session
 
+;;; handler
+; context-path null-path-info?
+
 (defn start ^Server
-  [ring-handler {:keys [join? auth] :as opts}]
+  [ring-handler {::keys [join?] :as opts}]
   (let [server        (create-server opts)
-        login-service (some-> auth auth/login-service)]
+        login-service (authz/login-service opts)]
     (.setHandler server ^Handler (handler/root ring-handler login-service opts))
     (some->> login-service (.addBean server))
     (.start server)

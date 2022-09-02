@@ -155,9 +155,9 @@
           (.sendError resp 406 "Unable to process request"))))))
 
 (defn handler
-  [handler {:keys [ws-max-idle-time ws-max-text-message-size]
-            :or   {ws-max-idle-time         500000
-                   ws-max-text-message-size 65536}}]
+  [handler {::keys [ws-max-idle-time ws-max-text-message-size]
+            :or    {ws-max-idle-time         500000
+                    ws-max-text-message-size 65536}}]
   (proxy [WebSocketHandler] []
     (configure [^WebSocketServletFactory factory]
       (doto (.getPolicy factory)

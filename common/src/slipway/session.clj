@@ -14,13 +14,13 @@
 ;; Apply sensible defaults in-line with ring-defaults:
 ;; https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
 (defn handler ^SessionHandler
-  [{:keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
-    :or   {max-inactive-interval -1
-           secure-request-only?  true
-           http-only?            true
-           same-site             :strict
-           cookie-name           "JSESSIONID"
-           tracking-modes        #{:cookie}}}]
+  [{::keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name]
+    :or    {max-inactive-interval -1
+            secure-request-only?  true
+            http-only?            true
+            same-site             :strict
+            cookie-name           "JSESSIONID"
+            tracking-modes        #{:cookie}}}]
   (let [same-site      (cookie-same-site same-site)
         tracking-modes (into #{} (map tracking-mode) tracking-modes)]
     (doto (SessionHandler.)

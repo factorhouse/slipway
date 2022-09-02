@@ -1,7 +1,9 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
+            [slipway.authz :as authz]
             [slipway.example.app :as app]
-            [slipway.server :as server])
+            [slipway.server :as server]
+            [slipway.session :as session])
   (:import (io.factorhouse.slipway SimpleErrorHandler)
            (org.eclipse.jetty.security ConstraintMapping)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
@@ -18,32 +20,33 @@
      (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
 
 (def ssl-opts
-  {:ssl?            true
-   :http?           false
-   :ssl-port        3000
-   :keystore        "dev-resources/my-keystore.jks"
-   :keystore-type   "PKCS12"
-   :key-password    "password"
-   :truststore      "dev-resources/my-truststore.jks"
-   :trust-password  "password"
-   :truststore-type "PKCS12"})
+  (merge #::server{:ssl?  true
+                   :http? false}
+         ;; TODO: break out these SSL options into a seprate slipway.ssl namespace and change alias here
+         #::server{:ssl-port        3000
+                   :keystore        "dev-resources/my-keystore.jks"
+                   :keystore-type   "PKCS12"
+                   :key-password    "password"
+                   :truststore      "dev-resources/my-truststore.jks"
+                   :trust-password  "password"
+                   :truststore-type "PKCS12"}))
 
 (def jaas-opts
-  {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
-   :auth          {:realm               "slipway"
-                   :login-service       "jaas"
-                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                   :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-                   :constraint-mappings constraints}})
+  (merge #::server{:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))}
+         #::authz{:realm               "slipway"
+                  :login-service       "jaas"
+                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                  :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                  :constraint-mappings constraints}))
 
 (def hash-opts
-  {:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))
-   :auth          {:realm               "slipway"
-                   :login-service       "hash"
-                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                   :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-                   :session             {:max-inactive-interval 20}
-                   :constraint-mappings constraints}})
+  (merge #::server{:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))}
+         #::authz{:realm               "slipway"
+                  :login-service       "hash"
+                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                  :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                  :constraint-mappings constraints}
+         #::session{:max-inactive-interval 20}))
 
 (defn stop-server!
   []
@@ -71,7 +74,7 @@
 
 (defn hash-basic-server
   []
-  (start-server! (assoc-in hash-opts [:auth :authenticator] (BasicAuthenticator.))))
+  (start-server! (assoc-in hash-opts [::authz/authenticator] (BasicAuthenticator.))))
 
 (defn jaas-server
   "Start a REPL with the following JVM JAAS parameter:
@@ -85,4 +88,4 @@
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start-server! (assoc-in jaas-opts [:auth :authenticator] (BasicAuthenticator.))))
+  (start-server! (assoc-in jaas-opts [::authz/authenticator] (BasicAuthenticator.))))
