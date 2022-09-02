@@ -11,7 +11,7 @@
 
   Authentication$User
   (datafy [user]
-    {::identity (p/datafy (.getUserIdentity ^Authentication$User user))}))
+    #::{:identity (p/datafy (.getUserIdentity ^Authentication$User user))}))
 
 (defn identity
   [req]
