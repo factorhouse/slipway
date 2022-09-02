@@ -153,11 +153,11 @@
   ([^HttpServletRequest req ^HttpServletResponse res ^AsyncContext async-context ws opts]
    (let [{:keys [ws-max-idle-time ws-max-text-message-size]
           :or   {ws-max-idle-time         500000
-                 ws-max-text-message-size 65536}} opts]
-     (let [creator   (reify-ws-creator ws)
-           container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
-       (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
-       (.setMaxTextMessageSize container ws-max-text-message-size)
-       (.upgrade container creator req res)
-       (when async-context
-         (.complete async-context))))))
+                 ws-max-text-message-size 65536}} opts
+         creator   (reify-ws-creator ws)
+         container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
+     (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
+     (.setMaxTextMessageSize container ws-max-text-message-size)
+     (.upgrade container creator req res)
+     (when async-context
+       (.complete async-context)))))
