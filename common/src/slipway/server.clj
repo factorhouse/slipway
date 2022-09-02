@@ -212,7 +212,6 @@
 ;:auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
 ;;session
 
-
 (defn start ^Server
   [ring-handler {:keys [join? auth] :as opts}]
   (let [server        (create-server opts)
