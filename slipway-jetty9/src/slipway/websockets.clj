@@ -11,9 +11,17 @@
            (org.eclipse.jetty.websocket.server WebSocketHandler)
            (org.eclipse.jetty.websocket.servlet ServletUpgradeRequest WebSocketCreator WebSocketServletFactory)))
 
-(def ^:private no-op (constantly nil))
+(def no-op (constantly nil))
 
-(defn- write-callback
+(extend-protocol servlet/RequestMapDecoder
+
+  ServletUpgradeRequest
+  (build-request-map [request]
+    (assoc (-> (.getHttpServletRequest request) (servlet/updgrade-servlet-request-map))
+           :websocket-subprotocols (into [] (.getSubProtocols request))
+           :websocket-extensions (into [] (.getExtensions request)))))
+
+(defn write-callback
   [{:keys [write-failed write-success]
     :or   {write-failed  no-op
            write-success no-op}}]
@@ -24,6 +32,7 @@
       (write-success))))
 
 (extend-protocol common.ws/WebSocketSend
+
   (Class/forName "[B")
   (-send!
     ([ba ws]
@@ -32,6 +41,7 @@
      (common.ws/-send! (ByteBuffer/wrap ba) ws callback))))
 
 (extend-protocol common.ws/WebSocketSend
+
   ByteBuffer
   (-send!
     ([bb ws]
@@ -60,10 +70,12 @@
          (.sendString ^RemoteEndpoint (str this) ^WriteCallback (write-callback callback))))))
 
 (extend-protocol common.ws/WebSocketPing
+
   (Class/forName "[B")
   (-ping! [ba ws] (common.ws/-ping! (ByteBuffer/wrap ba) ws)))
 
 (extend-protocol common.ws/WebSocketPing
+
   ByteBuffer
   (-ping! [bb ws] (-> ^WebSocketAdapter ws .getRemote (.sendPing ^ByteBuffer bb)))
 
@@ -73,14 +85,8 @@
   Object
   (-ping! [o ws] (common.ws/-ping! (.getBytes (str o) "UTF-8") ws)))
 
-(extend-protocol servlet/RequestMapDecoder
-  ServletUpgradeRequest
-  (build-request-map [request]
-    (assoc (-> (.getHttpServletRequest request) (servlet/updgrade-servlet-request-map))
-           :websocket-subprotocols (into [] (.getSubProtocols request))
-           :websocket-extensions (into [] (.getExtensions request)))))
-
 (extend-protocol common.ws/WebSockets
+
   WebSocketAdapter
   (send!
     ([this msg]

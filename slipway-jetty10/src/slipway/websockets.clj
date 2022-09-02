@@ -11,9 +11,10 @@
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WebSocketPingPongListener WriteCallback)
            (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator JettyWebSocketServerContainer)))
 
-(def ^:private no-op (constantly nil))
+(def no-op (constantly nil))
 
 (extend-protocol servlet/RequestMapDecoder
+
   JettyServerUpgradeRequest
   (build-request-map [request]
     (assoc (-> (.getHttpServletRequest request) (servlet/updgrade-servlet-request-map))
@@ -31,6 +32,7 @@
       (write-success))))
 
 (extend-protocol common.ws/WebSocketSend
+
   (Class/forName "[B")
   (-send!
     ([ba ws]
@@ -39,6 +41,7 @@
      (common.ws/-send! (ByteBuffer/wrap ba) ws callback))))
 
 (extend-protocol common.ws/WebSocketSend
+
   ByteBuffer
   (-send!
     ([bb ws]
@@ -67,10 +70,12 @@
          (.sendString ^RemoteEndpoint (str this) ^WriteCallback (write-callback callback))))))
 
 (extend-protocol common.ws/WebSocketPing
+
   (Class/forName "[B")
   (-ping! [ba ws] (common.ws/-ping! (ByteBuffer/wrap ba) ws)))
 
 (extend-protocol common.ws/WebSocketPing
+
   ByteBuffer
   (-ping! [bb ws] (-> ^WebSocketAdapter ws .getRemote (.sendPing ^ByteBuffer bb)))
 
@@ -81,6 +86,7 @@
   (-ping! [o ws] (common.ws/-ping! (.getBytes (str o) "UTF-8") ws)))
 
 (extend-protocol common.ws/WebSockets
+
   WebSocketAdapter
   (send!
     ([this msg]
@@ -142,20 +148,16 @@
       (proxy-ws-adapter ws-fns))))
 
 (defn upgrade-websocket
-  ([req res ws options]
-   (upgrade-websocket req res nil ws options))
-  ([^HttpServletRequest req
-    ^HttpServletResponse res
-    ^AsyncContext async-context
-    ws
-    {:keys [ws-max-idle-time
-            ws-max-text-message-size]
-     :or   {ws-max-idle-time         500000
-            ws-max-text-message-size 65536}}]
-   (let [creator   (reify-ws-creator ws)
-         container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
-     (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
-     (.setMaxTextMessageSize container ws-max-text-message-size)
-     (.upgrade container creator req res)
-     (when async-context
-       (.complete async-context)))))
+  ([req res ws opts]
+   (upgrade-websocket req res nil ws opts))
+  ([^HttpServletRequest req ^HttpServletResponse res ^AsyncContext async-context ws opts]
+   (let [{:keys [ws-max-idle-time ws-max-text-message-size]
+          :or   {ws-max-idle-time         500000
+                 ws-max-text-message-size 65536}} opts]
+     (let [creator   (reify-ws-creator ws)
+           container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
+       (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
+       (.setMaxTextMessageSize container ws-max-text-message-size)
+       (.upgrade container creator req res)
+       (when async-context
+         (.complete async-context))))))

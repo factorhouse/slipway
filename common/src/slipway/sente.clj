@@ -13,6 +13,7 @@
    :write-success (fn [] (common.ws/close! ws))})
 
 (extend-protocol i/IServerChan
+
   WebSocketAdapter
   (sch-open? [ws]
     (common.ws/connected? ws))

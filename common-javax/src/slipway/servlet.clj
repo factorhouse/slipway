@@ -47,6 +47,7 @@
    :ssl-client-cert (get-client-cert request)})
 
 (extend-protocol RequestMapDecoder
+
   HttpServletRequest
   (build-request-map [request]
     (servlet/build-request-map request)))
