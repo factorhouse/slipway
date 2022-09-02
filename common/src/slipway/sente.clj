@@ -8,10 +8,6 @@
   {:write-failed  (fn [ex] (log/error ex "websocket send failure"))
    :write-success (fn [] (log/debug "websocket send success"))})
 
-(defn ajax-cbs [ws]
-  {:write-failed  (fn [_] (common.ws/close! ws))
-   :write-success (fn [] (common.ws/close! ws))})
-
 (extend-protocol i/IServerChan
 
   WebSocketAdapter
@@ -22,7 +18,7 @@
     (common.ws/close! ws))
 
   (sch-send! [ws ws? msg]
-    (if ws?
+    (when ws?
       ;; Note: it is important we async send as we send concurrently from multiple threads to one RemoteEndpoint
       ;;       in normal operation and this is not supported by the WS protocol. With sync send that results in the
       ;;       'Blocking message pending 10000 for BLOCKING' error that we see frequently where any client has
@@ -34,8 +30,7 @@
       ;;         - see :ws-kalive-ms configuration
       ;;       so all ws channels are bounded in terms of our attempts to send, regardless if hard/half closed
       ;;       though we should bound the RemoteEndpoint queue on 9.4 availability all the same
-      (common.ws/send! ws msg ws-cbs)
-      (common.ws/send! ws msg (ajax-cbs ws)))))
+      (common.ws/send! ws msg ws-cbs))))
 
 (defn server-ch-resp
   [ws? {:keys [on-open on-close on-msg on-error]}]
@@ -54,6 +49,7 @@
     {:status 406}))
 
 (deftype JettyServerChanAdapter []
+
   i/IServerChanAdapter
   (ring-req->server-ch-resp [_ req callbacks-map]
     (server-ch-resp (common.ws/upgrade-request? req) callbacks-map)))
