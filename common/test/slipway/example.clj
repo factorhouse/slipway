@@ -3,7 +3,8 @@
             [slipway.authz :as authz]
             [slipway.example.app :as app]
             [slipway.server :as server]
-            [slipway.session :as session])
+            [slipway.session :as session]
+            [slipway.ssl :as ssl])
   (:import (io.factorhouse.slipway SimpleErrorHandler)
            (org.eclipse.jetty.security ConstraintMapping)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
@@ -20,16 +21,15 @@
      (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
 
 (def ssl-opts
-  (merge #::server{:ssl?  true
-                   :http? false}
-         ;; TODO: break out these SSL options into a seprate slipway.ssl namespace and change alias here
-         #::server{:ssl-port        3000
-                   :keystore        "dev-resources/my-keystore.jks"
-                   :keystore-type   "PKCS12"
-                   :key-password    "password"
-                   :truststore      "dev-resources/my-truststore.jks"
-                   :trust-password  "password"
-                   :truststore-type "PKCS12"}))
+  (merge #::server{:ssl?     true
+                   :http?    false
+                   :ssl-port 3000}
+         #::ssl{:keystore        "dev-resources/my-keystore.jks"
+                :keystore-type   "PKCS12"
+                :key-password    "password"
+                :truststore      "dev-resources/my-truststore.jks"
+                :trust-password  "password"
+                :truststore-type "PKCS12"}))
 
 (def jaas-opts
   (merge #::server{:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))}
