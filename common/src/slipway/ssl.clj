@@ -31,7 +31,7 @@
       :need (.setNeedClientAuth context-server true)
       :want (.setWantClientAuth context-server true)
       nil)
-    (when-let [exclude-ciphers exclude-ciphers]
+    (when exclude-ciphers
       (let [ciphers (into-array String exclude-ciphers)]
         (if replace-exclude-ciphers?
           (.setExcludeCipherSuites context-server ciphers)

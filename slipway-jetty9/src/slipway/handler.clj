@@ -82,7 +82,7 @@
 
 (defmethod root :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "slipway Jetty 9, default handler")
+  (log/info "slipway Jetty 9, default root handler")
   (let [context (doto (ContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))

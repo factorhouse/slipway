@@ -30,7 +30,6 @@
     (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
 
 (defn user
-  "Derive user identity from a jetty base request"
   [^Request base-request]
   (when-let [authentication (.getAuthentication base-request)]
     (when (instance? Authentication$User authentication)

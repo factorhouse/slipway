@@ -26,7 +26,6 @@
   (-> req identity :roles))
 
 (defn logout
-  "Logout user and invalidate the session"
   [{:keys [^Request slipway.handler/base-request ::identity]}]
   (when base-request
     (try
