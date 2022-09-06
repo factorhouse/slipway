@@ -73,7 +73,7 @@
       (is (not (nil? csrf-token)))
       (is (seq cookies))
 
-      ;;; full websocket upgrade (test hangs in the handshake/upgrade process as we switch from http to wss)
+      ;; full websocket upgrade (test hangs in the handshake/upgrade process as we switch from http to wss)
       ;(is (= 400 (client/do-get "http" "localhost" 3000
       ;                          (format "/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
       ;                          {:cookies            cookies

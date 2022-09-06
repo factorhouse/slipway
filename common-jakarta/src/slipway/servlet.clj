@@ -21,8 +21,6 @@
       (.setHeader response key val-or-vals)
       (doseq [val val-or-vals]
         (.addHeader response key val))))
-  ;; TODO: check the reason for this case-sensitive double-attempt here, it's different from underlying ring impl
-  ;; TODO: took it from an earlier slipway where it wasn't actually used - d-t-w 2022-08-23
   ; Some headers must be set through specific methods
   (when-let [content-type (or (get headers "Content-Type") (get headers "content-type"))]
     (.setContentType response content-type)))

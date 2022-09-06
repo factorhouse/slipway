@@ -184,37 +184,37 @@
 (defn home-handler
   [_]
   {:status  200
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (home-html)})
 
 (defn user-handler
   [req]
   {:status  200
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (user-html req)})
 
 (defn error-404-handler
   [_]
   {:status  404
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (error-html 404 "Page Not Found")})
 
 (defn error-405-handler
   [_]
   {:status  405
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (error-html 405 "Method Not Allowed")})
 
 (defn error-406-handler
   [_]
   {:status  406
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (error-html 406 "Not Acceptable")})
 
 (defn error-handler
   [_]
   {:status  500
-   :headers {"content-type" "text/html"}
+   :headers {"Content-Type" "text/html"}
    :body    (error-html 500 "Application Error")})
 
 (defn error-route-handler
