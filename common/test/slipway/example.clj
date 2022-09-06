@@ -20,10 +20,14 @@
      (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/img/*"))
      (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
 
-(def ssl-opts
-  (merge #::server{:ssl?     true
-                   :http?    false
-                   :ssl-port 3000}
+(def http-opts
+  (merge #::server{:error-handler app/server-error-handler}))
+
+(def https-opts
+  (merge #::server{:ssl?          true
+                   :http?         false
+                   :ssl-port      3000
+                   :error-handler app/server-error-handler}
          #::ssl{:keystore        "dev-resources/my-keystore.jks"
                 :keystore-type   "PKCS12"
                 :key-password    "password"
@@ -33,7 +37,6 @@
 
 (def jaas-opts
   (merge #::server{:error-handler app/server-error-handler}
-
          #::authz{:realm               "slipway"
                   :login-service       "jaas"
                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
@@ -49,44 +52,67 @@
                   :constraint-mappings constraints}
          #::session{:max-inactive-interval 20}))
 
+(def basic-authenticator-opts
+  #::authz{:authenticator (BasicAuthenticator.)})
+
 (defn stop-server!
   []
   (when-let [server @state]
     (slipway/stop server)))
 
 (defn start-server!
-  ([opts]
-   (start-server! (app/handler) opts))
-  ([handler opts]
-   (stop-server!)
-   (reset! state (slipway/start handler opts))))
+  [handler opts]
+  (stop-server!)
+  (reset! state (slipway/start handler opts)))
 
 (defn http-server
   []
-  (start-server! app/hello-handler {}))
+  (start-server! (app/handler) http-opts))
 
 (defn https-server
   []
-  (start-server! app/hello-handler ssl-opts))
+  (start-server! (app/handler) https-opts))
 
-(defn hash-server
+(defn http-hash-server
   []
-  (start-server! hash-opts))
+  (start-server! (app/handler) hash-opts))
 
-(defn hash-basic-server
+(defn http-hash-basic-server
   []
-  (start-server! (assoc-in hash-opts [::authz/authenticator] (BasicAuthenticator.))))
+  (start-server! (app/handler) (merge hash-opts basic-authenticator-opts)))
 
-(defn jaas-server
+(defn https-hash-server
+  []
+  (start-server! (app/handler) (merge https-opts hash-opts)))
+
+(defn https-hash-basic-server
+  []
+  (start-server! (app/handler) (merge https-opts hash-opts basic-authenticator-opts)))
+
+(defn http-jaas-server
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start-server! jaas-opts))
+  (start-server! (app/handler) jaas-opts))
 
-(defn jaas-basic-server
+(defn http-jaas-basic-server
   "Start a REPL with the following JVM JAAS parameter:
     - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
     - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
   []
-  (start-server! (assoc-in jaas-opts [::authz/authenticator] (BasicAuthenticator.))))
+  (start-server! (app/handler) (merge jaas-opts basic-authenticator-opts)))
+
+(defn https-jaas-server
+  "Start a REPL with the following JVM JAAS parameter:
+    - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
+    - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
+  []
+  (start-server! (app/handler) (merge jaas-opts https-opts)))
+
+(defn https-jaas-basic-server
+  "Start a REPL with the following JVM JAAS parameter:
+    - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
+    - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf"
+  []
+  (start-server! (app/handler) (merge jaas-opts https-opts basic-authenticator-opts)))

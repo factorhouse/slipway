@@ -34,7 +34,7 @@
 (deftest ws-connection-upgrade-not-authorized
 
   (try
-    (example/hash-server)
+    (example/http-hash-server)
 
     ;; no-auth requests immediately bounced to a 303/see-login
     (is (= 303 (->> {:cookies            {}
@@ -54,10 +54,10 @@
 
     (finally (example/stop-server!))))
 
-(deftest ws-connection-upgrade
+(deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (example/hash-server)
+    (example/http-hash-server)
 
     (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
           client-id  (str (random-uuid))

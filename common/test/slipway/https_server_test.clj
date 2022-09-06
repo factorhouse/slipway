@@ -1,27 +1,12 @@
-(ns slipway.server-test
+(ns slipway.https-server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
             [slipway.example :as example]
             [slipway.example.app :as app])
   (:import (java.net ConnectException)
-           (javax.net.ssl SSLException)))
+           (org.apache.http ProtocolException)))
 
 (def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
-
-(deftest simple-http
-
-  (try
-    (example/http-server)
-
-    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-            :status                200
-            :reason-phrase         "OK"
-            :orig-content-encoding "gzip"
-            :body                  "<html><h1>Hello world</h1></html>"}
-           (-> (client/do-get "http://localhost:3000/" {})
-               (select-keys of-interest))))
-
-    (finally (example/stop-server!))))
 
 (deftest simple-https
 
@@ -32,8 +17,8 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  "<html><h1>Hello world</h1></html>"}
-           (-> (client/do-get "https://localhost:3000/" {:insecure? true})
+            :body                  (app/user-html {})}
+           (-> (client/do-get "https://localhost:3000/user" {:insecure? true})
                (select-keys of-interest))))
 
     (is (thrown? Exception (client/do-get "http://localhost:3000/" {})))
@@ -43,40 +28,40 @@
 (deftest compression
 
   (try
-    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? nil))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? nil))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
             :body                  (app/login-html false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
+           (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? true))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? true))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
             :body                  (app/login-html false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
+           (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? false))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? false))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
             :body                  (app/login-html false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
+           (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
     (finally (example/stop-server!))))
@@ -84,13 +69,13 @@
 (deftest form-authentication
 
   (try
-    (example/hash-server)
+    (example/https-hash-server)
 
     (testing "constraints"
 
       ;; wrong port / scheme
-      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
-      (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
+      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 "" {:insecure? true}))))
+      (is (thrown? ProtocolException (client/do-get "http" "localhost" 3000 "" {:insecure? true})))
 
       ;; does not require authentication
       (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
@@ -98,7 +83,7 @@
               :reason-phrase    "OK"
               ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
               :body             ""}
-             (-> (client/do-get "http" "localhost" 3000 "/up")
+             (-> (client/do-get "https" "localhost" 3000 "/up" {:insecure? true})
                  (select-keys (vec (butlast of-interest))))))
 
       ;; requires authentication
@@ -107,14 +92,15 @@
               :reason-phrase         "See Other"
               :orig-content-encoding nil
               :body                  ""}
-             (-> (client/do-get "http" "localhost" 3000 "")
+             (-> (client/do-get "https" "localhost" 3000 "" {:insecure? true})
                  (select-keys of-interest))))
 
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/"))))
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/user"))))
+      (is (= 303 (:status (client/do-get "https" "localhost" 3000 "/" {:insecure? true}))))
+      (is (= 303 (:status (client/do-get "https" "localhost" 3000 "/user" {:insecure? true}))))
 
       ;; auth redirect goes to expected login page
-      (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "") [:headers "Location"])))
+      (is (= "https://localhost:3000/login" (get-in (client/do-get "https" "localhost" 3000 "" {:insecure? true})
+                                                    [:headers "Location"])))
 
       ;; login / login-retry don't redirect
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -122,13 +108,13 @@
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
               :body                  (app/login-html false)}
-             (-> (client/do-get "http" "localhost" 3000 "/login")
+             (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                  (select-keys of-interest))))
 
-      (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/login-retry"))))
+      (is (= 200 (:status (client/do-get "https" "localhost" 3000 "/login-retry" {:insecure? true}))))
 
       ;; jetty nukes session and redirects to /login regardless
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/logout")))))
+      (is (= 303 (:status (client/do-get "https" "localhost" 3000 "/logout" {:insecure? true})))))
 
     (testing "login"
 
@@ -137,7 +123,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"}
-             (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
+             (-> (client/do-login "https" "localhost" 3000 "" "admin" "admin" {:insecure? true})
                  :ring
                  (select-keys of-interest)
                  (dissoc :body))))                          ;; can't compare home html due to csrf token
@@ -147,7 +133,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"}
-             (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
+             (-> (client/do-login "https" "localhost" 3000 "/" "admin" "admin" {:insecure? true})
                  :ring
                  (select-keys of-interest)
                  (dissoc :body)))))
@@ -159,7 +145,7 @@
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
               :body                  (app/login-html true)}
-             (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "wrong")
+             (-> (client/do-login "https" "localhost" 3000 "/user" "admin" "wrong" {:insecure? true})
                  :ring
                  (select-keys of-interest)))))
 
@@ -175,7 +161,7 @@
                                                                "content-administrator"
                                                                "server-administrator"
                                                                "user"}}})}
-             (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
+             (-> (client/do-login "https" "localhost" 3000 "/user" "admin" "admin" {:insecure? true})
                  :ring
                  (select-keys of-interest)))))
 
@@ -187,8 +173,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"}
-             (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
-                 :ring
+             (-> (client/do-login "https" "localhost" 3000 "/login" "admin" "admin" {:insecure? true})
+                 :anon
                  (select-keys of-interest)
                  ;; this is home-html but hard to test body due to csrf token
                  (dissoc :body)))))
@@ -200,9 +186,11 @@
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
               :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
-             (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
-                               (select-keys [:cookies]))]
-               (-> (client/do-get "http" "localhost" 3000 "/user" session)
+             (let [session (-> (client/do-login "https" "localhost" 3000 "" "user" "password" {:insecure? true})
+                               :anon
+                               (select-keys [:cookies])
+                               (merge {:insecure? true}))]
+               (-> (client/do-get "https" "localhost" 3000 "/user" session)
                    (select-keys of-interest))))))
 
     (testing "logout"
@@ -210,10 +198,11 @@
       (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
               :reason-phrase    "See Other"
               :status           303}
-             (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
-                               (select-keys [:cookies]))]
-               (client/do-get "http" "localhost" 3000 "/logout" session)
-               (-> (client/do-get "http" "localhost" 3000 "/" session)
+             (let [session (-> (client/do-login "https" "localhost" 3000 "" "admin" "admin" {:insecure? true})
+                               (select-keys [:cookies])
+                               (merge {:insecure? true}))]
+               (client/do-get "https" "localhost" 3000 "/logout" session)
+               (-> (client/do-get "https" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
     (finally (example/stop-server!))))
@@ -221,13 +210,13 @@
 (deftest basic-authentication
 
   (try
-    (example/hash-basic-server)
+    (example/https-hash-basic-server)
 
     (testing "constraints"
 
       ;; wrong port / scheme
-      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
-      (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
+      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 "" {:insecure? true}))))
+      (is (thrown? ProtocolException (client/do-get "http" "localhost" 3000 "" {:insecure? true})))
 
       ;; does not require authentication
       (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
@@ -235,7 +224,7 @@
               :reason-phrase    "OK"
               ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
               :body             ""}
-             (-> (client/do-get "http" "localhost" 3000 "/up")
+             (-> (client/do-get "https" "localhost" 3000 "/up" {:insecure? true})
                  (select-keys (vec (butlast of-interest))))))
 
       ;; requires authentication
@@ -244,11 +233,11 @@
               :reason-phrase         "Unauthorized"
               :orig-content-encoding nil
               :body                  (app/error-html 401 "Server Error" "Unauthorized")}
-             (-> (client/do-get "http" "localhost" 3000 "")
+             (-> (client/do-get "https" "localhost" 3000 "" {:insecure? true})
                  (select-keys of-interest))))
 
-      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/"))))
-      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user"))))
+      (is (= 401 (:status (client/do-get "https" "localhost" 3000 "/" {:insecure? true}))))
+      (is (= 401 (:status (client/do-get "https" "localhost" 3000 "/user" {:insecure? true}))))
 
       (testing "credentials provided"
 
@@ -256,7 +245,7 @@
                 :status                200
                 :reason-phrase         "OK"
                 :orig-content-encoding "gzip"}
-               (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
+               (-> (client/do-get "https" "admin:admin@localhost" 3000 "" {:insecure? true})
                    (select-keys of-interest)
                    (dissoc :body))))
 
@@ -265,7 +254,7 @@
                 :reason-phrase         "OK"
                 :orig-content-encoding "gzip"
                 :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
-               (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
+               (-> (client/do-get "https" "user:password@localhost" 3000 "/user" {:insecure? true})
                    (select-keys of-interest))))
 
         ;; incorrect password
@@ -274,7 +263,7 @@
                 :reason-phrase         "Unauthorized"
                 :body                  (app/error-html 401 "Server Error" "Unauthorized")
                 :orig-content-encoding nil}
-               (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
+               (-> (client/do-get "https" "user:wrong@localhost" 3000 "/user" {:insecure? true})
                    (select-keys of-interest))))))
 
     (finally (example/stop-server!))))
