@@ -5,7 +5,8 @@
             [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
-           (org.eclipse.jetty.server Request Response)
+           (javax.servlet.http HttpServletRequest HttpServletResponse)
+           (org.eclipse.jetty.server Request)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WriteCallback)
            (org.eclipse.jetty.websocket.api.extensions ExtensionConfig)
            (org.eclipse.jetty.websocket.server WebSocketHandler)
@@ -150,9 +151,9 @@
                   (.setExtensions resp (mapv #(ExtensionConfig. ^String %) exts)))
                 (proxy-ws-adapter ws-results))
               ;; If we don't get a ws-response, send appropriate status code + error message
-              (.sendError resp (:status resp-map 500) (str (:body resp-map "Unable to handle WS upgrade request")))))
+              (.sendError resp (:status resp-map 400) (str (:body resp-map "Bad Request")))))
           ;; This should be handled by the ring-app-handler handler, but be extra defensive anyway
-          (.sendError resp 406 "Unable to process request"))))))
+          (.sendError resp 400 "Bad Request"))))))
 
 (defn handler
   [handler {::keys [ws-max-idle-time ws-max-text-message-size]
@@ -163,13 +164,4 @@
       (doto (.getPolicy factory)
         (.setIdleTimeout ws-max-idle-time)
         (.setMaxTextMessageSize ws-max-text-message-size))
-      (.setCreator factory (reify-ws-creator handler)))
-    (handle [^String target, ^Request request req ^Response res]
-      (let [^WebSocketHandler this       this
-            ^WebSocketServletFactory wsf (proxy-super getWebSocketFactory)]
-        (if (.isUpgradeRequest wsf req res)
-          (if (.acceptWebSocket wsf req res)
-            (.setHandled request true)
-            (when (.isCommitted res)
-              (.setHandled request true)))
-          (proxy-super handle target request req res))))))
+      (.setCreator factory (reify-ws-creator handler)))))

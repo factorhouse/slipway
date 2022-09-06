@@ -14,7 +14,7 @@
 (defmulti root (fn [_ _ opts] (::root opts)))
 
 (defn gzip-handler
-  [{:keys [gzip? gzip-content-types gzip-min-size]}]
+  [{::keys [gzip? gzip-content-types gzip-min-size]}]
   (when (not (false? gzip?))
     (let [gzip-handler (GzipHandler.)]
       (log/info "enabling gzip compression")
@@ -47,19 +47,6 @@
          (authz/user base-request)
          {::base-request base-request}))
 
-(defn handle-request
-  [handler request-map base-request response]
-  (try
-    (when-let [response-map (handler request-map)]
-      (if (common.ws/upgrade-response? response-map)
-        (servlet/update-servlet-response response {:status 406})
-        (servlet/update-servlet-response response response-map)))
-    (catch Throwable e
-      (log/error e "unhandled exception processing HTTP request")
-      (.sendError response 500 (.getMessage e)))
-    (finally
-      (.setHandled base-request true))))
-
 (defn handler
   [handler]
   (proxy [AbstractHandler] []
@@ -67,9 +54,10 @@
       (try
         (safe-login-redirect request)
         (let [request-map (request-map base-request request)]
-          (if (common.ws/upgrade-request? request-map)
-            (.setHandled base-request false)
-            (handle-request handler request-map base-request response)))
+          (when-not (common.ws/upgrade-request? request-map)
+            (let [response-map (handler request-map)]
+              (servlet/update-servlet-response response response-map)
+              (.setHandled base-request true))))
         (catch Throwable e
           (log/error e "unhandled exception processing HTTP request")
           (.sendError response 500 (.getMessage e))
