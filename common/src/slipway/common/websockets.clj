@@ -31,9 +31,10 @@
   [{:keys [status ws] :as resp}]
   (and (= 101 status) (map? ws) (upgrade-request? resp)))
 
+;; TODO: should this response be capitalized? Generally outputted as Connection: Upgrade, see RFC6455Negotiation
 (defn upgrade-response
   [ws-handler]
   {:status  101
-   :headers {"upgrade"    "websocket"
-             "connection" "upgrade"}
+   :headers {"connection" "upgrade"
+             "upgrade"    "websocket"}
    :ws      ws-handler})

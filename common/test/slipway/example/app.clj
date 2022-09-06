@@ -5,6 +5,12 @@
             [hiccup.core :as hiccup]
             [hiccup.page :as hiccup.page]
             [reitit.ring :as reitit]
+            [ring.middleware.anti-forgery :as ring.forgery]
+            [ring.middleware.keyword-params :as ring.params.kw]
+            [ring.middleware.params :as ring.params]
+            [ring.middleware.session :as ring.session]
+            [ring.middleware.session.memory :as ring.session.memory]
+            [slipway.sente :as sente]
             [slipway.user :as user]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
@@ -63,28 +69,15 @@
        [:img.hidden.lg:block.h-8.w-auto {:src "img/sw-icon-zinc.png" :alt "Factor House"}]]
       [:div.hidden.sm:-my-px.sm:ml-6.sm:flex.sm:space-x-8
        (menu-item "/" "Home" (= :home selected))
-       (menu-item "/user" "User Details" (= :user selected))
+       (menu-item "/user" "User" (= :user selected))
        (menu-item "/404" "404" false)
        (menu-item "/405" "405" false)
        (menu-item "/406" "406" false)
        (menu-item "/500" "500" false)
        (menu-item "/logout" "Logout" false)]]]]])
 
-(defn user-details
-  [req]
-  [:div
-   [:div.mt-5.border-t.border-gray-200
-    [:dl.divide-y.divide-gray-200
-     [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
-      [:dt.text-sm.font-medium.text-gray-500 "Username"]
-      [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-       [:span.flex-grow (user/name req)]]]
-     [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
-      [:dt.text-sm.font-medium.text-gray-500 "Roles"]
-      [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-       [:span.flex-grow (str/join ", " (user/roles req))]]]]]])
-
-(def home-html
+(defn home-html
+  []
   (hiccup/html
    (hiccup.page/html5
     {:class "h-full bg-gray-50" :lang "en"}
@@ -96,6 +89,9 @@
      [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
+     ;; Note, this HTML must be dynamically produced within the scope of the wrap-anti-forgery middleware
+     ;;       as otherwise this anti-forgery-token is unbound (ie. this cannot be static hiccup)
+     [:div#sente-csrf-token {:data-csrf-token (force ring.forgery/*anti-forgery-token*)}]
      [:div.min-h-full
       (menu :home)
       [:div.py-10
@@ -125,11 +121,20 @@
       [:div.py-10
        [:header
         [:div.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "User Details"]]]
+         [:h1.text-3xl.tracking-tight.font-bold.leading-tight.text-gray-900 "User"]]]
        [:main
         [:div.max-w-7xl.mx-auto.sm:px-6.lg:px-8
          [:div.px-4.py-8.sm:px-0
-          (user-details req)]]]]]])))
+          [:div.mt-5.border-t.border-gray-200
+           [:dl.divide-y.divide-gray-200
+            [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+             [:dt.text-sm.font-medium.text-gray-500 "Username"]
+             [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+              [:span.flex-grow (user/name req)]]]
+            [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+             [:dt.text-sm.font-medium.text-gray-500 "Roles"]
+             [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+              [:span.flex-grow (str/join ", " (user/roles req))]]]]]]]]]]])))
 
 (defn error-html
   [code text]
@@ -180,7 +185,7 @@
   [_]
   {:status  200
    :headers {"content-type" "text/html"}
-   :body    home-html})
+   :body    (home-html)})
 
 (defn user-handler
   [req]
@@ -222,7 +227,8 @@
    :headers {"Content-Type" "text/html"}
    :body    hello-html})
 
-(def routes
+(defn routes
+  [sente]
   [""
    ["/up" {:get {:handler up}}]
    ["/login" {:get {:handler login-handler}}]
@@ -230,6 +236,7 @@
    ["/logout" {:get {:handler logout-handler}}]
    ["/" {:get {:handler home-handler}}]
    ["/user" {:get {:handler user-handler}}]
+   ["/chsk" {:get {:handler (:ws-handshake sente)}}]
    ["/405" {:get {:handler error-405-handler}}]
    ["/406" {:get {:handler error-406-handler}}]
    ["/500" {:get {:handler error-route-handler}}]])
@@ -249,9 +256,15 @@
 
 (defn handler
   []
-  (-> (reitit/ring-handler
-       (reitit/router routes)
-       (reitit/routes
-        (reitit/create-resource-handler {:path "/"})
-        (reitit/create-default-handler error-handlers)))
-      (wrap-errors)))
+  (let [sente-config   {:allowed-origins #{"http://localhost:3000"}}
+        session-config {:store (ring.session.memory/memory-store)}]
+    (-> (reitit/ring-handler
+         (reitit/router (routes (sente/start-server sente-config)))
+         (reitit/routes
+          (reitit/create-resource-handler {:path "/"})
+          (reitit/create-default-handler error-handlers)))
+        (wrap-errors)
+        (ring.forgery/wrap-anti-forgery)
+        (ring.session/wrap-session session-config)
+        (ring.params.kw/wrap-keyword-params)
+        (ring.params/wrap-params))))

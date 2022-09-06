@@ -6,7 +6,6 @@
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
            (java.time Duration)
-           (javax.servlet AsyncContext)
            (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WebSocketPingPongListener WriteCallback)
            (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator JettyWebSocketServerContainer)))
@@ -148,16 +147,12 @@
       (proxy-ws-adapter ws-fns))))
 
 (defn upgrade-websocket
-  ([req res ws opts]
-   (upgrade-websocket req res nil ws opts))
-  ([^HttpServletRequest req ^HttpServletResponse res ^AsyncContext async-context ws opts]
-   (let [{::keys [ws-max-idle-time ws-max-text-message-size]
-          :or    {ws-max-idle-time         500000
-                  ws-max-text-message-size 65536}} opts
-         creator   (reify-ws-creator ws)
-         container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
-     (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
-     (.setMaxTextMessageSize container ws-max-text-message-size)
-     (.upgrade container creator req res)
-     (when async-context
-       (.complete async-context)))))
+  [^HttpServletRequest req ^HttpServletResponse res ws opts]
+  (let [{::keys [ws-max-idle-time ws-max-text-message-size]
+         :or    {ws-max-idle-time         500000
+                 ws-max-text-message-size 65536}} opts
+        creator   (reify-ws-creator ws)
+        container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
+    (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
+    (.setMaxTextMessageSize container ws-max-text-message-size)
+    (.upgrade container creator req res)))

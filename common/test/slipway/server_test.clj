@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
             [slipway.example :as example]
-            [slipway.example.app :as ring])
+            [slipway.example.app :as app])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
@@ -49,7 +49,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (ring/login-html false)}
+            :body                  (app/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -62,7 +62,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
-            :body                  (ring/login-html false)}
+            :body                  (app/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -75,7 +75,7 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
-            :body                  (ring/login-html false)}
+            :body                  (app/login-html false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
@@ -121,7 +121,7 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (ring/login-html false)}
+              :body                  (app/login-html false)}
              (-> (client/do-get "http" "localhost" 3000 "/login")
                  (select-keys of-interest))))
 
@@ -136,19 +136,30 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"
-              :body                  ring/home-html}
+              :orig-content-encoding "gzip"}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
-                 (select-keys of-interest))))
+                 (select-keys of-interest)
+                 (dissoc :body))))                          ;; can't compare home html due to csrf token
 
       ;; root with '/' (tests jetty nullPathInfo)
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"
-              :body                  ring/home-html}
+              :orig-content-encoding "gzip"}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
+                 :ring
+                 (select-keys of-interest)
+                 (dissoc :body)))))
+
+    (testing "wrong-credentials"
+
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :body                  (app/login-html true)}
+             (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "wrong")
                  :ring
                  (select-keys of-interest)))))
 
@@ -158,12 +169,12 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (ring/user-html {:slipway.user/identity
-                                                      {:name  "admin"
-                                                       :roles #{"admin"
-                                                                "content-administrator"
-                                                                "server-administrator"
-                                                                "user"}}})}
+              :body                  (app/user-html {:slipway.user/identity
+                                                     {:name  "admin"
+                                                      :roles #{"admin"
+                                                               "content-administrator"
+                                                               "server-administrator"
+                                                               "user"}}})}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
                  :ring
                  (select-keys of-interest)))))
@@ -175,11 +186,12 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"
-              :body                  ring/home-html}
+              :orig-content-encoding "gzip"}
              (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
                  :ring
-                 (select-keys of-interest)))))
+                 (select-keys of-interest)
+                 ;; this is home-html but hard to test body due to csrf token
+                 (dissoc :body)))))
 
     (testing "session-continuation"
 
@@ -187,9 +199,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (ring/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
-                               :jetty
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/user" session)
                    (select-keys of-interest))))))
@@ -200,7 +211,6 @@
               :reason-phrase    "See Other"
               :status           303}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
-                               :jetty
                                (select-keys [:cookies]))]
                (client/do-get "http" "localhost" 3000 "/logout" session)
                (-> (client/do-get "http" "localhost" 3000 "/" session)
@@ -240,12 +250,31 @@
       (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/"))))
       (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user"))))
 
-      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-              :status                200
-              :reason-phrase         "OK"
-              :orig-content-encoding "gzip"
-              :body                  ring/home-html}
-             (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
-                 (select-keys of-interest)))))
+      (testing "credentials provided"
+
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"}
+               (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
+                   (select-keys of-interest)
+                   (dissoc :body))))
+
+        (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"
+                :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+               (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
+                   (select-keys of-interest))))
+
+        ;; incorrect password
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                401
+                :reason-phrase         "Unauthorized"
+                :body                  ""
+                :orig-content-encoding nil}
+               (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
+                   (select-keys of-interest))))))
 
     (finally (example/stop-server!))))

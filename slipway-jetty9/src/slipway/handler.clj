@@ -50,11 +50,10 @@
 (defn handle-request
   [handler request-map base-request response]
   (try
-    (let [response-map (handler request-map)]
-      (when response-map
-        (if (common.ws/upgrade-response? response-map)
-          (servlet/update-servlet-response response {:status 406})
-          (servlet/update-servlet-response response response-map))))
+    (when-let [response-map (handler request-map)]
+      (if (common.ws/upgrade-response? response-map)
+        (servlet/update-servlet-response response {:status 406})
+        (servlet/update-servlet-response response response-map)))
     (catch Throwable e
       (log/error e "unhandled exception processing HTTP request")
       (.sendError response 500 (.getMessage e)))

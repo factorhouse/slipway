@@ -10,7 +10,6 @@
   :profiles {:dev   {:dependencies   [[clj-kondo "2022.08.03"]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
                                       [ch.qos.logback/logback-classic "1.2.11"]
-                                      [hiccup "1.0.5"]
                                       [metosin/reitit-ring "0.5.18"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
                      :plugins        [[lein-cljfmt "0.8.2"]]}
@@ -18,12 +17,13 @@
 
   :aliases {"check"  ["with-profile" "+smoke" "check"]
             "kondo"  ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
-            "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
-            "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
+            "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
+                 [ring/ring-anti-forgery "1.3.0"]
+                 [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty/jetty-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.48.v20220622"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.48.v20220622"]

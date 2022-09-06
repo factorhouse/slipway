@@ -1,7 +1,8 @@
 (ns slipway.client
   (:require [clj-http.client :as client]
             [clojure.string :as str]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log])
+  (:import (java.net URLEncoder)))
 
 (defn do-get
   ([location opts]
@@ -42,6 +43,8 @@
                (get-in jetty-authed [:cookies "JSESSIONID" :value])
                (get-in ring-initialized [:cookies "ring-session" :value])
                csrf-token)
-    {:anon  (dissoc anonymous :http-client)
-     :jetty (dissoc jetty-authed :http-client)
-     :ring  (dissoc ring-initialized :http-client)}))
+    {:anon       (dissoc anonymous :http-client)
+     :jetty      (dissoc jetty-authed :http-client)
+     :ring       (dissoc ring-initialized :http-client)
+     :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))
+     :cookies    (merge (:cookies jetty-authed) (:cookies ring-initialized))}))
