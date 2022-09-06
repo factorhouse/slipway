@@ -12,9 +12,7 @@
             [ring.middleware.session.memory :as ring.session.memory]
             [slipway.error :as error]
             [slipway.sente :as sente]
-            [slipway.user :as user])
-  (:import (javax.servlet RequestDispatcher)
-           (javax.servlet.http HttpServletRequest)))
+            [slipway.user :as user]))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
 
@@ -227,10 +225,8 @@
    :body    hello-html})
 
 (defn server-error-body-fn
-  [^HttpServletRequest request code message _]
-  (if-let [ex (.getAttribute request RequestDispatcher/ERROR_EXCEPTION)]
-    (log/errorf ^Throwable ex "server error: %s %s" code message)
-    (log/errorf "server error: %s %s" code message))
+  [request code message _]
+  (error/log-error request code message)
   (error-html code "Server Error" message))
 
 (def server-error-handler (error/handler server-error-body-fn))

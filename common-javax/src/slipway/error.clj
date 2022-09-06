@@ -1,7 +1,15 @@
 (ns slipway.error
+  (:require [clojure.tools.logging :as log])
   (:import (java.io Writer)
+           (javax.servlet RequestDispatcher)
            (javax.servlet.http HttpServletRequest)
            (org.eclipse.jetty.server.handler ErrorHandler)))
+
+(defn log-error
+  [request code message]
+  (if-let [ex (.getAttribute request RequestDispatcher/ERROR_EXCEPTION)]
+    (log/errorf ex "server error: %s %s" code message)
+    (log/errorf "server error: %s %s" code message)))
 
 (defn handler ^ErrorHandler
   [body-fn]
