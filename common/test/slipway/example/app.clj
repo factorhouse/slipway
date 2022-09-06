@@ -10,8 +10,11 @@
             [ring.middleware.params :as ring.params]
             [ring.middleware.session :as ring.session]
             [ring.middleware.session.memory :as ring.session.memory]
+            [slipway.error :as error]
             [slipway.sente :as sente]
-            [slipway.user :as user]))
+            [slipway.user :as user])
+  (:import (javax.servlet RequestDispatcher)
+           (javax.servlet.http HttpServletRequest)))
 
 (def hello-html "<html><h1>Hello world</h1></html>")
 
@@ -137,28 +140,30 @@
               [:span.flex-grow (str/join ", " (user/roles req))]]]]]]]]]]])))
 
 (defn error-html
-  [code text]
-  (hiccup/html
-   (hiccup.page/html5
-    {:class "h-full bg-gray-50" :lang "en"}
-    [:head
-     [:title "Home | Slipway Demo"]
-     [:meta {:charset "UTF-8"}]
-     [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
-     [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
-     [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
-     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
-    [:body.h-full
-     [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
-      [:div.max-w-max.mx-auto
-       [:main.sm:flex
-        [:p.text-4xl.tracking-tight.font-bold.text-indigo-600.sm:text-5xl code]
-        [:div.sm:ml-6
-         [:div.sm:border-l.sm:border-gray-200.sm:pl-6
-          [:h1.text-4xl.font-bold.text-gray-900.tracking-tight.sm:text-5xl text]]
-         [:div.mt-10.flex.space-x-3.sm:border-l.sm:border-transparent.sm:pl-6
-          [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.shadow-sm.text-white.bg-indigo-600.hover:bg-indigo-700.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "/"} "Home"]
-          [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.text-indigo-700.bg-indigo-100.hover:bg-indigo-200.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "#"} "Contact Support"]]]]]]])))
+  ([code title]
+   (error-html code title nil))
+  ([code title message]
+   (hiccup/html
+    (hiccup.page/html5
+     {:class "h-full bg-gray-50" :lang "en"}
+     [:head
+      [:title (str title " | Slipway Demo")]
+      [:meta {:charset "UTF-8"}]
+      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
+      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
+      [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
+      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+     [:body.h-full
+      [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
+       [:div.max-w-max.mx-auto
+        [:main.sm:flex
+         [:p.text-4xl.tracking-tight.font-bold.text-indigo-600.sm:text-5xl code]
+         [:div.sm:ml-6
+          [:div.sm:border-l.sm:border-gray-200.sm:pl-6
+           [:h1.text-4xl.font-bold.text-gray-900.tracking-tight.sm:text-5xl (or message title)]]
+          [:div.mt-10.flex.space-x-3.sm:border-l.sm:border-transparent.sm:pl-6
+           [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.shadow-sm.text-white.bg-indigo-600.hover:bg-indigo-700.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "/"} "Home"]
+           [:a.inline-flex.items-center.px-4.py-2.border.border-transparent.text-sm.font-medium.rounded-md.text-indigo-700.bg-indigo-100.hover:bg-indigo-200.focus:outline-none.focus:ring-2.focus:ring-offset-2.focus:ring-indigo-500 {:href "#"} "Contact Support"]]]]]]]))))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
 
@@ -211,13 +216,7 @@
    :headers {"Content-Type" "text/html"}
    :body    (error-html 406 "Not Acceptable")})
 
-(defn error-handler
-  [_]
-  {:status  500
-   :headers {"Content-Type" "text/html"}
-   :body    (error-html 500 "Application Error")})
-
-(defn error-route-handler
+(defn deliberately-erroring-handler
   [_]
   (throw (RuntimeException. "Error Route")))
 
@@ -226,6 +225,15 @@
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    hello-html})
+
+(defn server-error-body-fn
+  [^HttpServletRequest request code message _]
+  (if-let [ex (.getAttribute request RequestDispatcher/ERROR_EXCEPTION)]
+    (log/errorf ^Throwable ex "server error: %s %s" code message)
+    (log/errorf "server error: %s %s" code message))
+  (error-html code "Server Error" message))
+
+(def server-error-handler (error/handler server-error-body-fn))
 
 (defn routes
   [sente]
@@ -239,7 +247,7 @@
    ["/chsk" {:get {:handler (:ws-handshake sente)}}]
    ["/405" {:get {:handler error-405-handler}}]
    ["/406" {:get {:handler error-406-handler}}]
-   ["/500" {:get {:handler error-route-handler}}]])
+   ["/500" {:get {:handler deliberately-erroring-handler}}]])
 
 (def error-handlers
   {:not-found          error-404-handler
@@ -252,7 +260,9 @@
     (try (handler req)
          (catch Throwable ex
            (log/errorf ex "application error %s" (:uri req))
-           (error-handler ex)))))
+           {:status  500
+            :headers {"Content-Type" "text/html"}
+            :body    (error-html 500 "Application Error")}))))
 
 (defn handler
   []

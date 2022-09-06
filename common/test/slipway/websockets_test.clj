@@ -138,15 +138,6 @@
                                                                "Upgrade"    "Websocket"
                                                                "Origin"     "http://localhost:3000"}}))))
 
-      ;; as above, lowercase headers
-      (is (= 400 (:status (client/do-get "http" "localhost" 3000
-                                         (format "/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
-                                         {:cookies            cookies
-                                          :connection-manager conn-mgr
-                                          :headers            {"connection" "upgrade"
-                                                               "upgrade"    "websocket"
-                                                               "origin"     "http://localhost:3000"}}))))
-
       ;; missing upgrade header
       (is (= 400 (:status (client/do-get "http" "localhost" 3000
                                          (format "/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)

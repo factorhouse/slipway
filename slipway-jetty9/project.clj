@@ -31,7 +31,6 @@
                  [org.slf4j/slf4j-api "1.7.36"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
-  :java-source-paths ["common-javax/src-java"]
   :test-paths ["test" "common/test"]
 
   :javac-options ["-target" "8" "-source" "8"])

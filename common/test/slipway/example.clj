@@ -6,8 +6,7 @@
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.ssl :as ssl])
-  (:import (io.factorhouse.slipway SimpleErrorHandler)
-           (org.eclipse.jetty.security ConstraintMapping)
+  (:import (org.eclipse.jetty.security ConstraintMapping)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (org.eclipse.jetty.util.security Constraint)))
 
@@ -33,7 +32,8 @@
                 :truststore-type "PKCS12"}))
 
 (def jaas-opts
-  (merge #::server{:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))}
+  (merge #::server{:error-handler app/server-error-handler}
+
          #::authz{:realm               "slipway"
                   :login-service       "jaas"
                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
@@ -41,7 +41,7 @@
                   :constraint-mappings constraints}))
 
 (def hash-opts
-  (merge #::server{:error-handler (SimpleErrorHandler. (app/error-html 500 "Server Error"))}
+  (merge #::server{:error-handler app/server-error-handler}
          #::authz{:realm               "slipway"
                   :login-service       "hash"
                   :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
