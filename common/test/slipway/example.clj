@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [slipway.authz :as authz]
             [slipway.example.app :as app]
+            [slipway.handler]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.ssl :as ssl])

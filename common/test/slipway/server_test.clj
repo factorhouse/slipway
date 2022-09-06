@@ -43,7 +43,7 @@
 (deftest compression
 
   (try
-    (example/start-server! (assoc example/hash-opts :gzip? nil))
+    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? nil))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -56,7 +56,7 @@
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (assoc example/hash-opts :gzip? true))
+    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? true))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -69,7 +69,7 @@
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (assoc example/hash-opts :gzip? false))
+    (example/start-server! (assoc example/hash-opts :slipway.server/gzip? false))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200

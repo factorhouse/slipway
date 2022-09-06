@@ -1,12 +1,27 @@
 (ns slipway.server
   (:require [clojure.tools.logging :as log]
             [slipway.authz :as authz]
-            [slipway.handler :as handler]
             [slipway.ssl :as ssl])
   (:import (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer Handler HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
+           (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory)
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
+
+(defmulti handler (fn [_ _ opts] (::handler opts)))
+
+(defn gzip-handler
+  [{::keys [gzip? gzip-content-types gzip-min-size]}]
+  (when (not (false? gzip?))
+    (let [gzip-handler (GzipHandler.)]
+      (log/info "enabling gzip compression")
+      (when (seq gzip-content-types)
+        (log/infof "setting gzip included mime types: %s" gzip-content-types)
+        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
+      (when gzip-min-size
+        (log/infof "setting gzip min size: %s" gzip-min-size)
+        (.setMinGzipSize gzip-min-size))
+      gzip-handler)))
 
 (defn http-config
   [{::keys [ssl-port secure-scheme output-buffer-size request-header-size response-header-size send-server-version?
@@ -166,7 +181,7 @@
   [ring-handler {::keys [join?] :as opts}]
   (let [server        (create-server opts)
         login-service (authz/login-service opts)]
-    (.setHandler server ^Handler (handler/root ring-handler login-service opts))
+    (.setHandler server ^Handler (handler ring-handler login-service opts))
     (some->> login-service (.addBean server))
     (.start server)
     (when join? (.join server))
