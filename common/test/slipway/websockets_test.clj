@@ -1,10 +1,9 @@
 (ns slipway.websockets-test
-  (:require
-   [clj-http.conn-mgr :as conn]
-   [clojure.test :refer :all]
-   [clojure.tools.logging :as log]
-   [slipway.client :as client]
-   [slipway.example :as example])
+  (:require [clj-http.conn-mgr :as conn]
+            [clojure.test :refer :all]
+            [clojure.tools.logging :as log]
+            [slipway.client :as client]
+            [slipway.example :as example])
   (:import (java.security SecureRandom)
            (java.util Base64)))
 

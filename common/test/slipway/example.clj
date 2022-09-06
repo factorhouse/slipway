@@ -1,8 +1,8 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
+            [slipway :as slipway]
             [slipway.authz :as authz]
             [slipway.example.app :as app]
-            [slipway.handler]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.ssl :as ssl])
@@ -52,14 +52,14 @@
 (defn stop-server!
   []
   (when-let [server @state]
-    (server/stop server)))
+    (slipway/stop server)))
 
 (defn start-server!
   ([opts]
    (start-server! (app/handler) opts))
   ([handler opts]
    (stop-server!)
-   (reset! state (server/start handler opts))))
+   (reset! state (slipway/start handler opts))))
 
 (defn http-server
   []
