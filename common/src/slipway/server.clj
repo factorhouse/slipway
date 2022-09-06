@@ -1,8 +1,7 @@
 (ns slipway.server
   (:require [clojure.tools.logging :as log]
-            [slipway.authz :as authz]
             [slipway.ssl :as ssl])
-  (:import (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer Handler HttpConfiguration
+  (:import (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
            (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory)

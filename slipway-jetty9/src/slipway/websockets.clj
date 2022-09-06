@@ -1,12 +1,8 @@
 (ns slipway.websockets
-  "Jetty9 impl of the Websockets API + handler, inspired by:
-    * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
   (:require [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)
-           (org.eclipse.jetty.server Request)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WriteCallback)
            (org.eclipse.jetty.websocket.api.extensions ExtensionConfig)
            (org.eclipse.jetty.websocket.server WebSocketHandler)

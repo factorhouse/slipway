@@ -1,6 +1,4 @@
 (ns slipway.websockets
-  "Jetty11 impl of the Websockets API + handler, inspired by:
-    * https://github.com/sunng87/ring-jetty9-adapter/blob/master/src/ring/adapter/jetty9/websocket.clj"
   (:require [slipway.common.websockets :as common.ws]
             [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
