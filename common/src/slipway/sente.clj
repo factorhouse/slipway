@@ -43,7 +43,7 @@
       :on-close   (fn [ws status-code _] (on-close ws ws? status-code))
       :on-error   (fn [ws e] (on-error ws ws? e))})
     ;; Only support ws as a protocol, no ajax
-    {:status 406}))
+    {:status 400 :body "Bad Request"}))
 
 (deftype JettyServerChanAdapter []
 

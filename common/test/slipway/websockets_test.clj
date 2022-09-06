@@ -149,7 +149,7 @@
                                                                "origin"     "http://localhost:3000"}}))))
 
       ;; missing upgrade header
-      (is (= 406 (:status (client/do-get "http" "localhost" 3000
+      (is (= 400 (:status (client/do-get "http" "localhost" 3000
                                          (format "/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                                          {:cookies            cookies
                                           :connection-manager conn-mgr
@@ -198,7 +198,7 @@
                                                                "Upgrade"    "Websocket"
                                                                "Origin"     "https://localhost:3000"}}))))
 
-      ;; wrong post origin header
+      ;; wrong port origin header
       (is (= 403 (:status (client/do-get "http" "localhost" 3000
                                          (format "/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                                          {:cookies            cookies

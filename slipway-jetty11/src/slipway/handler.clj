@@ -42,7 +42,7 @@
           (when response-map
             (if (and (common.ws/upgrade-request? request-map) (common.ws/upgrade-response? response-map))
               (when-not (ws/upgrade-websocket request response (:ws response-map) opts)
-                (.sendError response 400 "Bad Request"))
+                (servlet/update-servlet-response response {:status 400 :body "Bad Request"}))
               (servlet/update-servlet-response response response-map))))
         (catch Throwable ex
           (log/error ex "Unhandled exception processing HTTP request")
