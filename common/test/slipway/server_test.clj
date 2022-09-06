@@ -243,7 +243,7 @@
               :status                401
               :reason-phrase         "Unauthorized"
               :orig-content-encoding nil
-              :body                  ""}
+              :body                  (app/error-html 401 "Server Error" "Unauthorized")}
              (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
@@ -272,7 +272,7 @@
         (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
                 :status                401
                 :reason-phrase         "Unauthorized"
-                :body                  ""
+                :body                  (app/error-html 401 "Server Error" "Unauthorized")
                 :orig-content-encoding nil}
                (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                    (select-keys of-interest))))))
