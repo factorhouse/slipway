@@ -32,35 +32,23 @@
 ;:sni-required? - require sni for secure connection, default to false
 ;:sni-host-check? - enable host check for secure connection, default to true
 
-;:join? - blocks the thread until server ends (defaults to false)
-
-;;; ssl
-
-;:ssl-port - the SSL port to listen on (defaults to 443, implies :ssl?)
-;:ssl-context - an optional SSLContext to use for SSL connections
-;:ssl-protocols - the ssl protocols to use, default to ["TLSv1.3" "TLSv1.2"]
-;:ssl-provider - the ssl provider
-;:exclude-ciphers      - when :ssl? is true, additionally exclude these cipher suites
-;:exclude-protocols    - when :ssl? is true, additionally exclude these protocols
-;:keystore - the keystore to use for SSL connections
-;:keystore-type - the format of keystore
-;:key-password - the password to the keystore
-;:key-manager-password - the password for key manager
-;:truststore - a truststore to use for SSL connections
-;:truststore-type - the format of trust store
-;:trust-password - the password to the truststore
-;:replace-exclude-ciphers?   - when true, :exclude-ciphers will replace rather than add to the cipher exclusion list (defaults to false)
-;:replace-exclude-protocols? - when true, :exclude-protocols will replace rather than add to the protocols exclusion list (defaults to false)
-
-;;; websockets
-;:ws-max-idle-time  - the maximum idle time in milliseconds for a websocket connection (default 500000)
-;:ws-max-text-message-size  - the maximum text message size in bytes for a websocket connection (default 65536)
-
-;;; auth / session
-;:auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
-;;session
-
 (comment
+  #:slipway.ssl {:keystore                   "keystore to use, either path (String) or concrete KeyStore"
+                 :keystore-type              "type of keystore, e.g. JKS"
+                 :keystore-password          "password of the keystore"
+                 :key-manager-password       "password for the specific key within the keystore"
+                 :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+                 :truststore-password        "password of the truststore"
+                 :truststore-type            "type of the truststore, eg. JKS"
+                 :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+                 :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+                 :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+                 :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+                 :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+                 :ssl-provider               "the security provider name"
+                 :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+                 :ssl-context                "a concrete pre-configured SslContext"}
+
   #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
                   :constraint-mappings "a list of concrete Jetty ConstraintMapping"
