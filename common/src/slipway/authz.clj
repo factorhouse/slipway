@@ -35,6 +35,13 @@
     (when (instance? Authentication$User authentication)
       (p/datafy authentication))))
 
+(comment
+  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
+                  :realm               "the JAAS realm to use with jaas or hash authentication"
+                  :hash-user-file      "the path to a Jetty Hash User File"})
+
 (defn handler
   [^LoginService login-service {::keys [authenticator constraint-mappings]}]
   (doto (ConstraintSecurityHandler.)

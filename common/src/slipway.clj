@@ -61,6 +61,12 @@
 ;;session
 
 (comment
+  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
+                  :realm               "the JAAS realm to use with jaas or hash authentication"
+                  :hash-user-file      "the path to a Jetty Hash User File"}
+
   #:slipway.session {:secure-request-only?  "set the secure flag on session cookies"
                      :http-only?            "set the http-only flag on session cookies"
                      :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
@@ -71,7 +77,7 @@
                      :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
                      :path-parameter-name   "name of path parameter used for URL session tracking"}
 
-  ;; Jetty 10 / Jetty 11
+  ;; Jetty 10 / Jetty 11 Websockets
   #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
                         :input-buffer-size       "max websocket input buffer size"
                         :output-buffer-size      "max websocket output buffer size"
@@ -80,7 +86,7 @@
                         :max-frame-size          "max websoccket frame size"
                         :auto-fragment           "websocket auto fragment"}
 
-  ;; Jetty 9
+  ;; Jetty 9 Websockets
   #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
                         :input-buffer-size       "max websocket input buffer size"
                         :max-text-message-size   "max websocket text message size"
