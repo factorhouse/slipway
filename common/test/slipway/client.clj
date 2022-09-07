@@ -70,3 +70,14 @@
              :ring       (dissoc ring-initialized :http-client)
              :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))}
             session-cookies))))
+
+(defn do-get-login-redirect
+  ([scheme host port uri user pass]
+   (do-get-login-redirect scheme host port uri user pass nil))
+  ([scheme host port uri user pass opts]
+   (let [anonymous       (do-get scheme host port uri opts)
+         session-cookies (select-keys anonymous [:cookies])
+         jetty-authed    (do-login-post scheme host port user pass (merge opts session-cookies))
+         redirect        (get-in jetty-authed [:headers "Location"])]
+     (log/infof "logged redirect: %s" redirect)
+     redirect)))

@@ -148,33 +148,21 @@
 
     (testing "post-login-redirect"
 
-      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
-              :status                200
-              :reason-phrase         "OK"
-              :orig-content-encoding "gzip"
-              :body                  (app/user-html {:slipway.user/identity
-                                                     {:name  "admin"
-                                                      :roles #{"admin"
-                                                               "content-administrator"
-                                                               "server-administrator"
-                                                               "user"}}})}
-             (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "admin")
-                 :ring
-                 (select-keys of-interest)))))
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "" "admin" "admin")))
+
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/" "admin" "admin")))
+
+      (is (= "http://localhost:3000/user"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/user" "admin" "admin"))))
 
     (testing "post-login-redirect-null-request-context"
 
       ;; if we start our session on the login page we have no post-login request context we fallback
       ;; to the default context, this tests a default context is in place in the handler chain
-      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
-              :status                200
-              :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
-             (-> (client/do-login "http" "localhost" 3000 "/login" "admin" "admin")
-                 :ring
-                 (select-keys of-interest)
-                 ;; this is home-html but hard to test body due to csrf token
-                 (dissoc :body)))))
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/login" "admin" "admin"))))
 
     (testing "session-continuation"
 
