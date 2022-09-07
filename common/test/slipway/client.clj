@@ -25,7 +25,7 @@
 (defn do-login-post
   [scheme host port user pass opts]
   (let [url (format "%s://%s:%s/j_security_check" scheme host port)]
-    (log/infof "POST %s" url)
+    (log/infof "POST %s with %s" url opts)
     (client/request
      (merge
       {:url               url
@@ -43,8 +43,8 @@
   ([scheme host port uri user pass opts]
    (let [anonymous        (do-get scheme host port uri opts)
          session-cookies  (select-keys anonymous [:cookies])
+         _                (do-get (get-in anonymous [:headers "Location"]) (merge opts session-cookies))
          jetty-authed     (do-login-post scheme host port user pass (merge opts session-cookies))
-         ;; w/ http our example server reissues a new cookie on login, w/ https the initial anon cookie is preserved
          session-cookies  (merge session-cookies (select-keys jetty-authed [:cookies]))
          ring-initialized (do-get (get-in jetty-authed [:headers "Location"]) (merge opts session-cookies))
          session-cookies  (merge-with merge session-cookies (select-keys ring-initialized [:cookies]))
@@ -77,7 +77,8 @@
   ([scheme host port uri user pass opts]
    (let [anonymous       (do-get scheme host port uri opts)
          session-cookies (select-keys anonymous [:cookies])
+         _               (do-get (get-in anonymous [:headers "Location"]) (merge opts session-cookies))
          jetty-authed    (do-login-post scheme host port user pass (merge opts session-cookies))
          redirect        (get-in jetty-authed [:headers "Location"])]
-     (log/infof "logged redirect: %s" redirect)
+     (log/infof "login redirect: %s" redirect)
      redirect)))

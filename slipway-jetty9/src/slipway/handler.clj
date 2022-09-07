@@ -23,7 +23,7 @@
   (when-let [^String post-login-uri (some-> (.getSession request false) (.getAttribute FormAuthenticator/__J_URI))]
     (when (.endsWith post-login-uri "/chsk")
       (let [new-uri (uri-without-chsk post-login-uri)]
-        (log/debugf "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
+        (log/infof "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
         (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
 
 (defn request-map

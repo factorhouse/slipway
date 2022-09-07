@@ -178,8 +178,6 @@
               :orig-content-encoding "gzip"
               :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "https" "localhost" 3000 "" "user" "password" {:insecure? true})
-                               :anon
-                               (select-keys [:cookies])
                                (merge {:insecure? true}))]
                (-> (client/do-get "https" "localhost" 3000 "/user" session)
                    (select-keys of-interest))))))
