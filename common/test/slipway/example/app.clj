@@ -14,8 +14,6 @@
             [slipway.sente :as sente]
             [slipway.user :as user]))
 
-(def hello-html "<html><h1>Hello world</h1></html>")
-
 (defn login-html
   [retry?]
   (hiccup/html
@@ -217,12 +215,6 @@
 (defn deliberately-erroring-handler
   [_]
   (throw (RuntimeException. "Error Route")))
-
-(defn hello-handler
-  [_]
-  {:status  200
-   :headers {"Content-Type" "text/html"}
-   :body    hello-html})
 
 (defn server-error-body-fn
   [request code message _]
