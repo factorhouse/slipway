@@ -261,5 +261,4 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-
     (finally (example/stop-server!))))
