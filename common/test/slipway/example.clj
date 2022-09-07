@@ -27,12 +27,12 @@
                                    :http?         false
                                    :ssl-port      3000
                                    :error-handler app/server-error-handler}
-                         #::ssl{:keystore        "dev-resources/my-keystore.jks"
-                                :keystore-type   "PKCS12"
-                                :key-password    "password"
-                                :truststore      "dev-resources/my-truststore.jks"
-                                :trust-password  "password"
-                                :truststore-type "PKCS12"})
+                         #::ssl{:keystore            "dev-resources/my-keystore.jks"
+                                :keystore-type       "PKCS12"
+                                :keystore--password  "password"
+                                :truststore          "dev-resources/my-truststore.jks"
+                                :truststore-password "password"
+                                :truststore-type     "PKCS12"})
    :jaas-auth     #::authz{:realm               "slipway"
                            :login-service       "jaas"
                            :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
