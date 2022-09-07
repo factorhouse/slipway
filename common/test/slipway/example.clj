@@ -2,12 +2,14 @@
   (:require [clojure.test :refer :all]
             [slipway :as slipway]
             [slipway.authz :as authz]
+            [slipway.connector.http :as http]
+            [slipway.connector.http]
+            [slipway.connector.https :as https]
             [slipway.example.app :as app]
             [slipway.handler :as handler]
             [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
-            [slipway.session :as session]
-            [slipway.ssl :as ssl])
+            [slipway.session :as session])
   (:import (org.eclipse.jetty.security ConstraintMapping)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
            (org.eclipse.jetty.util.security Constraint)))
@@ -22,35 +24,53 @@
      (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/img/*"))
      (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
 
+(def http-connector #::http{:port 3000})
+
+(def https-connector #::https{:port                3443
+                              :keystore            "dev-resources/my-keystore.jks"
+                              :keystore-type       "PKCS12"
+                              :keystore-password   "password"
+                              :truststore          "dev-resources/my-truststore.jks"
+                              :truststore-password "password"
+                              :truststore-type     "PKCS12"})
+
+(def form-authenticator (FormAuthenticator. "/login" "/login-retry" false))
+
 (def options
-  {:http          #::server{:error-handler app/server-error-handler}
-   :https         (merge #::server{:ssl?          true
-                                   :http?         false
-                                   :ssl-port      3000
-                                   :error-handler app/server-error-handler}
-                         #::ssl{:keystore            "dev-resources/my-keystore.jks"
-                                :keystore-type       "PKCS12"
-                                :keystore-password   "password"
-                                :truststore          "dev-resources/my-truststore.jks"
-                                :truststore-password "password"
-                                :truststore-type     "PKCS12"})
+  {:http          #::server{:connectors    [http-connector]
+                            :error-handler app/server-error-handler}
+
+   :https         #::server{:connectors    [https-connector]
+                            :error-handler app/server-error-handler}
+
+   :http+https    #::server{:connectors    [http-connector https-connector]
+                            :error-handler app/server-error-handler}
+
    :jaas-auth     #::authz{:realm               "slipway"
                            :login-service       "jaas"
                            :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                           :authenticator       form-authenticator
                            :constraint-mappings constraints}
+
    :hash-auth     #::authz{:realm               "slipway"
                            :login-service       "hash"
                            :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                           :authenticator       form-authenticator
                            :constraint-mappings constraints}
+
    :basic-auth    #::authz{:authenticator (BasicAuthenticator.)}
+
    :gzip-nil      #::gzip{:enabled? nil}
+
    :gzip-false    #::gzip{:enabled? false}
+
    :gzip-true     #::gzip{:enabled? true}
+
    :custom-ws     #::handler{:ws-path "/wsx"}
-   :join          #::slipway{:join? true}
-   :short-session #::session{:max-inactive-interval 10}})
+
+   :short-session #::session{:max-inactive-interval 10}
+
+   :join          #::slipway{:join? true}})
 
 (defn stop!
   []

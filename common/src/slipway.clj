@@ -1,6 +1,8 @@
 (ns slipway
   (:require [clojure.tools.logging :as log]
             [slipway.authz :as authz]
+            [slipway.connector.http]
+            [slipway.connector.https]
             [slipway.server :as server])
   (:import (org.eclipse.jetty.server Handler Server)))
 
