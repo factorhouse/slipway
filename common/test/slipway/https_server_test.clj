@@ -11,7 +11,7 @@
 (deftest simple-https
 
   (try
-    (example/https-server)
+    (example/start! [:https])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -23,13 +23,12 @@
 
     (is (thrown? Exception (client/do-get "http://localhost:3000/" {})))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest compression
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
-                                                :slipway.server/gzip? nil))
+    (example/start! [:https :gzip-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -39,11 +38,10 @@
            (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop-server!)))
+    (finally (example/stop!)))
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
-                                                :slipway.server/gzip? true))
+    (example/start! [:https :gzip-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -53,11 +51,10 @@
            (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop-server!)))
+    (finally (example/stop!)))
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
-                                                :slipway.server/gzip? false))
+    (example/start! [:https :gzip-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -67,12 +64,12 @@
            (-> (client/do-get "https" "localhost" 3000 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest form-authentication
 
   (try
-    (example/https-hash-server)
+    (example/start! [:https :hash-auth])
 
     (testing "constraints"
 
@@ -194,12 +191,12 @@
                (-> (client/do-get "https" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (example/https-hash-basic-server)
+    (example/start! [:https :hash-auth :basic-auth])
 
     (testing "constraints"
 
@@ -256,4 +253,4 @@
              (-> (client/do-get "https" "user:wrong@localhost" 3000 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))

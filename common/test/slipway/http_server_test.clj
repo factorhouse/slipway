@@ -11,7 +11,7 @@
 (deftest simple-http
 
   (try
-    (example/http-server)
+    (example/start! [:http])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -21,12 +21,12 @@
            (-> (client/do-get "http://localhost:3000/user" {})
                (select-keys of-interest))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest compression
 
   (try
-    (example/start-server! (app/handler) (assoc example/hash-opts :slipway.server/gzip? nil))
+    (example/start! [:http :gzip-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -36,10 +36,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (example/stop-server!)))
+    (finally (example/stop!)))
 
   (try
-    (example/start-server! (app/handler) (assoc example/hash-opts :slipway.server/gzip? true))
+    (example/start! [:http :gzip-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -49,10 +49,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (example/stop-server!)))
+    (finally (example/stop!)))
 
   (try
-    (example/start-server! (app/handler) (assoc example/hash-opts :slipway.server/gzip? false))
+    (example/start! [:http :gzip-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -62,12 +62,12 @@
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest form-authentication
 
   (try
-    (example/http-hash-server)
+    (example/start! [:http :hash-auth])
 
     (testing "constraints"
 
@@ -187,12 +187,12 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (example/http-hash-basic-server)
+    (example/start! [:http :hash-auth :basic-auth])
 
     (testing "constraints"
 
@@ -249,4 +249,4 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))

@@ -31,6 +31,6 @@
     (try
       (log/debug "logout" identity)
       (.logout base-request)
-      (.invalidate (.getSession base-request))
+      (some-> (.getSession base-request false) (.invalidate))
       (catch Exception ex
         (log/error ex "logout error")))))

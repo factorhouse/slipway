@@ -30,7 +30,7 @@
     (when (.endsWith post-login-uri ws-path)
       (let [new-uri (uri-without-chsk post-login-uri ws-path)]
         (log/infof "avoiding {..}%s post-login, setting post-login uri to %s" ws-path new-uri)
-        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
+        (.setAttribute (.getSession request false) FormAuthenticator/__J_URI new-uri)))))
 
 (defn handler
   [handler opts]

@@ -64,7 +64,7 @@
 ; context-path null-path-info? ws-path
 
 (defn start ^Server
-  [ring-handler {:server/keys [join?] :as opts}]
+  [ring-handler {::keys [join?] :as opts}]
   (let [server        (server/create-server opts)
         login-service (authz/login-service opts)]
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))

@@ -35,7 +35,7 @@
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (example/http-server)
+    (example/start! [:http])
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "localhost" 3000)
           client-id  (str (random-uuid))
@@ -175,12 +175,12 @@
                                                           "Origin"     "https://localhost:2999"}})
                      :status))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (example/http-hash-server)
+    (example/start! [:http :hash-auth])
 
     (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
           client-id  (str (random-uuid))
@@ -346,12 +346,12 @@
                                                                                    bytes)))}})
                      :status))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
 
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (example/http-hash-basic-server)
+    (example/start! [:http :hash-auth :basic-auth])
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
           client-id  (str (random-uuid))
@@ -508,4 +508,4 @@
                                                                                    bytes)))}})
                      :status))))
 
-    (finally (example/stop-server!))))
+    (finally (example/stop!))))
