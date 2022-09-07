@@ -29,7 +29,7 @@
                                    :error-handler app/server-error-handler}
                          #::ssl{:keystore            "dev-resources/my-keystore.jks"
                                 :keystore-type       "PKCS12"
-                                :keystore--password  "password"
+                                :keystore-password   "password"
                                 :truststore          "dev-resources/my-truststore.jks"
                                 :truststore-password "password"
                                 :truststore-type     "PKCS12"})
