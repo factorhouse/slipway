@@ -60,7 +60,6 @@
 ;:auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
 ;;session
 
-
 (comment
   #:slipway.session {:secure-request-only?  "set the secure flag on session cookies"
                      :http-only?            "set the http-only flag on session cookies"
