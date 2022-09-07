@@ -1,6 +1,6 @@
 (ns slipway
-  (:require [slipway.authz :as authz]
-            [slipway.handler]
+  (:require [clojure.tools.logging :as log]
+            [slipway.authz :as authz]
             [slipway.server :as server])
   (:import (org.eclipse.jetty.server Handler Server)))
 
@@ -63,6 +63,16 @@
 ;;; handler
 ; context-path null-path-info? ws-path
 
+(comment "Configuration"
+  #:slipway.websockets {:idle-timeout          "max websocket idle time"
+                        :max-text-message-size "max websocket text message size"}
+  
+  #:slipway.handler {:context-path    "the root context path, default '/'"
+                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                     :null-path-info? "true if /path is not redirected to /path/, default true"}
+
+  #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
+
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
   (let [server        (server/create-server opts)
@@ -70,7 +80,9 @@
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))
     (some->> login-service (.addBean server))
     (.start server)
-    (when join? (.join server))
+    (when join?
+      (log/info "joining jetty thread")
+      (.join server))
     server))
 
 (defn stop

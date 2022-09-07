@@ -52,6 +52,11 @@
   [ring-handler opts]
   (HandlerList. (into-array Handler [(handler ring-handler opts) (ws/handler ring-handler opts)])))
 
+(comment "Configuration"
+  #:slipway.handler {:context-path    "the root context path, default '/'"
+                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                     :null-path-info? "true if /path is not redirected to /path/, default true"})
+
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/info "using Jetty 9, default server handler")

@@ -151,13 +151,15 @@
           ;; This should be handled by the ring-app-handler handler, but be extra defensive anyway
           (.sendError resp 400 "Bad Request"))))))
 
+(comment
+  #:slipway.websockets {:idle-timeout          "max websocket idle time"
+                        :max-text-message-size "max websocket text message size"})
+
 (defn handler
-  [handler {::keys [ws-max-idle-time ws-max-text-message-size]
-            :or    {ws-max-idle-time         500000
-                    ws-max-text-message-size 65536}}]
+  [handler {::keys [idle-timeout max-text-message-size]}]
   (proxy [WebSocketHandler] []
     (configure [^WebSocketServletFactory factory]
-      (doto (.getPolicy factory)
-        (.setIdleTimeout ws-max-idle-time)
-        (.setMaxTextMessageSize ws-max-text-message-size))
+      (let [policy (.getPolicy factory)]
+        (some->> idle-timeout (.setIdleTimeout policy))
+        (some->> max-text-message-size (.setMaxTextMessageSize)))
       (.setCreator factory (reify-ws-creator handler)))))

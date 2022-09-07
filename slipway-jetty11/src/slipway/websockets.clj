@@ -144,13 +144,15 @@
     (createWebSocket [_ _ _]
       (proxy-ws-adapter ws-fns))))
 
+(comment "Configuration"
+  #:slipway.websockets {:idle-timeout         "max websocket idle time"
+                        :max-text-message-size "max websocket text message size"})
+
 (defn upgrade-websocket
   [^HttpServletRequest req ^HttpServletResponse res ws opts]
-  (let [{::keys [ws-max-idle-time ws-max-text-message-size]
-         :or    {ws-max-idle-time         500000
-                 ws-max-text-message-size 65536}} opts
+  (let [{::keys [idle-timeout max-text-message-size]} opts
         creator   (reify-ws-creator ws)
         container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
-    (.setIdleTimeout container (Duration/ofMillis ws-max-idle-time))
-    (.setMaxTextMessageSize container ws-max-text-message-size)
+    (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
+    (some->> max-text-message-size (.setMaxTextMessageSize container))
     (.upgrade container creator req res)))
