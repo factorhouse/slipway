@@ -105,7 +105,8 @@
 
 (defn handler
   []
-  (let [sente-config   {:allowed-origins #{"http://localhost:3000"}}
+  (let [sente-config   {:allowed-origins #{"http://localhost:3000"
+                                           "http://localhost:3443"}}
         session-config {:store (ring.session.memory/memory-store)}]
     (-> (reitit/ring-handler
          (reitit/router (routes (sente/start-server sente-config)))
