@@ -41,8 +41,8 @@
   ([scheme host port uri user pass]
    (do-login scheme host port uri user pass nil))
   ([scheme host port uri user pass opts]
-   (let [anonymous        (do-get scheme host port uri opts)
-         session-cookies  (select-keys anonymous [:cookies])]
+   (let [anonymous       (do-get scheme host port uri opts)
+         session-cookies (select-keys anonymous [:cookies])]
      (when-not (str/ends-with? uri "login")
        (do-get (or (get-in anonymous [:headers "Location"])) (merge opts session-cookies)))
      (let [jetty-authed     (do-login-post scheme host port user pass (merge opts session-cookies))
