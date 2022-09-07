@@ -144,9 +144,9 @@
     (createWebSocket [_ _ _]
       (proxy-ws-adapter ws-fns))))
 
-(comment "Configuration"
-  #:slipway.websockets {:idle-timeout         "max websocket idle time"
-                        :max-text-message-size "max websocket text message size"})
+(comment
+ #:slipway.websockets {:idle-timeout          "max websocket idle time"
+                       :max-text-message-size "max websocket text message size"})
 
 (defn upgrade-websocket
   [^HttpServletRequest req ^HttpServletResponse res ws opts]

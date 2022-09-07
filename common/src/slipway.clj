@@ -63,15 +63,15 @@
 ;;; handler
 ; context-path null-path-info? ws-path
 
-(comment "Configuration"
-  #:slipway.websockets {:idle-timeout          "max websocket idle time"
-                        :max-text-message-size "max websocket text message size"}
-  
-  #:slipway.handler {:context-path    "the root context path, default '/'"
-                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
-                     :null-path-info? "true if /path is not redirected to /path/, default true"}
+(comment
+ #:slipway.websockets {:idle-timeout          "max websocket idle time"
+                       :max-text-message-size "max websocket text message size"}
 
-  #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
+ #:slipway.handler {:context-path    "the root context path, default '/'"
+                    :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                    :null-path-info? "true if /path is not redirected to /path/, default true"}
+
+ #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
