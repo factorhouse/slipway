@@ -45,7 +45,7 @@
                  :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
                  :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
                  :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
-                 :ssl-provider               "the security provider name"
+                 :security-provider          "the security provider name"
                  :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                  :ssl-context                "a concrete pre-configured SslContext"}
 
