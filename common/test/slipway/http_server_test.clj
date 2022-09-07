@@ -231,33 +231,35 @@
                  (select-keys of-interest))))
 
       (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/"))))
-      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user"))))
+      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user")))))
 
-      (testing "credentials provided"
+    (testing "credentials provided"
 
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"}
-               (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
-                   (select-keys of-interest)
-                   (dissoc :body))))
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"}
+             (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
+                 (select-keys of-interest)
+                 (dissoc :body))))
 
-        (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"
-                :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
-               (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
-                   (select-keys of-interest))))
+      (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :body                  (app/user-html {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+             (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
+                 (select-keys of-interest)))))
 
-        ;; incorrect password
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                401
-                :reason-phrase         "Unauthorized"
-                :body                  (app/error-html 401 "Server Error" "Unauthorized")
-                :orig-content-encoding nil}
-               (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
-                   (select-keys of-interest))))))
+    (testing "incorrect-password"
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                401
+              :reason-phrase         "Unauthorized"
+              :body                  (app/error-html 401 "Server Error" "Unauthorized")
+              :orig-content-encoding nil}
+             (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
+                 (select-keys of-interest)))))
+
 
     (finally (example/stop-server!))))

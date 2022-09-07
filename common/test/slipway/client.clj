@@ -33,7 +33,8 @@
        :body              (format "j_username=%s&j_password=%s" user pass)
        :headers           {"Referer"      (format "%s://%s:%s/login" scheme host port)
                            "Content-Type" "application/x-www-form-urlencoded"}
-       :redirect-strategy :none}
+       :redirect-strategy :none
+       :throw-exceptions  false}
       opts))))
 
 (defn do-login
@@ -41,19 +42,31 @@
    (do-login scheme host port uri user pass nil))
   ([scheme host port uri user pass opts]
    (let [anonymous        (do-get scheme host port uri opts)
-         jetty-authed     (do-login-post scheme host port user pass (merge opts (select-keys anonymous [:cookies])))
-         ring-initialized (do-get (get-in jetty-authed [:headers "Location"]) (merge opts
-                                                                                     (select-keys anonymous [:cookies])
-                                                                                     (select-keys jetty-authed [:cookies])))
+         session-cookies  (select-keys anonymous [:cookies])
+         jetty-authed     (do-login-post scheme host port user pass (merge opts session-cookies))
+         ;; w/ http our example server reissues a new cookie on login, w/ https the initial anon cookie is preserved
+         session-cookies  (merge session-cookies (select-keys jetty-authed [:cookies]))
+         ring-initialized (do-get (get-in jetty-authed [:headers "Location"]) (merge opts session-cookies))
+         session-cookies  (merge-with merge session-cookies (select-keys ring-initialized [:cookies]))
          csrf-token       (decode-csrf-token (:body ring-initialized))]
-     (log/infof "logged in with jetty: %s, ring: %s, csrf-token: %s"
-                (get-in jetty-authed [:cookies "JSESSIONID" :value])
-                (get-in ring-initialized [:cookies "ring-session" :value])
-                csrf-token)
-     {:anon       (dissoc anonymous :http-client)
-      :jetty      (dissoc jetty-authed :http-client)
-      :ring       (dissoc ring-initialized :http-client)
-      :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))
-      :cookies    (merge (:cookies anonymous)
-                         (:cookies jetty-authed)
-                         (:cookies ring-initialized))})))
+     (log/infof "logged in with csrf-token: %s, session: %s" csrf-token session-cookies)
+     (merge {:anon       (dissoc anonymous :http-client)
+             :jetty      (dissoc jetty-authed :http-client)
+             :ring       (dissoc ring-initialized :http-client)
+             :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))}
+            session-cookies))))
+
+(defn do-get-csrf
+  ([scheme host port]
+   (do-get-csrf scheme host port nil))
+  ([scheme host port opts]
+   (let [anonymous        (do-get scheme host port "/" opts)
+         session-cookies  (select-keys anonymous [:cookies])
+         ring-initialized (do-get scheme host port "/" (merge opts session-cookies))
+         session-cookies  (merge-with merge session-cookies (select-keys ring-initialized [:cookies]))
+         csrf-token       (decode-csrf-token (:body ring-initialized))]
+     (log/infof "retrieved no-auth csrf-token: %s, session: %s" csrf-token session-cookies)
+     (merge {:anon       (dissoc anonymous :http-client)
+             :ring       (dissoc ring-initialized :http-client)
+             :csrf-token (when csrf-token (URLEncoder/encode ^String csrf-token "UTF-8"))}
+            session-cookies))))
