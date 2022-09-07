@@ -4,6 +4,7 @@
             [slipway.authz :as authz]
             [slipway.example.app :as app]
             [slipway.handler :as handler]
+            [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.ssl :as ssl])
@@ -44,9 +45,9 @@
                            :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
                            :constraint-mappings constraints}
    :basic-auth    #::authz{:authenticator (BasicAuthenticator.)}
-   :gzip-nil      #::server{:gzip? nil}
-   :gzip-false    #::server{:gzip? false}
-   :gzip-true     #::server{:gzip? true}
+   :gzip-nil      #::gzip{:enabled? nil}
+   :gzip-false    #::gzip{:enabled? false}
+   :gzip-true     #::gzip{:enabled? true}
    :custom-ws     #::handler{:ws-path "/wsx"}
    :join          #::slipway{:join? true}
    :short-session #::session{:max-inactive-interval 10}})

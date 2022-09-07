@@ -2,6 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [slipway.authz :as authz]
             [slipway.common.websockets :as common.ws]
+            [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
             [slipway.servlet :as servlet]
             [slipway.session :as session]
@@ -67,5 +68,5 @@
     (when login-service
       (.insertHandler context (authz/handler login-service opts))
       (.insertHandler context (session/handler opts)))
-    (some->> (server/gzip-handler opts) (.insertHandler context))
+    (some->> (gzip/handler opts) (.insertHandler context))
     context))

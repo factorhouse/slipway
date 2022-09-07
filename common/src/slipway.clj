@@ -33,6 +33,11 @@
 ;:sni-host-check? - enable host check for secure connection, default to true
 
 (comment
+  #:slipway.handler.gzip {:enabled?            "is gzip enabled? default true"
+                          :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
+                          :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
+                          :min-gzip-size       "min response size to trigger dynamic compression"}
+
   #:slipway.ssl {:keystore                   "keystore to use, either path (String) or concrete KeyStore"
                  :keystore-type              "type of keystore, e.g. JKS"
                  :keystore-password          "password of the keystore"

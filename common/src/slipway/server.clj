@@ -3,24 +3,10 @@
             [slipway.ssl :as ssl])
   (:import (org.eclipse.jetty.server ConnectionFactory Connector ForwardedRequestCustomizer HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
-           (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.util.ssl SslContextFactory)
            (org.eclipse.jetty.util.thread QueuedThreadPool ScheduledExecutorScheduler ThreadPool)))
 
 (defmulti handler (fn [_ _ opts] (::handler opts)))
-
-(defn gzip-handler
-  [{::keys [gzip? gzip-content-types gzip-min-size]}]
-  (when (not (false? gzip?))
-    (let [gzip-handler (GzipHandler.)]
-      (log/info "enabling gzip compression")
-      (when (seq gzip-content-types)
-        (log/infof "setting gzip included mime types: %s" gzip-content-types)
-        (.setIncludedMimeTypes gzip-handler (into-array String gzip-content-types)))
-      (when gzip-min-size
-        (log/infof "setting gzip min size: %s" gzip-min-size)
-        (.setMinGzipSize gzip-min-size))
-      gzip-handler)))
 
 (defn http-config
   [{::keys [ssl-port secure-scheme output-buffer-size request-header-size response-header-size send-server-version?
@@ -80,6 +66,39 @@
           (.getHttpConfiguration)
           (.addCustomizer (ForwardedRequestCustomizer.))))
 
+(comment
+  #:slipway.server{:handler                 ""
+
+                   :port                    ""
+                   :max-threads             ""
+                   :min-threads             ""
+                   :threadpool-idle-timeout ""
+                   :job-queue               ""
+                   :daemon?                 ""
+                   :max-idle-time           ""
+                   :host                    ""
+                   :ssl?                    ""
+                   :ssl-port                ""
+                   :http?                   ""
+                   :proxy?                  ""
+                   :thread-pool             ""
+                   :http-forwarded?         ""
+                   :error-handler           ""
+
+                   :secure-scheme           ""
+                   :output-buffer-size      ""
+                   :request-header-size     ""
+                   :response-header-size    ""
+                   :send-server-version?    ""
+                   :send-date-header?       ""
+                   :header-cache-size       ""
+                   :sni-required?           ""
+                   :sni-host-check?         ""
+
+                   :gzip?                   ""
+                   :gzip-content-types      ""
+                   :gzip-min-size           ""})
+
 (defn create-server ^Server
   [{::keys [port max-threads min-threads threadpool-idle-timeout job-queue daemon? max-idle-time host ssl? ssl-port http?
             proxy? thread-pool http-forwarded? error-handler]
@@ -93,7 +112,7 @@
             ssl?                    false
             http?                   true
             proxy?                  false}
-    :as    options}]
+    :as    opts}]
   {:pre [(or http? ssl? ssl-port)]}
   (let [pool               (or thread-pool
                                (doto (QueuedThreadPool. (int max-threads)
@@ -103,10 +122,10 @@
                                  (.setDaemon daemon?)))
         server             (doto (Server. ^ThreadPool pool)
                              (.addBean (ScheduledExecutorScheduler.)))
-        http-configuration (http-config options)
+        http-configuration (http-config opts)
         ssl?               (or ssl? ssl-port)
         connectors         (cond-> []
-                             ssl? (conj (https-connector server http-configuration (ssl/context-factory options)
+                             ssl? (conj (https-connector server http-configuration (ssl/context-factory opts)
                                                          ssl-port host max-idle-time))
                              http? (conj (http-connector server http-configuration port host max-idle-time proxy?)))]
     (.setConnectors server (into-array connectors))
