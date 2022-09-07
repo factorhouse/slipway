@@ -11,33 +11,33 @@
            (org.eclipse.jetty.server Handler Request)
            (org.eclipse.jetty.server.handler AbstractHandler ContextHandler HandlerList)))
 
-(defn uri-without-chsk
-  [url]
-  (subs url 0 (- (count url) 4)))
-
-;;; TODO: consider configurable 'chsk' endpoint for websockets as we're assuming our normal setup here
-(defn safe-login-redirect
-  "With dual http/ws handlers it is possible that the websocket initialization request to {..}/chsk trigers a login
-   redirection and we don't want to post-login http redirect to {..}/chsk. Dropping back to {..}/ is better"
-  [^Request request]
-  (when-let [^String post-login-uri (some-> (.getSession request false) (.getAttribute FormAuthenticator/__J_URI))]
-    (when (.endsWith post-login-uri "/chsk")
-      (let [new-uri (uri-without-chsk post-login-uri)]
-        (log/infof "avoiding {..}/chsk post-login, setting post-login uri to %s" new-uri)
-        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
-
 (defn request-map
   [^Request base-request ^HttpServletRequest request]
   (merge (servlet/build-request-map request)
          (authz/user base-request)
          {::base-request base-request}))
 
+(defn uri-without-chsk
+  [url ws-path]
+  (when url
+    (subs url 0 (max 0 (- (count url) (dec (count ws-path)))))))
+
+(defn safe-login-redirect
+  "With dual http/ws handlers it is possible that the websocket initialization request to {..}/chsk trigers a login
+   redirection and we don't want to post-login http redirect to {..}/chsk. Dropping back to {..}/ is better"
+  [^Request request {::keys [ws-path] :or {ws-path "/chsk"}}]
+  (when-let [^String post-login-uri (some-> (.getSession request false) (.getAttribute FormAuthenticator/__J_URI))]
+    (when (.endsWith post-login-uri ws-path)
+      (let [new-uri (uri-without-chsk post-login-uri ws-path)]
+        (log/infof "avoiding {..}%s post-login, setting post-login uri to %s" ws-path new-uri)
+        (.setAttribute (.getSession request) FormAuthenticator/__J_URI new-uri)))))
+
 (defn handler
-  [handler]
+  [handler opts]
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
       (try
-        (safe-login-redirect request)
+        (safe-login-redirect request opts)
         (let [request-map (request-map base-request request)]
           (when-not (common.ws/upgrade-request? request-map)
             (let [response-map (handler request-map)]
@@ -50,7 +50,7 @@
 
 (defn handler-list
   [ring-handler opts]
-  (HandlerList. (into-array Handler [(handler ring-handler) (ws/handler ring-handler opts)])))
+  (HandlerList. (into-array Handler [(handler ring-handler opts) (ws/handler ring-handler opts)])))
 
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]

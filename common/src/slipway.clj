@@ -61,7 +61,7 @@
 ;;session
 
 ;;; handler
-; context-path null-path-info?
+; context-path null-path-info? ws-path
 
 (defn start ^Server
   [ring-handler {:server/keys [join?] :as opts}]
