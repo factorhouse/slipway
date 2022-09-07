@@ -28,7 +28,8 @@
 (deftest compression
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? nil))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
+                                                :slipway.server/gzip? nil))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -41,7 +42,8 @@
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? true))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
+                                                :slipway.server/gzip? true))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -54,7 +56,8 @@
     (finally (example/stop-server!)))
 
   (try
-    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts) :slipway.server/gzip? false))
+    (example/start-server! (app/handler) (assoc (merge example/https-opts example/hash-opts)
+                                                :slipway.server/gzip? false))
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
