@@ -145,7 +145,7 @@
       (proxy-ws-adapter ws-fns))))
 
 (comment
-  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
                         :input-buffer-size       "max websocket input buffer size"
                         :output-buffer-size      "max websocket output buffer size"
                         :max-text-message-size   "max websocket text message size"

@@ -60,12 +60,20 @@
 ;:auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
 ;;session
 
-;;; handler
-; context-path null-path-info? ws-path
 
 (comment
-  ;; Jetty 10/11
-  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+  #:slipway.session {:secure-request-only?  "set the secure flag on session cookies"
+                     :http-only?            "set the http-only flag on session cookies"
+                     :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
+                     :max-inactive-interval "max session idle time (in s)"
+                     :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
+                     :cookie-name           "the name of the session cookie"
+                     :session-id-manager    "the meta manager used for cross context session management"
+                     :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
+                     :path-parameter-name   "name of path parameter used for URL session tracking"}
+
+  ;; Jetty 10 / Jetty 11
+  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
                         :input-buffer-size       "max websocket input buffer size"
                         :output-buffer-size      "max websocket output buffer size"
                         :max-text-message-size   "max websocket text message size"
@@ -74,7 +82,7 @@
                         :auto-fragment           "websocket auto fragment"}
 
   ;; Jetty 9
-  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
                         :input-buffer-size       "max websocket input buffer size"
                         :max-text-message-size   "max websocket text message size"
                         :max-binary-message-size "max websocket binary message size"}
@@ -83,7 +91,7 @@
                      :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
                      :null-path-info? "true if /path is not redirected to /path/, default true"}
 
-  #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
+  #:slipway {:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
