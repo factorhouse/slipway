@@ -64,8 +64,20 @@
 ; context-path null-path-info? ws-path
 
 (comment
-  #:slipway.websockets {:idle-timeout          "max websocket idle time"
-                        :max-text-message-size "max websocket text message size"}
+  ;; Jetty 10/11
+  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+                        :input-buffer-size       "max websocket input buffer size"
+                        :output-buffer-size      "max websocket output buffer size"
+                        :max-text-message-size   "max websocket text message size"
+                        :max-binary-message-size "max websocket binary message size"
+                        :max-frame-size          "max websoccket frame size"
+                        :auto-fragment           "websocket auto fragment"}
+
+  ;; Jetty 9
+  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+                        :input-buffer-size       "max websocket input buffer size"
+                        :max-text-message-size   "max websocket text message size"
+                        :max-binary-message-size "max websocket binary message size"}
 
   #:slipway.handler {:context-path    "the root context path, default '/'"
                      :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"

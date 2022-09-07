@@ -152,14 +152,18 @@
           (.sendError resp 400 "Bad Request"))))))
 
 (comment
-  #:slipway.websockets {:idle-timeout          "max websocket idle time"
-                        :max-text-message-size "max websocket text message size"})
+  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+                        :input-buffer-size       "max websocket input buffer size"
+                        :max-text-message-size   "max websocket text message size"
+                        :max-binary-message-size "max websocket binary message size"})
 
 (defn handler
-  [handler {::keys [idle-timeout max-text-message-size]}]
+  [handler {::keys [idle-timeout input-buffer-size max-text-message-size max-binary-message-size]}]
   (proxy [WebSocketHandler] []
     (configure [^WebSocketServletFactory factory]
       (let [policy (.getPolicy factory)]
         (some->> idle-timeout (.setIdleTimeout policy))
-        (some->> max-text-message-size (.setMaxTextMessageSize)))
+        (some->> input-buffer-size (.setInputBufferSize policy))
+        (some->> max-binary-message-size (.setMaxBinaryMessageSize policy))
+        (some->> max-text-message-size (.setMaxTextMessageSize policy)))
       (.setCreator factory (reify-ws-creator handler)))))

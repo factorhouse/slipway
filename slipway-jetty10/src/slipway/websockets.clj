@@ -145,14 +145,25 @@
       (proxy-ws-adapter ws-fns))))
 
 (comment
-  #:slipway.websockets {:idle-timeout          "max websocket idle time"
-                        :max-text-message-size "max websocket text message size"})
+  #:slipway.websockets {:idle-timeout            "max websocket idle time"
+                        :input-buffer-size       "max websocket input buffer size"
+                        :output-buffer-size      "max websocket output buffer size"
+                        :max-text-message-size   "max websocket text message size"
+                        :max-binary-message-size "max websocket binary message size"
+                        :max-frame-size          "max websoccket frame size"
+                        :auto-fragment           "websocket auto fragment"})
 
 (defn upgrade-websocket
   [^HttpServletRequest req ^HttpServletResponse res ws opts]
-  (let [{::keys [idle-timeout max-text-message-size]} opts
+  (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size
+                 max-binary-message-size max-frame-size auto-fragment]} opts
         creator   (reify-ws-creator ws)
         container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
     (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
+    (some->> input-buffer-size (.setInputBufferSize container))
+    (some->> output-buffer-size (.setOutputBufferSize container))
     (some->> max-text-message-size (.setMaxTextMessageSize container))
+    (some->> max-binary-message-size (.setMaxBinaryMessageSize container))
+    (some->> max-frame-size (.setMaxFrameSize container))
+    (some->> auto-fragment (.setAutoFragment container))
     (.upgrade container creator req res)))
