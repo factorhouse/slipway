@@ -11,4 +11,4 @@
     (is (= "http://localhost:3000/"
            (client/do-get-login-redirect "http" "localhost" 3000 "/chsk" "admin" "admin")))
 
-    (example/stop-server!)))
+    (finally (example/stop-server!))))
