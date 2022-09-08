@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [slipway-core, slipway-jetty9, slipway-jetty10]
+        project: [slipway-jetty9, slipway-jetty10, slipway-jetty11]
 
     steps:
       - name: Checkout
@@ -48,9 +48,9 @@ jobs:
         working-directory: ./${{ matrix.project }}
         run: lein kondo
 
-      - name: Kaocha
+      - name: Test 
         working-directory: ./${{ matrix.project }}
-        run: lein kaocha
+        run: lein test
 
       - name: Uberjar
         working-directory: ./${{ matrix.project }}

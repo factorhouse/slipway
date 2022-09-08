@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty10 "1.0.8"
+(defproject io.factorhouse/slipway-jetty11 "1.0.8"
 
   :description "A Clojure Companion for Embedded Jetty"
 
@@ -9,8 +9,8 @@
 
   :profiles {:dev   {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
-                                      [ch.qos.logback/logback-classic "1.2.11"]
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
+                                      [ch.qos.logback/logback-classic "1.2.11"]
                                       [metosin/reitit-ring "0.5.18"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
                      :plugins        [[lein-cljfmt "0.8.2"]]}
@@ -24,13 +24,13 @@
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.11"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-servlet "10.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-server "10.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-jaas "10.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.11"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-jaas "11.0.11" :exclusions [org.slf4j/slf4j-api]]
                  [org.apache.mina/mina-core "2.1.6" :exclusions [org.slf4j/slf4j-api]] ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
                  [org.slf4j/slf4j-api "1.7.36"]]
 
-  :source-paths ["src" "common/src" "common-javax/src"]
+  :source-paths ["src" "common/src" "common-jakarta/src"]
   :test-paths ["test" "common/test"])
