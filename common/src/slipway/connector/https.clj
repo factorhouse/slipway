@@ -3,7 +3,7 @@
             [slipway.server :as server])
   (:import (java.security KeyStore)
            (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
-                                     HttpConnectionFactory SecureRequestCustomizer Server ServerConnector)
+                                     HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn config ^HttpConfiguration
@@ -110,14 +110,15 @@
                              :ssl-context                "a concrete pre-configured SslContext"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout _proxy-protocol?]
+  [^Server server {::keys [host port idle-timeout proxy-protocol?]
                    :or    {idle-timeout 200000}
                    :as    opts}]
   {:pre [port]}
-  (let [context-factory (context-factory opts)
-        conn-factories  (into-array ConnectionFactory [(HttpConnectionFactory. (config opts))])]
+  (let [factories (->> (if proxy-protocol? [(ProxyConnectionFactory.) (HttpConnectionFactory. (config opts))]
+                                           [(HttpConnectionFactory. (config opts))])
+                       (into-array ConnectionFactory))]
     (log/infof "starting HTTPS connector on port %s" port)
-    (doto (ServerConnector. server context-factory ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" conn-factories)
+    (doto (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)
       (.setHost host)
       (.setPort port)
       (.setIdleTimeout idle-timeout))))

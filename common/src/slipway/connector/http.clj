@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [slipway.server :as server])
   (:import (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
-                                     HttpConnectionFactory Server ServerConnector)))
+                                     HttpConnectionFactory ProxyConnectionFactory Server ServerConnector)))
 
 (defn config ^HttpConfiguration
   [{::keys [output-buffer-size request-header-size response-header-size send-server-version? send-date-header?
@@ -38,14 +38,16 @@
                             :idle-timeout         ""})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout _proxy-protocol?]
+  [^Server server {::keys [host port idle-timeout proxy-protocol?]
                    :or    {idle-timeout 200000}
                    :as    opts}]
   {:pre [port]}
   ;conn-factory (cond-> [(HttpConnectionFactory. http-configuration)] proxy? (concat [(ProxyConnectionFactory.)]))
-  (let [conn-factories (into-array ConnectionFactory [(HttpConnectionFactory. (config opts))])]
+  (let [factories (->> (if proxy-protocol? [(ProxyConnectionFactory.) (HttpConnectionFactory. (config opts))]
+                                           [(HttpConnectionFactory. (config opts))])
+                       (into-array ConnectionFactory))]
     (log/infof "starting HTTP connector on port %s" port)
-    (doto (ServerConnector. ^Server server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" conn-factories)
+    (doto (ServerConnector. ^Server server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)
       (.setPort port)
       (.setHost host)
       (.setIdleTimeout idle-timeout))))
