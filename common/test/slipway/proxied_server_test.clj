@@ -1,4 +1,4 @@
-(ns slipway.forwarded-server-test
+(ns slipway.proxied-server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
             [slipway.example :as example]
@@ -12,7 +12,7 @@
 (deftest simple
 
   (try
-    (example/start! [:http+https+forwarded])
+    (example/start! [:http+https+proxied])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -35,7 +35,7 @@
 (deftest compression
 
   (try
-    (example/start! [:http+https+forwarded :gzip-nil])
+    (example/start! [:http+https+proxied :gzip-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -56,7 +56,7 @@
     (finally (example/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :gzip-true])
+    (example/start! [:http+https+proxied :gzip-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -77,7 +77,7 @@
     (finally (example/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :gzip-false])
+    (example/start! [:http+https+proxied :gzip-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -100,7 +100,7 @@
 (deftest form-authentication
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth])
+    (example/start! [:http+https+proxied :hash-auth])
 
     (testing "constraints http"
 
@@ -132,12 +132,6 @@
       ;; auth redirect goes to expected login page
       (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "")
                                                    [:headers "Location"])))
-
-      ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
-      (is (= "https://localhost:3000/login" (get-in (client/do-get
-                                                     "http://localhost:3000/"
-                                                     {:headers {"Forwarded" "for=2.36.72.144:21216;proto=https"}})
-                                                    [:headers "Location"])))
 
       ;; login / login-retry don't redirect
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -183,13 +177,6 @@
       ;; auth redirect goes to expected login page
       (is (= "https://localhost:3443/login" (get-in (client/do-get "https" "localhost" 3443 "" {:insecure? true})
                                                     [:headers "Location"])))
-
-      ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
-      (is (= "http://localhost:3443/login" (get-in (client/do-get
-                                                    "https://localhost:3443/"
-                                                    {:headers   {"Forwarded" "for=2.36.72.144:21216;proto=http"}
-                                                     :insecure? true})
-                                                   [:headers "Location"])))
 
       ;; login / login-retry don't redirect
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -347,7 +334,7 @@
 (deftest basic-authentication-http
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth :basic-auth])
+    (example/start! [:http+https+proxied :hash-auth :basic-auth])
 
     (testing "constraints"
 
@@ -409,7 +396,7 @@
 (deftest basic-authentication-https
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth :basic-auth])
+    (example/start! [:http+https+proxied :hash-auth :basic-auth])
 
     (testing "constraints"
 
