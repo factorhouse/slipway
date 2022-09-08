@@ -35,63 +35,87 @@
 ;:sni-host-check? - enable host check for secure connection, default to true
 
 (comment
-  #:slipway.handler.gzip {:enabled?            "is gzip enabled? default true"
-                          :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
-                          :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
-                          :min-gzip-size       "min response size to trigger dynamic compression"}
+  #:slipway.handler.gzip
+          {:enabled?            "is gzip enabled? default true"
+           :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
+           :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
+           :min-gzip-size       "min response size to trigger dynamic compression"}
 
-  #:slipway.ssl {:keystore                   "keystore to use, either path (String) or concrete KeyStore"
-                 :keystore-type              "type of keystore, e.g. JKS"
-                 :keystore-password          "password of the keystore"
-                 :key-manager-password       "password for the specific key within the keystore"
-                 :truststore                 "truststore to use, either path (String) or concrete KeyStore"
-                 :truststore-password        "password of the truststore"
-                 :truststore-type            "type of the truststore, eg. JKS"
-                 :include-protocols          "a list of protocol name patterns to include in SSLEngine"
-                 :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
-                 :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
-                 :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
-                 :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
-                 :security-provider          "the security provider name"
-                 :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-                 :ssl-context                "a concrete pre-configured SslContext"}
+  #:slipway.connector.https
+          {:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+           :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+           :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+           :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+           :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+           :configurator               "a fn taking the final connector as argument, allowing further configuration"
+           :keystore                   "keystore to use, either path (String) or concrete KeyStore"
+           :keystore-type              "type of keystore, e.g. JKS"
+           :keystore-password          "password of the keystore"
+           :key-manager-password       "password for the specific key within the keystore"
+           :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+           :truststore-password        "password of the truststore"
+           :truststore-type            "type of the truststore, eg. JKS"
+           :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+           :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+           :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+           :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+           :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+           :security-provider          "the security provider name"
+           :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+           :ssl-context                "a concrete pre-configured SslContext"}
 
-  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
-                  :realm               "the JAAS realm to use with jaas or hash authentication"
-                  :hash-user-file      "the path to a Jetty Hash User File"}
+  #:slipway.connector.http
+          {:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+           :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+           :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+           :proxy-protocol? "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+           :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
+           :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
-  #:slipway.session {:secure-request-only?  "set the secure flag on session cookies"
-                     :http-only?            "set the http-only flag on session cookies"
-                     :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
-                     :max-inactive-interval "max session idle time (in s)"
-                     :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
-                     :cookie-name           "the name of the session cookie"
-                     :session-id-manager    "the meta manager used for cross context session management"
-                     :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
-                     :path-parameter-name   "name of path parameter used for URL session tracking"}
+  #:slipway.authz
+          {:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+           :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+           :constraint-mappings "a list of concrete Jetty ConstraintMapping"
+           :realm               "the JAAS realm to use with jaas or hash authentication"
+           :hash-user-file      "the path to a Jetty Hash User File"}
+
+  #:slipway.session
+          {:secure-request-only?  "set the secure flag on session cookies"
+           :http-only?            "set the http-only flag on session cookies"
+           :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
+           :max-inactive-interval "max session idle time (in s)"
+           :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
+           :cookie-name           "the name of the session cookie"
+           :session-id-manager    "the meta manager used for cross context session management"
+           :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
+           :path-parameter-name   "name of path parameter used for URL session tracking"}
 
   ;; Jetty 10 / Jetty 11 Websockets
-  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
-                        :input-buffer-size       "max websocket input buffer size"
-                        :output-buffer-size      "max websocket output buffer size"
-                        :max-text-message-size   "max websocket text message size"
-                        :max-binary-message-size "max websocket binary message size"
-                        :max-frame-size          "max websoccket frame size"
-                        :auto-fragment           "websocket auto fragment"}
+  #:slipway.websockets
+          {:idle-timeout            "max websocket idle time (in ms)"
+           :input-buffer-size       "max websocket input buffer size"
+           :output-buffer-size      "max websocket output buffer size"
+           :max-text-message-size   "max websocket text message size"
+           :max-binary-message-size "max websocket binary message size"
+           :max-frame-size          "max websoccket frame size"
+           :auto-fragment           "websocket auto fragment"}
 
   ;; Jetty 9 Websockets
-  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
-                        :input-buffer-size       "max websocket input buffer size"
-                        :max-text-message-size   "max websocket text message size"
-                        :max-binary-message-size "max websocket binary message size"}
+  #:slipway.websockets
+          {:idle-timeout            "max websocket idle time (in ms)"
+           :input-buffer-size       "max websocket input buffer size"
+           :max-text-message-size   "max websocket text message size"
+           :max-binary-message-size "max websocket binary message size"}
 
-  #:slipway.handler {:context-path    "the root context path, default '/'"
-                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
-                     :null-path-info? "true if /path is not redirected to /path/, default true"}
+  #:slipway.handler
+          {:context-path    "the root context path, default '/'"
+           :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+           :null-path-info? "true if /path is not redirected to /path/, default true"}
 
-  #:slipway {:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
+  #:slipway
+          {:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
