@@ -10,21 +10,17 @@
             [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
             [slipway.session :as session])
-  (:import (org.eclipse.jetty.security ConstraintMapping)
-           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)
-           (org.eclipse.jetty.util.security Constraint)))
+  (:import (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def state (atom nil))
 
-(def constraints
-  (let [require-auth (doto (Constraint. "auth" Constraint/ANY_AUTH) (.setAuthenticate true))
-        none         (doto (Constraint.) (.setName "no-auth"))]
-    [(doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/up"))
-     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/css/*"))
-     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/img/*"))
-     (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))
+(def http-forwarded #::http{:http-forwarded? true})
+(def http-proxied #::http{:proxy-protocol? true})
 
 (def http-connector #::http{:port 3000})
+
+(def https-forwarded #::https{:http-forwarded? true})
+(def https-proxied #::https{:proxy-protocol? true})
 
 (def https-connector #::https{:port                3443
                               :keystore            "dev-resources/my-keystore.jks"
@@ -37,40 +33,48 @@
 (def form-authenticator (FormAuthenticator. "/login" "/login-retry" false))
 
 (def options
-  {:http          #::server{:connectors    [http-connector]
-                            :error-handler app/server-error-handler}
+  {:http                 #::server{:connectors    [http-connector]
+                                   :error-handler app/server-error-handler}
 
-   :https         #::server{:connectors    [https-connector]
-                            :error-handler app/server-error-handler}
+   :https                #::server{:connectors    [https-connector]
+                                   :error-handler app/server-error-handler}
 
-   :http+https    #::server{:connectors    [http-connector https-connector]
-                            :error-handler app/server-error-handler}
+   :http+https           #::server{:connectors    [http-connector https-connector]
+                                   :error-handler app/server-error-handler}
 
-   :jaas-auth     #::authz{:realm               "slipway"
-                           :login-service       "jaas"
-                           :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                           :authenticator       form-authenticator
-                           :constraint-mappings constraints}
+   :http+https+forwarded #::server{:connectors    [(merge http-connector http-forwarded)
+                                                   (merge https-connector https-forwarded)]
+                                   :error-handler app/server-error-handler}
 
-   :hash-auth     #::authz{:realm               "slipway"
-                           :login-service       "hash"
-                           :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                           :authenticator       form-authenticator
-                           :constraint-mappings constraints}
+   :http+https+proxied   #::server{:connectors    [(merge http-connector http-proxied)
+                                                   (merge https-connector https-proxied)]
+                                   :error-handler app/server-error-handler}
 
-   :basic-auth    #::authz{:authenticator (BasicAuthenticator.)}
+   :jaas-auth            #::authz{:realm               "slipway"
+                                  :login-service       "jaas"
+                                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                                  :authenticator       form-authenticator
+                                  :constraint-mappings app/constraints}
 
-   :gzip-nil      #::gzip{:enabled? nil}
+   :hash-auth            #::authz{:realm               "slipway"
+                                  :login-service       "hash"
+                                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                                  :authenticator       form-authenticator
+                                  :constraint-mappings app/constraints}
 
-   :gzip-false    #::gzip{:enabled? false}
+   :basic-auth           #::authz{:authenticator (BasicAuthenticator.)}
 
-   :gzip-true     #::gzip{:enabled? true}
+   :gzip-nil             #::gzip{:enabled? nil}
 
-   :custom-ws     #::handler{:ws-path "/wsx"}
+   :gzip-false           #::gzip{:enabled? false}
 
-   :short-session #::session{:max-inactive-interval 10}
+   :gzip-true            #::gzip{:enabled? true}
 
-   :join          #::slipway{:join? true}})
+   :custom-ws            #::handler{:ws-path "/wsx"}
+
+   :short-session        #::session{:max-inactive-interval 10}
+
+   :join                 #::slipway{:join? true}})
 
 (defn stop!
   []

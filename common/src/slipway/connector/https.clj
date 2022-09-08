@@ -2,8 +2,9 @@
   (:require [clojure.tools.logging :as log]
             [slipway.server :as server])
   (:import (java.security KeyStore)
+           (org.eclipse.jetty.http HttpVersion)
            (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
-                                     HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector)
+                                     HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector SslConnectionFactory)
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn config ^HttpConfiguration
@@ -77,6 +78,23 @@
           (.addExcludeProtocols context-factory protocols))))
     context-factory))
 
+(defn proxied-connector
+  [^Server server {::keys [port http-forwarded?] :as opts}]
+  (log/infof (str "starting proxied HTTPS connector on port %s"
+                  (when http-forwarded? " with http-forwarded support")) port)
+  (let [factories (->> [(ProxyConnectionFactory.)
+                        (SslConnectionFactory. (context-factory opts) (.asString HttpVersion/HTTP_1_1))
+                        (HttpConnectionFactory. (config opts))]
+                       (into-array ConnectionFactory))]
+    (ServerConnector. server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
+
+(defn standard-connector
+  [^Server server {::keys [port http-forwarded?] :as opts}]
+  (log/infof (str "starting HTTPS connector on port %s"
+                  (when http-forwarded? " with http-forwarded support")) port)
+  (let [factories (->> [(HttpConnectionFactory. (config opts))] (into-array ConnectionFactory))]
+    (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
+
 (comment
   #:slipway.connector.https {:host                       ""
                              :secure-port                ""
@@ -114,11 +132,8 @@
                    :or    {idle-timeout 200000}
                    :as    opts}]
   {:pre [port]}
-  (let [factories (->> (if proxy-protocol? [(ProxyConnectionFactory.) (HttpConnectionFactory. (config opts))]
-                                           [(HttpConnectionFactory. (config opts))])
-                       (into-array ConnectionFactory))]
-    (log/infof "starting HTTPS connector on port %s" port)
-    (doto (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)
+  (let [connector (if proxy-protocol? (proxied-connector server opts) (standard-connector server opts))]
+    (doto connector
       (.setHost host)
       (.setPort port)
       (.setIdleTimeout idle-timeout))))

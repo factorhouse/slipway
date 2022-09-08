@@ -10,7 +10,9 @@
             [slipway.error :as error]
             [slipway.example.html :as html]
             [slipway.sente :as sente]
-            [slipway.user :as user]))
+            [slipway.user :as user])
+  (:import (org.eclipse.jetty.security ConstraintMapping)
+           (org.eclipse.jetty.util.security Constraint)))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
 
@@ -118,3 +120,11 @@
         (ring.session/wrap-session session-config)
         (ring.params.kw/wrap-keyword-params)
         (ring.params/wrap-params))))
+
+(def constraints
+  (let [require-auth (doto (Constraint. "auth" Constraint/ANY_AUTH) (.setAuthenticate true))
+        none         (doto (Constraint.) (.setName "no-auth"))]
+    [(doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/up"))
+     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/css/*"))
+     (doto (ConstraintMapping.) (.setConstraint none) (.setPathSpec "/img/*"))
+     (doto (ConstraintMapping.) (.setConstraint require-auth) (.setPathSpec "/*"))]))

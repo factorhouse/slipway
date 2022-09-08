@@ -38,15 +38,16 @@
                             :idle-timeout         ""})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout proxy-protocol?]
+  [^Server server {::keys [host port idle-timeout proxy-protocol? http-forwarded?]
                    :or    {idle-timeout 200000}
                    :as    opts}]
   {:pre [port]}
-  ;conn-factory (cond-> [(HttpConnectionFactory. http-configuration)] proxy? (concat [(ProxyConnectionFactory.)]))
-  (let [factories (->> (if proxy-protocol? [(ProxyConnectionFactory.) (HttpConnectionFactory. (config opts))]
-                                           [(HttpConnectionFactory. (config opts))])
+  (let [factories (->> (if proxy-protocol?
+                         [(ProxyConnectionFactory.) (HttpConnectionFactory. (config opts))]
+                         [(HttpConnectionFactory. (config opts))])
                        (into-array ConnectionFactory))]
-    (log/infof "starting HTTP connector on port %s" port)
+    (log/infof (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on port %s"
+                    (when http-forwarded? " with http-forwarded support")) port)
     (doto (ServerConnector. ^Server server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)
       (.setPort port)
       (.setHost host)
