@@ -76,34 +76,33 @@
     (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
 
 (comment
-  #:slipway.connector.https
-          {:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-           :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-           :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
-           :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-           :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
-           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
-           :configurator               "a fn taking the final connector as argument, allowing further configuration"
-           :keystore                   "keystore to use, either path (String) or concrete KeyStore"
-           :keystore-type              "type of keystore, e.g. JKS"
-           :keystore-password          "password of the keystore"
-           :key-manager-password       "password for the specific key within the keystore"
-           :truststore                 "truststore to use, either path (String) or concrete KeyStore"
-           :truststore-password        "password of the truststore"
-           :truststore-type            "type of the truststore, eg. JKS"
-           :include-protocols          "a list of protocol name patterns to include in SSLEngine"
-           :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
-           :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
-           :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
-           :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
-           :security-provider          "the security provider name"
-           :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-           :ssl-context                "a concrete pre-configured SslContext"})
+  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+                            :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+                            :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                            :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+                            :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                            :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                            :keystore                   "keystore to use, either path (String) or concrete KeyStore"
+                            :keystore-type              "type of keystore, e.g. JKS"
+                            :keystore-password          "password of the keystore"
+                            :key-manager-password       "password for the specific key within the keystore"
+                            :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+                            :truststore-password        "password of the truststore"
+                            :truststore-type            "type of the truststore, eg. JKS"
+                            :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+                            :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+                            :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+                            :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+                            :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+                            :security-provider          "the security provider name"
+                            :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+                            :ssl-context                "a concrete pre-configured SslContext"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? configurator http-config]
-                   :or {idle-timeout 180000}
-                   :as opts}]
+                   :or    {idle-timeout 180000}
+                   :as    opts}]
   {:pre [port]}
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
         connector    (if proxy-protocol? (proxied-connector server http-factory opts) (standard-connector server opts))]
