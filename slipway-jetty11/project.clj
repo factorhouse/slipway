@@ -17,7 +17,7 @@
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
-            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
+            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:test:common/test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
@@ -32,5 +32,5 @@
                  [org.apache.mina/mina-core "2.1.6" :exclusions [org.slf4j/slf4j-api]] ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
                  [org.slf4j/slf4j-api "1.7.36"]]
 
-  :source-paths ["src" "common/src" "common-jakarta/src"]
+  :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
   :test-paths ["test" "common/test"])

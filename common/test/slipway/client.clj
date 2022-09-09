@@ -44,7 +44,7 @@
    (let [anonymous       (do-get scheme host port uri opts)
          session-cookies (select-keys anonymous [:cookies])]
      (when-not (str/ends-with? uri "login")
-       (do-get (or (get-in anonymous [:headers "Location"])) (merge opts session-cookies)))
+       (do-get (get-in anonymous [:headers "Location"]) (merge opts session-cookies)))
      (let [jetty-authed     (do-login-post scheme host port user pass (merge opts session-cookies))
            session-cookies  (merge session-cookies (select-keys jetty-authed [:cookies]))
            ring-initialized (do-get (get-in jetty-authed [:headers "Location"]) (merge opts session-cookies))
@@ -79,7 +79,7 @@
    (let [anonymous       (do-get scheme host port uri opts)
          session-cookies (select-keys anonymous [:cookies])]
      (when-not (str/ends-with? uri "login")
-       (do-get (or (get-in anonymous [:headers "Location"])) (merge opts session-cookies)))
+       (do-get (get-in anonymous [:headers "Location"]) (merge opts session-cookies)))
      (let [jetty-authed (do-login-post scheme host port user pass (merge opts session-cookies))
            redirect     (get-in jetty-authed [:headers "Location"])]
        (log/infof "login redirect: %s" redirect)
