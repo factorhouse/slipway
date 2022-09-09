@@ -1,16 +1,16 @@
 (defproject io.factorhouse/slipway-jetty11 "1.1.0"
 
-  :description "A Clojure Companion for Embedded Jetty"
+  :description "A Clojure Companion for Jetty"
 
   :url "https://github.com/factorhouse/slipway"
 
   :license {:name "MIT License"
             :url  "https://github.com/operatr-io/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
+  :profiles {:dev   {:dependencies   [[clj-kondo "2022.09.08" :exclusions [org.ow2.asm/asm]]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
-                                      [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
                                       [ch.qos.logback/logback-classic "1.2.11"]
+                                      [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
                                       [metosin/reitit-ring "0.5.18"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
                      :plugins        [[lein-cljfmt "0.8.2"]]}
