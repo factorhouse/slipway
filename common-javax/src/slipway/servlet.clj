@@ -4,8 +4,7 @@
             [slipway.session :as session])
   (:import (java.util Locale)
            (javax.servlet SessionTrackingMode)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)
-           (org.eclipse.jetty.websocket.server JettyWebSocketCreator JettyWebSocketServerContainer)))
+           (javax.servlet.http HttpServletRequest HttpServletResponse)))
 
 (defprotocol RequestMapDecoder
   (build-request-map [r]))
