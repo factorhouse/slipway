@@ -1,11 +1,11 @@
-(defproject io.factorhouse/slipway-jetty10 "1.0.8"
+(defproject io.factorhouse/slipway-jetty10 "1.1.0"
 
   :description "A Clojure Companion for Embedded Jetty"
 
   :url "https://github.com/factorhouse/slipway"
 
-  :license {:name "Eclipse Public License"
-            :url  "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "MIT License"
+            :url  "https://github.com/operatr-io/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[clj-kondo "2022.08.03" :exclusions [org.ow2.asm/asm]]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
