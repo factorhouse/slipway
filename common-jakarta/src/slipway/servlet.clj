@@ -50,7 +50,6 @@
   [^HttpServletRequest request]
   (first (.getAttribute request "jakarta.servlet.request.X509Certificate")))
 
-
 (extend-protocol RequestMapDecoder
   HttpServletRequest
   (build-request-map [request]
@@ -126,10 +125,6 @@
 (defn get-context
   [^HttpServletRequest req]
   (.getServletContext req))
-
-(defn upgrade-container
-  [^JettyWebSocketServerContainer container ^JettyWebSocketCreator creator ^HttpServletRequest req ^HttpServletResponse res]
-  (.upgrade container creator req res))
 
 (defn send-error
   [^HttpServletResponse response code message]

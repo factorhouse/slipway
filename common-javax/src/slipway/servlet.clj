@@ -69,10 +69,6 @@
   [^HttpServletRequest req]
   (.getServletContext req))
 
-(defn upgrade-container
-  [^JettyWebSocketServerContainer container ^JettyWebSocketCreator creator ^HttpServletRequest req ^HttpServletResponse res]
-  (.upgrade container creator req res))
-
 (defn send-error
   [^HttpServletResponse response code message]
   (.sendError response code message))

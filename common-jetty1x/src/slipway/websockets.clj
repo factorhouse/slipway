@@ -165,4 +165,4 @@
     (some->> max-binary-message-size (.setMaxBinaryMessageSize container))
     (some->> max-frame-size (.setMaxFrameSize container))
     (some->> auto-fragment (.setAutoFragment container))
-    (servlet/upgrade-container container creator req res)))
+    (.upgrade container creator req res)))
