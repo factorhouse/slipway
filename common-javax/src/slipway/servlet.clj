@@ -4,10 +4,29 @@
             [slipway.session :as session])
   (:import (java.util Locale)
            (javax.servlet SessionTrackingMode)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)))
+           (javax.servlet.http HttpServletRequest HttpServletResponse)
+           (org.eclipse.jetty.websocket.server JettyWebSocketCreator JettyWebSocketServerContainer)))
 
 (defprotocol RequestMapDecoder
   (build-request-map [r]))
+
+(extend-protocol RequestMapDecoder
+
+  HttpServletRequest
+  (build-request-map [request]
+    (servlet/build-request-map request)))
+
+(defmethod session/tracking-mode :cookie
+  [_]
+  SessionTrackingMode/COOKIE)
+
+(defmethod session/tracking-mode :url
+  [_]
+  SessionTrackingMode/URL)
+
+(defmethod session/tracking-mode :ssl
+  [_]
+  SessionTrackingMode/SSL)
 
 (defn get-headers
   "Creates a name/value map of all the request headers.
@@ -46,20 +65,14 @@
    :headers         (get-headers request)
    :ssl-client-cert (get-client-cert request)})
 
-(extend-protocol RequestMapDecoder
+(defn get-context
+  [^HttpServletRequest req]
+  (.getServletContext req))
 
-  HttpServletRequest
-  (build-request-map [request]
-    (servlet/build-request-map request)))
+(defn upgrade-container
+  [^JettyWebSocketServerContainer container ^JettyWebSocketCreator creator ^HttpServletRequest req ^HttpServletResponse res]
+  (.upgrade container creator req res))
 
-(defmethod session/tracking-mode :cookie
-  [_]
-  SessionTrackingMode/COOKIE)
-
-(defmethod session/tracking-mode :url
-  [_]
-  SessionTrackingMode/URL)
-
-(defmethod session/tracking-mode :ssl
-  [_]
-  SessionTrackingMode/SSL)
+(defn send-error
+  [^HttpServletResponse response code message]
+  (.sendError response code message))

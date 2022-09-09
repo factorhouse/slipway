@@ -4,7 +4,6 @@
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
            (java.time Duration)
-           (javax.servlet.http HttpServletRequest HttpServletResponse)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WebSocketPingPongListener WriteCallback)
            (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator JettyWebSocketServerContainer)))
 
@@ -154,11 +153,11 @@
                         :auto-fragment           "websocket auto fragment"})
 
 (defn upgrade-websocket
-  [^HttpServletRequest req ^HttpServletResponse res ws opts]
+  [req res ws opts]
   (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size
                  max-binary-message-size max-frame-size auto-fragment]} opts
         creator   (reify-ws-creator ws)
-        container (JettyWebSocketServerContainer/getContainer (.getServletContext req))]
+        container (JettyWebSocketServerContainer/getContainer (servlet/get-context req))]
     (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
     (some->> input-buffer-size (.setInputBufferSize container))
     (some->> output-buffer-size (.setOutputBufferSize container))
@@ -166,4 +165,4 @@
     (some->> max-binary-message-size (.setMaxBinaryMessageSize container))
     (some->> max-frame-size (.setMaxFrameSize container))
     (some->> auto-fragment (.setAutoFragment container))
-    (.upgrade container creator req res)))
+    (servlet/upgrade-container container creator req res)))

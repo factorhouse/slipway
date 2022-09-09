@@ -8,7 +8,8 @@
   (:import (jakarta.servlet AsyncContext SessionTrackingMode)
            (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (java.io FilterOutputStream)
-           (java.util Locale)))
+           (java.util Locale)
+           (org.eclipse.jetty.websocket.server JettyWebSocketCreator JettyWebSocketServerContainer)))
 
 (defprotocol RequestMapDecoder
   (build-request-map [r]))
@@ -48,6 +49,37 @@
   "Returns the SSL client certificate of the request, if one exists."
   [^HttpServletRequest request]
   (first (.getAttribute request "jakarta.servlet.request.X509Certificate")))
+
+
+(extend-protocol RequestMapDecoder
+  HttpServletRequest
+  (build-request-map [request]
+    {:server-port        (.getServerPort request)
+     :server-name        (.getServerName request)
+     :remote-addr        (.getRemoteAddr request)
+     :uri                (.getRequestURI request)
+     :query-string       (.getQueryString request)
+     :scheme             (keyword (.getScheme request))
+     :request-method     (keyword (.toLowerCase (.getMethod request) Locale/ENGLISH))
+     :protocol           (.getProtocol request)
+     :headers            (get-headers request)
+     :content-type       (.getContentType request)
+     :content-length     (get-content-length request)
+     :character-encoding (.getCharacterEncoding request)
+     :ssl-client-cert    (get-client-cert request)
+     :body               (.getInputStream request)}))
+
+(defmethod session/tracking-mode :cookie
+  [_]
+  SessionTrackingMode/COOKIE)
+
+(defmethod session/tracking-mode :url
+  [_]
+  SessionTrackingMode/URL)
+
+(defmethod session/tracking-mode :ssl
+  [_]
+  SessionTrackingMode/SSL)
 
 (defn- make-output-stream
   [^HttpServletResponse response ^AsyncContext context]
@@ -91,32 +123,14 @@
    :headers         (get-headers request)
    :ssl-client-cert (get-client-cert request)})
 
-(extend-protocol RequestMapDecoder
-  HttpServletRequest
-  (build-request-map [request]
-    {:server-port        (.getServerPort request)
-     :server-name        (.getServerName request)
-     :remote-addr        (.getRemoteAddr request)
-     :uri                (.getRequestURI request)
-     :query-string       (.getQueryString request)
-     :scheme             (keyword (.getScheme request))
-     :request-method     (keyword (.toLowerCase (.getMethod request) Locale/ENGLISH))
-     :protocol           (.getProtocol request)
-     :headers            (get-headers request)
-     :content-type       (.getContentType request)
-     :content-length     (get-content-length request)
-     :character-encoding (.getCharacterEncoding request)
-     :ssl-client-cert    (get-client-cert request)
-     :body               (.getInputStream request)}))
+(defn get-context
+  [^HttpServletRequest req]
+  (.getServletContext req))
 
-(defmethod session/tracking-mode :cookie
-  [_]
-  SessionTrackingMode/COOKIE)
+(defn upgrade-container
+  [^JettyWebSocketServerContainer container ^JettyWebSocketCreator creator ^HttpServletRequest req ^HttpServletResponse res]
+  (.upgrade container creator req res))
 
-(defmethod session/tracking-mode :url
-  [_]
-  SessionTrackingMode/URL)
-
-(defmethod session/tracking-mode :ssl
-  [_]
-  SessionTrackingMode/SSL)
+(defn send-error
+  [^HttpServletResponse response code message]
+  (.sendError response code message))

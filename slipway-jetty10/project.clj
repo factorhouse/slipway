@@ -32,5 +32,5 @@
                  [org.apache.mina/mina-core "2.1.6" :exclusions [org.slf4j/slf4j-api]] ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
                  [org.slf4j/slf4j-api "1.7.36"]]
 
-  :source-paths ["src" "common/src" "common-javax/src"]
+  :source-paths ["common/src" "common-jetty1x/src" "common-javax/src"]
   :test-paths ["test" "common/test"])
