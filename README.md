@@ -291,4 +291,6 @@ Slipway is the first step towards us releasing [shortcut](https://github.com/ope
 
 ## License
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the MIT License.
+
+Copyright (c) 2022 Factor House
