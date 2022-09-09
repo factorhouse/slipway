@@ -3,7 +3,6 @@
             [slipway :as slipway]
             [slipway.authz :as authz]
             [slipway.connector.http :as http]
-            [slipway.connector.http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
             [slipway.handler :as handler]
