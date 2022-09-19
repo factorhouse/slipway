@@ -90,9 +90,9 @@ Add one of the version-specific dependencies to your project:
 [io.operatr/slipway-jetty9 "1.1.0"]
 ```
 
-### Running a server
+### Quick Start
 
-Slipway works like all other Ring adapters:
+Slipway starts with a ring-handler and configuration map.
 
 ```clojure 
 (require '[slipway :as slipway])
@@ -101,7 +101,7 @@ Slipway works like all other Ring adapters:
 
 (defn handler [_] {:status 200 :body "Hello world"})
 
-(slipway/start handler #::server{:connectors #::http{:port 3000}})
+(slipway/start handler #::server{:connectors [#::http{:port 3000}]})
 ```
 
 #### Options
