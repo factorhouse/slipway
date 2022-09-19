@@ -1,15 +1,15 @@
 # Slipway
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
-A [Ring](https://github.com/ring-clojure/ring) adapter for enterprise Clojure development.
+[Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
 
-Slipway is based off [Jetty](https://www.eclipse.org/jetty/) and evolved from the excellent [ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) project. 
+Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
-Slipway is built to meet the requirements of [kPow](https://kpow.io/). 
+# Why Jetty?
 
-kPow is a self-hosted JAR/Docker container that runs on our customer's infrastructure. Each customer's configuration+deployment of kPow's web server is unique. 
+A commonly asked question in the Clojure community is - which web server library should I use?
 
-Thus, Slipway is battle tested. We imagine kPow is one of the most heavily deployed Clojure projects out there.
+Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
 
 ## Features/goals
 
