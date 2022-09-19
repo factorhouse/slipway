@@ -78,6 +78,11 @@
                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"}
 
+  #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
+                   :connectors    "the connectors supported by this server"
+                   :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
+                   :error-handler "the error-handler used by this server for Jetty level errors"}
+
   #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
