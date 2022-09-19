@@ -39,7 +39,8 @@ Slipway aims to provide first-class, extensible support for:
 * Jetty 9 / 10 / 11
 * Session management
 * Proxy protocol / http forwarded
-* Common / sensible defaults (e.g. Gzip compression)
+* Common / sensible defaults (e.g. gzip compression)
+* Configurable error handling
 * Automated CVE scanning with NVD
 * Comprehensive integration tests
 * Ring compatibility
