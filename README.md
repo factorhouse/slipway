@@ -7,37 +7,80 @@ Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
 ## Why Jetty?
 
-A commonly asked question in the Clojure community is - which web server library should I use?
-
 Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
 
-## Features/goals
+Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvments.
 
-* Provide Java8 compatability via Jetty9
-* Provide Java11+ compatability via Jetty10 
-* Provide a unified API across both Jetty9 and Jetty10 implementations
-* Track closely against the latest Jetty versions
-  * Stay on top of all Jetty/dependency related CVEs
-* Integrate with Jetty JAAS authentication modules ([JDBC, LDAP etc](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas-loginmodules))
-* Provide configuration options for Gzip, SSL, HTTP forwarding, SNI checking etc
-* First-class WebSockets support (with [Sente](https://github.com/ptaoussanis/sente) integration)
-* Avoid breaking changes to the API
-* No fat. For us, that means no async handlers or HTTP2 support.
+More than a simple web server, Jetty is battle-tested, performant, and feature rich.
+
+## Our Requirements
+
+Kpow is a secure web-application with a rich SPA UI served by websockets. 
+
+Deployed in-cloud and on-premises Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
+
+> User: Can I configure a custom CA certificate to secure my JAAS/LDAPS authentication?
+
+> Kpow Team: Yes (thanks to Jetty).
+
+We have a hard requirement to support customers on Java 8 and Java 11+ and incorporate feedback from external security teams.
+
+## Primary Goals
+
+Slipway aims to provide first-class, extensible support for: 
+
+* HTTP 1.1
+* HTTPS / SSL
+* Synchronous handlers
+* JAAS Authentication (LDAP, HashUser, etc)
+* Form / basic authentication
+* WebSockets
+* Java 8 / 11+
+* Jetty 9 / 10 / 11
+* Session management
+* Proxy protocol / http forwarded
+* Common / sensible defaults (e.g. Gzip compression)
+* Automated CVE scanning with NVD
+* Comprehensive integration tests
+* Ring compatibility
+
+## Secondary Goals
+
+* Broad support for general Jetty use-cases / configuration
+
+## Currently Out Of Scope
+
+* Http2/3
+* Asynchronous Handlers
+
+## Non-Goals
+
+* A simplified DSL for Jetty
 
 ## Usage
 
 ### Installation
 
-Slipway is available from Clojars. Add one of these dependencies to your deps:
+Slipway will shortly be available from Clojars. 
+
+Add one of the version-specific dependencies to your project:
 
 ```clojure 
-;; Recommended for most users, tracks against the latest version of Jetty:
-[io.operatr/slipway-jetty10 "1.0.7"]
+;; Jetty 10: Recommended for general use, requires Java 11+
+
+[io.factorhouse/slipway-jetty10 "1.1.0"]
 ```
 
 ```clojure 
-;; If you are still on Java8 use this dependency:
-[io.operatr/slipway-jetty9 "1.0.7"]
+;; Jetty 9: If you require running with Java 8
+
+[io.operatr/slipway-jetty9 "1.1.0"]
+```
+
+```clojure 
+;; Jetty 11: If you want to run with Jakarta rather than Javax
+
+[io.operatr/slipway-jetty9 "1.1.0"]
 ```
 
 ### Running a server
