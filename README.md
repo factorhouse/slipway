@@ -5,6 +5,8 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
+![Slipway Login](docs/img/slipway-login.png)
+
 ## Why Jetty?
 
 Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
