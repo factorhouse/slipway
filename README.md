@@ -5,7 +5,7 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
-# Why Jetty?
+## Why Jetty?
 
 A commonly asked question in the Clojure community is - which web server library should I use?
 
