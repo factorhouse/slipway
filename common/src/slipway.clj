@@ -41,7 +41,7 @@
                            :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
                            :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
                            :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-                           :proxy-protocol? "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+                           :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
                            :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
