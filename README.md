@@ -1,5 +1,4 @@
-# slipway
-[![Clojars Project](https://img.shields.io/clojars/v/io.operatr/slipway-jetty10.svg)](https://clojars.org/io.operatr/slipway-jetty10)
+# Slipway
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
 A [Ring](https://github.com/ring-clojure/ring) adapter for enterprise Clojure development.
