@@ -18,7 +18,7 @@
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
      [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
-     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+     [:link {:href "/css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full.flex.items-center.justify-center.py-12.px-4.sm:px-6.lg:px-8
       [:div.max-w-md.w-full.space-y-8
@@ -79,7 +79,7 @@
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
      [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
-     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+     [:link {:href "/css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      ;; Note, this HTML must be dynamically produced within the scope of the wrap-anti-forgery middleware
      ;;       as otherwise this anti-forgery-token is unbound (ie. this cannot be static hiccup)
@@ -106,7 +106,7 @@
      [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
      [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
      [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
-     [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+     [:link {:href "/css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
     [:body.h-full
      [:div.min-h-full
       (menu :user)
@@ -141,7 +141,7 @@
       [:meta {:content "width=device-width, initial-scale=1, shrink-to-fit=no" :name "viewport"}]
       [:meta {:name "description" :content "A Clojure companion for Jetty by Factor House"}]
       [:link {:rel "icon" :type "image/png" :sizes "64x64" :href "/img/sw-icon-zinc.png"}]
-      [:link {:href "css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
+      [:link {:href "/css/tailwind.min.css" :rel "stylesheet" :type "text/css"}]]
      [:body.h-full
       [:div.min-h-full.px-4.py-16.sm:px-6.sm:py-24.md:grid.md:place-items-center.lg:px-8
        [:div.max-w-max.mx-auto

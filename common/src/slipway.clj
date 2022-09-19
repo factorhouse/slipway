@@ -3,6 +3,7 @@
             [slipway.authz :as authz]
             [slipway.connector.http]
             [slipway.connector.https]
+            [slipway.handler]
             [slipway.server :as server])
   (:import (org.eclipse.jetty.server Handler Server)))
 
