@@ -95,12 +95,13 @@ Add one of the version-specific dependencies to your project:
 Slipway works like all other Ring adapters:
 
 ```clojure 
-(require '[slipway.server :as slipway])
+(require '[slipway :as slipway])
+(require '[slipway.server :as server])
+(require '[slipway.connector.http :as http])
 
-(defn handler [req]
-  {:status 200 :body "Hello world"})
-  
-(slipway/run-jetty handler {:port 3000 :join? false})
+(defn handler [_] {:status 200 :body "Hello world"})
+
+(slipway/start handler #::server{:connectors #::http{:port 3000}})
 ```
 
 #### Options
