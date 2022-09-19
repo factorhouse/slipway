@@ -51,7 +51,6 @@
 
    :jaas-auth            #::authz{:realm               "slipway"
                                   :login-service       "jaas"
-                                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
                                   :authenticator       form-authenticator
                                   :constraint-mappings app/constraints}
 
