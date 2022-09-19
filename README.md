@@ -49,6 +49,10 @@ Slipway aims to provide first-class, extensible support for:
 
 * Broad support for general Jetty use-cases / configuration
 
+## Future Goals
+
+* Backport our SAML, OpenID and OAuth authentication implementations
+
 ## Currently Out Of Scope
 
 * Http2/3
