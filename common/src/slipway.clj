@@ -4,7 +4,8 @@
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.handler]
-            [slipway.server :as server])
+            [slipway.server :as server]
+            [slipway.user])
   (:import (org.eclipse.jetty.server Handler Server)))
 
 (comment
