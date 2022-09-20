@@ -5,6 +5,44 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
+### Quick Start
+
+Choose a project by Jetty version, then open a REPL.
+
+Start slipway with a ring-handler and a map of configuration options.
+
+```clojure 
+(require '[slipway :as slipway])
+(require '[slipway.server :as server])
+(require '[slipway.connector.http :as http])
+
+(defn handler [_] {:status 200 :body "Hello world"})
+
+(slipway/start handler #::server{:connectors [#::http{:port 3000}]})
+```
+
+Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
+
+### Example Configurations
+
+Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
+
+These configurations are used by our integration tests. The stateful start!/stop! functions within that namespace are not considered a guide for your own use of Slipway, but they are convenient for playing with server configurations like so:
+
+```clojure
+(require '[slipway.example :as example])
+
+(example/start! [:http :hash-auth :short-session])
+```
+
+Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
+
+You can login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
+
+Thanks to the `:short-session` configuration your session will expire after 10s of inactivity.
+
+-----
+
 ![Slipway Login](docs/img/slipway-login.png)
 
 ## Why Jetty?
@@ -88,20 +126,6 @@ Add one of the version-specific dependencies to your project:
 ;; Jetty 11: If you want to run with Jakarta rather than Javax
 
 [io.operatr/slipway-jetty9 "1.1.0"]
-```
-
-### Quick Start
-
-Slipway starts with a ring-handler and configuration map.
-
-```clojure 
-(require '[slipway :as slipway])
-(require '[slipway.server :as server])
-(require '[slipway.connector.http :as http])
-
-(defn handler [_] {:status 200 :body "Hello world"})
-
-(slipway/start handler #::server{:connectors [#::http{:port 3000}]})
 ```
 
 #### Options
