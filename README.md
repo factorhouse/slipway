@@ -102,9 +102,7 @@ Slipway aims to provide first-class, extensible support for:
 
 * A simplified DSL for Jetty
 
-## Usage
-
-### Installation
+## Installation
 
 Slipway will shortly be available from Clojars. 
 
@@ -128,63 +126,92 @@ Add one of the version-specific dependencies to your project:
 [io.operatr/slipway-jetty9 "1.1.0"]
 ```
 
-#### Options
+### Configuration
 
-The third argument to `run-jetty` is the options map:
+TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options configuration and [example.clj](common/test/slipway/example.clj) for example usage.
 
+```clojure
+  #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
+                         :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
+                         :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
+                         :min-gzip-size       "min response size to trigger dynamic compression"}
+
+  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+                            :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+                            :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                            :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+                            :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                            :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                            :keystore                   "keystore to use, either path (String) or concrete KeyStore"
+                            :keystore-type              "type of keystore, e.g. JKS"
+                            :keystore-password          "password of the keystore"
+                            :key-manager-password       "password for the specific key within the keystore"
+                            :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+                            :truststore-password        "password of the truststore"
+                            :truststore-type            "type of the truststore, eg. JKS"
+                            :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+                            :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+                            :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+                            :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+                            :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+                            :security-provider          "the security provider name"
+                            :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+                            :ssl-context                "a concrete pre-configured SslContext"}
+
+  #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+                           :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+                           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+                           :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                           :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+                           :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
+                           :configurator    "a fn taking the final connector as argument, allowing further configuration"}
+
+  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
+                  :realm               "the JAAS realm to use with jaas or hash authentication"
+                  :hash-user-file      "the path to a Jetty Hash User File"}
+
+  #:slipway.session{:secure-request-only?  "set the secure flag on session cookies"
+                    :http-only?            "set the http-only flag on session cookies"
+                    :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
+                    :max-inactive-interval "max session idle time (in s)"
+                    :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
+                    :cookie-name           "the name of the session cookie"
+                    :session-id-manager    "the meta manager used for cross context session management"
+                    :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
+                    :path-parameter-name   "name of path parameter used for URL session tracking"}
+
+  ;; Jetty 10 / Jetty 11 Websockets
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
+                       :input-buffer-size       "max websocket input buffer size"
+                       :output-buffer-size      "max websocket output buffer size"
+                       :max-text-message-size   "max websocket text message size"
+                       :max-binary-message-size "max websocket binary message size"
+                       :max-frame-size          "max websoccket frame size"
+                       :auto-fragment           "websocket auto fragment"}
+
+  ;; Jetty 9 Websockets
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
+                       :input-buffer-size       "max websocket input buffer size"
+                       :max-text-message-size   "max websocket text message size"
+                       :max-binary-message-size "max websocket binary message size"}
+
+  #:slipway.handler{:context-path    "the root context path, default '/'"
+                    :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                    :null-path-info? "true if /path is not redirected to /path/, default true"}
+
+  #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
+                   :connectors    "the connectors supported by this server"
+                   :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
+                   :error-handler "the error-handler used by this server for Jetty level errors"}
+
+  #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
 ```
-  :http? - allow connections over HTTP
-  :port - the port to listen on (defaults to 3000)
-  :host - the hostname to listen on
-  :join? - blocks the thread until server ends (defaults to false)
-  :auth - Map of auth opts. Configures Jetty JAAS auth, see JAAS Integration section of README
-  :http-forwarded? - support for X-Forwarded-For header (defaults to false)
-  :gzip? - enables Gzip compression on the server (defaults to true)
-  :gzip-content-types - contents types to apply Gzip compression to (defaults to ["text/css" "text/plain" "text/javascript" "application/javascript" "image/svg+xml"])
-  :gzip-min-size - the minimum size (in bytes) to apply Gzip compression to the response body. Default 1024
-  :error-handler - sets an error handlers on the server for catch-all Jetty errors (something that extends the `org.eclipse.jetty.server.handler.ErrorHandler` class)
-  :daemon? - use daemon threads (defaults to false)
-  :send-server-version? - whether to send the Server header in responses (default false)
-  :send-date-header? - whether to send Date header in responses (default false)
-  :output-buffer-size - set the size of the buffer into which response content is aggregated before being sent to the client. A larger buffer can improve performance by allowing a content producer to run without blocking, however larger buffers consume more memory and may induce some latency before a client starts processing the content. (default 32768)
-  :request-header-size - sets the maximum allowed size in bytes for the HTTP request line and HTTP request headers (default 8192) 
-  :response-header-size -  the maximum size in bytes of the response header (default 8192)
-  :header-cache-size - the size of the header field cache, in terms of unique characters (default 512)
-  :ssl? - allow connections over HTTPS
-  :ssl-port - the SSL port to listen on (defaults to 443, implies :ssl?)
-  :ssl-context - an optional SSLContext to use for SSL connections
-  :keystore - the keystore to use for SSL connections
-  :keystore-type - the format of keystore
-  :key-password - the password to the keystore
-  :key-manager-password - the password for key manager
-  :truststore - a truststore to use for SSL connections
-  :truststore-type - the format of trust store
-  :trust-password - the password to the truststore
-  :ssl-protocols - the ssl protocols to use, default to ["TLSv1.3" "TLSv1.2"]
-  :ssl-provider - the ssl provider
-  :exclude-ciphers      - when :ssl? is true, additionally exclude these
-                          cipher suites
-  :exclude-protocols    - when :ssl? is true, additionally exclude these
-                          protocols
-  :replace-exclude-ciphers?   - when true, :exclude-ciphers will replace rather
-                                than add to the cipher exclusion list (defaults
-                                to false)
-  :replace-exclude-protocols? - when true, :exclude-protocols will replace
-                                rather than add to the protocols exclusion list
-                                (defaults to false)
-  :thread-pool - the thread pool for Jetty workload
-  :max-threads - the maximum number of threads to use (default 50), ignored if `:thread-pool` provided
-  :min-threads - the minimum number of threads to use (default 8), ignored if `:thread-pool` provided
-  :threadpool-idle-timeout - the maximum idle time in milliseconds for a thread (default 60000), ignored if `:thread-pool` provided
-  :job-queue - the job queue to be used by the Jetty threadpool (default is unbounded), ignored if `:thread-pool` provided
-  :max-idle-time  - the maximum idle time in milliseconds for a connection (default 200000)
-  :ws-max-idle-time  - the maximum idle time in milliseconds for a websocket connection (default 500000)
-  :ws-max-text-message-size  - the maximum text message size in bytes for a websocket connection (default 65536)
-  :client-auth - SSL client certificate authenticate, may be set to :need, :want or :none (defaults to :none)
-  :proxy? - enable the proxy protocol on plain socket port (see http://www.eclipse.org/jetty/documentation/9.4.x/configuring-connectors.html#_proxy_protocol)
-  :sni-required? - require sni for secure connection, default to false
-  :sni-host-check? - enable host check for secure connection, default to true
-```
+
+### TBD Update Below This Line
+----
 
 ### WebSockets
 
