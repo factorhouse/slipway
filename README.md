@@ -5,11 +5,15 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
+Slipway is not an opinionated web-framework, you can consider it a battle-tested web server with websocket support.
+
+Our approach to shipping a full-stack web-system with slipway will (eventually) be open-sourced in [shortcut](https://github.com/factorhouse/shortcut).
+
 ### Quick Start
 
 Choose a project by Jetty version, then open a REPL.
 
-Start slipway with a ring-handler and a map of configuration options.
+Start slipway with a ring-handler and a map of configuration options:
 
 ```clojure 
 (require '[slipway :as slipway])
@@ -18,7 +22,9 @@ Start slipway with a ring-handler and a map of configuration options.
 
 (defn handler [_] {:status 200 :body "Hello world"})
 
-(slipway/start handler #::server{:connectors [#::http{:port 3000}]})
+(def http-connector #::http{:port 3000})
+
+(slipway/start handler #::server{:connectors [http-connector]})
 ```
 
 Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
