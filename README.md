@@ -103,6 +103,7 @@ Slipway aims to provide first-class, extensible support for:
 
 * Http2/3
 * Asynchronous Handlers
+* Ajax (including auto-fallback)
 
 ## Non-Goals
 
