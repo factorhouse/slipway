@@ -5,9 +5,9 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to Embedded Jetty.
 
-Slipway is not an opinionated web-framework, you can consider it a battle-tested web server with websocket support.
+Slipway is not an opinionated web-framework, it is a battle-tested web server with websocket support.
 
-Our approach to shipping a full-stack web-system with slipway will (eventually) be open-sourced in [shortcut](https://github.com/factorhouse/shortcut).
+We intend (eventually) to open-source a full-stack example application with slipway in [shortcut](https://github.com/factorhouse/shortcut).
 
 ### Quick Start
 
