@@ -78,7 +78,7 @@
 (comment
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000"
+                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
                             :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -101,7 +101,7 @@
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? configurator http-config]
-                   :or    {idle-timeout 180000}
+                   :or    {idle-timeout 200000}
                    :as    opts}]
   {:pre [port]}
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
