@@ -8,14 +8,15 @@
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn default-config ^HttpConfiguration
-  [{::keys [port http-forwarded?]}]
+  [{::keys [port http-forwarded? sni-required? sni-host-check?] :or {sni-required? false sni-host-check? false}}]
+  (log/info "sni required? %s, sni host check? %s" sni-required? sni-host-check?)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion false)
                  (.setSendDateHeader false)
                  (.addCustomizer (doto (SecureRequestCustomizer.)
-                                   (.setSniRequired false)
-                                   (.setSniHostCheck true))))]
+                                   (.setSniRequired sni-required?)
+                                   (.setSniHostCheck sni-host-check?))))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
     config))
 
@@ -96,7 +97,9 @@
                             :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-                            :ssl-context                "a concrete pre-configured SslContext"})
+                            :ssl-context                "a concrete pre-configured SslContext"
+                            :sni-required?              "true if a SNI certificate is required, default false"
+                            :sni-host-check?            "true if the SNI Host name must match, default false"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]

@@ -35,7 +35,9 @@
                             :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-                            :ssl-context                "a concrete pre-configured SslContext"}
+                            :ssl-context                "a concrete pre-configured SslContext"
+                            :sni-required?              "true if a SNI certificate is required, default false"
+                            :sni-host-check?            "true if the SNI Host name must match, default false"}
 
   #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
                            :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
