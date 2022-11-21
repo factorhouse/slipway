@@ -7,7 +7,7 @@
   :license {:name "MIT License"
             :url  "https://github.com/operatr-io/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[clj-kondo "2022.09.08" :exclusions [org.ow2.asm/asm]]
+  :profiles {:dev   {:dependencies   [[clj-kondo "2022.11.02" :exclusions [org.ow2.asm/asm]]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
                                       [ch.qos.logback/logback-classic "1.2.11"]
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
@@ -24,12 +24,11 @@
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.11"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-server "11.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-jaas "11.0.11" :exclusions [org.slf4j/slf4j-api]]
-                 [org.apache.mina/mina-core "2.1.6" :exclusions [org.slf4j/slf4j-api]] ;; explicit due to cve in 2.1.3 brought in by jetty-jaas 11.0.11
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.12"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.12" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.12" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "11.0.12" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-jaas "11.0.12" :exclusions [org.slf4j/slf4j-api]]
                  [org.slf4j/slf4j-api "1.7.36"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
