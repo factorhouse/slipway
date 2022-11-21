@@ -15,7 +15,7 @@
                          :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                            :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
                             :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
@@ -38,7 +38,7 @@
                             :ssl-context                "a concrete pre-configured SslContext"}
 
   #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                           :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
+                           :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
                            :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                            :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                            :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
