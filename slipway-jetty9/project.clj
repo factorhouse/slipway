@@ -7,7 +7,7 @@
   :license {:name "MIT License"
             :url  "https://github.com/operatr-io/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[clj-kondo "2022.09.08"]
+  :profiles {:dev   {:dependencies   [[clj-kondo "2022.11.02"]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
                                       [ch.qos.logback/logback-classic "1.2.11"]
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]

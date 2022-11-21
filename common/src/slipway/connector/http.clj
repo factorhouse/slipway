@@ -14,8 +14,8 @@
 
 (comment
   #:slipway.connector.http {:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                            :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                            :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000"
+                            :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                            :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol? "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
                             :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
@@ -23,11 +23,10 @@
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-forwarded? configurator http-config]
-                   :or    {idle-timeout 180000}
+                   :or    {idle-timeout 200000
+                           port         80}
                    :as    opts}]
-  {:pre [port]}
-  (log/infof (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on port %s"
-                  (when http-forwarded? " with http-forwarded support")) port)
+  (log/infof (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
         factories    (->> (if proxy-protocol? [(ProxyConnectionFactory.) http-factory] [http-factory])
                           (into-array ConnectionFactory))

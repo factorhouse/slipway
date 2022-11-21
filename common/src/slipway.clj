@@ -15,8 +15,8 @@
                          :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                            :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000 ms"
+                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
+                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
                             :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -35,11 +35,13 @@
                             :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-                            :ssl-context                "a concrete pre-configured SslContext"}
+                            :ssl-context                "a concrete pre-configured SslContext"
+                            :sni-required?              "true if a SNI certificate is required, default false"
+                            :sni-host-check?            "true if the SNI Host name must match, default false"}
 
   #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                           :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+                           :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                            :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                            :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
@@ -62,16 +64,16 @@
                     :path-parameter-name   "name of path parameter used for URL session tracking"}
 
   ;; Jetty 10 / Jetty 11 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms, default 500000)"
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
                        :input-buffer-size       "max websocket input buffer size (in bytes)"
                        :output-buffer-size      "max websocket output buffer size (in bytes)"
                        :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
                        :max-binary-message-size "max websocket binary message size (in bytes)"
-                       :max-frame-size          "max websoccket frame size (in bytes)"
-                       :auto-fragment           "websocket auto fragment"}
+                       :max-frame-size          "max websocket frame size (in bytes)"
+                       :auto-fragment           "websocket auto fragment (boolean)"}
 
   ;; Jetty 9 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
                        :input-buffer-size       "max websocket input buffer size"
                        :max-text-message-size   "max websocket text message size"
                        :max-binary-message-size "max websocket binary message size"}

@@ -2,14 +2,25 @@
   (:require [clojure.tools.logging :as log])
   (:import (org.eclipse.jetty.server.handler.gzip GzipHandler)))
 
+(def default-content-types
+  ["text/css"
+   "text/html"
+   "text/csv"
+   "text/plain"
+   "text/javascript"
+   "application/javascript"
+   "image/svg+xml"])
+
 (comment
   #:slipway.handler.gzip {:enabled?            "is gzip enabled? default true"
                           :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
                           :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
-                          :min-gzip-size       "min response size to trigger dynamic compression"})
+                          :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"})
 
 (defn handler
-  [{::keys [enabled? included-mime-types excluded-mime-types min-gzip-size]}]
+  [{::keys [enabled? included-mime-types excluded-mime-types min-gzip-size]
+    :or    {included-mime-types default-content-types
+            min-gzip-size       1024}}]
   (when (not (false? enabled?))
     (let [gzip-handler (GzipHandler.)]
       (log/info "enabling compression")

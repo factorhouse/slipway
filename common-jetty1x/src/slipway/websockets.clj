@@ -144,18 +144,19 @@
       (proxy-ws-adapter ws-fns))))
 
 (comment
-  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms)"
+  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms), default 500000"
                         :input-buffer-size       "max websocket input buffer size"
                         :output-buffer-size      "max websocket output buffer size"
                         :max-text-message-size   "max websocket text message size"
                         :max-binary-message-size "max websocket binary message size"
-                        :max-frame-size          "max websoccket frame size"
-                        :auto-fragment           "websocket auto fragment"})
+                        :max-frame-size          "max websocket frame size"
+                        :auto-fragment           "websocket auto fragment (boolean)"})
 
 (defn upgrade-websocket
   [req res ws opts]
   (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size
-                 max-binary-message-size max-frame-size auto-fragment]} opts
+                 max-binary-message-size max-frame-size auto-fragment]
+         :or    {idle-timeout 500000}} opts
         creator   (reify-ws-creator ws)
         container (JettyWebSocketServerContainer/getContainer (servlet/get-context req))]
     (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
