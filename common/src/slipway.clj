@@ -64,16 +64,16 @@
                     :path-parameter-name   "name of path parameter used for URL session tracking"}
 
   ;; Jetty 10 / Jetty 11 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms, default 500000)"
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
                        :input-buffer-size       "max websocket input buffer size (in bytes)"
                        :output-buffer-size      "max websocket output buffer size (in bytes)"
                        :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
                        :max-binary-message-size "max websocket binary message size (in bytes)"
-                       :max-frame-size          "max websoccket frame size (in bytes)"
-                       :auto-fragment           "websocket auto fragment"}
+                       :max-frame-size          "max websocket frame size (in bytes)"
+                       :auto-fragment           "websocket auto fragment (boolean)"}
 
   ;; Jetty 9 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
                        :input-buffer-size       "max websocket input buffer size"
                        :max-text-message-size   "max websocket text message size"
                        :max-binary-message-size "max websocket binary message size"}
