@@ -7,6 +7,10 @@
            (javax.net.ssl SSLException)
            (org.apache.http ProtocolException)))
 
+;; Note, this test simply confirms not unintended server behaviour changes when a ProxyConnectionFactory is enabled.
+;;       to specifically test the ProxyConnectionFactory requires HA Proxy with proxy-protocol configured, e.g. http://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+;;       I haven't found a java client that will emit the required proxy v1 or v2 line prior to scheme.
+
 (def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
 
 (deftest simple

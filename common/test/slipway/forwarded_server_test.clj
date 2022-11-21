@@ -133,6 +133,7 @@
       (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "")
                                                    [:headers "Location"])))
 
+      ;; NOTE: this is the test that ForwardedRequestCustomizer is configured and working as expected.
       ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
       (is (= "https://localhost:3000/login" (get-in (client/do-get
                                                      "http://localhost:3000/"
@@ -184,6 +185,7 @@
       (is (= "https://localhost:3443/login" (get-in (client/do-get "https" "localhost" 3443 "" {:insecure? true})
                                                     [:headers "Location"])))
 
+      ;; NOTE: this is the test that ForwardedRequestCustomizer is configured and working as expected.
       ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
       (is (= "http://localhost:3443/login" (get-in (client/do-get
                                                     "https://localhost:3443/"

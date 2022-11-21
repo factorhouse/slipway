@@ -70,10 +70,9 @@
     (ServerConnector. server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
 
 (defn standard-connector ^ServerConnector
-  [^Server server {::keys [host port http-forwarded?] :as opts}]
+  [^Server server ^HttpConnectionFactory http-factory {::keys [host port http-forwarded?] :as opts}]
   (log/infof (str "starting HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
-  (let [factories (->> [(HttpConnectionFactory. (default-config opts))] (into-array ConnectionFactory))]
-    (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
+  (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" (into-array ConnectionFactory [http-factory])))
 
 (comment
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
@@ -100,12 +99,12 @@
                             :ssl-context                "a concrete pre-configured SslContext"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout proxy-protocol? configurator http-config]
+  [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]
                    :or    {idle-timeout 200000
                            port         443}
                    :as    opts}]
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
-        connector    (if proxy-protocol? (proxied-connector server http-factory opts) (standard-connector server opts))]
+        connector    (if proxy-protocol? (proxied-connector server http-factory opts) (standard-connector server http-factory opts))]
     (.setHost connector host)
     (.setPort connector port)
     (.setIdleTimeout connector idle-timeout)
