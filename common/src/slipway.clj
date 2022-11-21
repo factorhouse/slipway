@@ -91,6 +91,7 @@
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
+  (log/info "starting slipway server")
   (let [server        (server/create-server opts)
         login-service (authz/login-service opts)]
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))
@@ -103,4 +104,5 @@
 
 (defn stop
   [^Server server]
+  (log/info "stopping slipway server")
   (.stop server))
