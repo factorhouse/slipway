@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log])
   (:import (java.util List)
            (org.eclipse.jetty.server Authentication$User)
-           (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this specific case.
+           (javax.security.auth.login Configuration)        ;; Jetty9/10/11 all use javax in this specific class.
            (org.eclipse.jetty.jaas JAASLoginService)
            (org.eclipse.jetty.security Authenticator ConstraintSecurityHandler HashLoginService LoginService)
            (org.eclipse.jetty.server Authentication$User Request)))
@@ -36,15 +36,16 @@
       (p/datafy authentication))))
 
 (comment
-  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+  #:slipway.authz{:realm               "the Jetty authentication realm"
+                  :hash-user-file      "the path to a Jetty Hash User File"
+                  :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
-                  :realm               "the JAAS realm to use with jaas or hash authentication"
-                  :hash-user-file      "the path to a Jetty Hash User File"})
+                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"})
 
 (defn handler
-  [^LoginService login-service {::keys [authenticator constraint-mappings]}]
+  [^LoginService login-service {::keys [realm authenticator constraint-mappings]}]
   (doto (ConstraintSecurityHandler.)
     (.setConstraintMappings ^List constraint-mappings)
     (.setAuthenticator ^Authenticator authenticator)
-    (.setLoginService login-service)))
+    (.setLoginService login-service)
+    (.setRealmName realm)))
