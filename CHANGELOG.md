@@ -1,7 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [1 1 1] - 2022-11-21
+## [1.1.2] - 2022-11-30
+### Changed
+- Remove explicit defaulting of Gzip content types
+- Minor auth comment and realm configuration change
+- Bump Jetty9 deps to latest
+
+## [1.1.1] - 2022-11-21
 ### Changed
 - Alignment of default configuration with previous versions
 
