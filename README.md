@@ -148,11 +148,11 @@ TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options conf
   #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
                          :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
                          :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
-                         :min-gzip-size       "min response size to trigger dynamic compression"}
+                         :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 
-  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                            :port                       "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
+                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
                             :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -171,26 +171,28 @@ TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options conf
                             :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
-                            :ssl-context                "a concrete pre-configured SslContext"}
+                            :ssl-context                "a concrete pre-configured SslContext"
+                            :sni-required?              "true if a SNI certificate is required, default false"
+                            :sni-host-check?            "true if the SNI Host name must match, default false"}
 
   #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                           :port            "port this connector listens on. If set the 0 a random port is assigned which may be obtained with getLocalPort()"
-                           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 180000."
+                           :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                           :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                            :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                            :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
                            :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
-  #:slipway.authz{:login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+  #:slipway.authz{:realm               "the Jetty authentication realm"
+                  :hash-user-file      "the path to a Jetty Hash User File"
+                  :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"
-                  :realm               "the JAAS realm to use with jaas or hash authentication"
-                  :hash-user-file      "the path to a Jetty Hash User File"}
+                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
 
-  #:slipway.session{:secure-request-only?  "set the secure flag on session cookies"
-                    :http-only?            "set the http-only flag on session cookies"
-                    :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
-                    :max-inactive-interval "max session idle time (in s)"
+  #:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
+                    :http-only?            "set the http-only flag on session cookies (default true)"
+                    :same-site             "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
+                    :max-inactive-interval "max session idle time (in s, default -1)"
                     :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
                     :cookie-name           "the name of the session cookie"
                     :session-id-manager    "the meta manager used for cross context session management"
@@ -198,16 +200,16 @@ TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options conf
                     :path-parameter-name   "name of path parameter used for URL session tracking"}
 
   ;; Jetty 10 / Jetty 11 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
-                       :input-buffer-size       "max websocket input buffer size"
-                       :output-buffer-size      "max websocket output buffer size"
-                       :max-text-message-size   "max websocket text message size"
-                       :max-binary-message-size "max websocket binary message size"
-                       :max-frame-size          "max websoccket frame size"
-                       :auto-fragment           "websocket auto fragment"}
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
+                       :input-buffer-size       "max websocket input buffer size (in bytes)"
+                       :output-buffer-size      "max websocket output buffer size (in bytes)"
+                       :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
+                       :max-binary-message-size "max websocket binary message size (in bytes)"
+                       :max-frame-size          "max websocket frame size (in bytes)"
+                       :auto-fragment           "websocket auto fragment (boolean)"}
 
   ;; Jetty 9 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms)"
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
                        :input-buffer-size       "max websocket input buffer size"
                        :max-text-message-size   "max websocket text message size"
                        :max-binary-message-size "max websocket binary message size"}
