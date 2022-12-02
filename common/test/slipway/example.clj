@@ -1,7 +1,7 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
             [slipway :as slipway]
-            [slipway.authz :as authz]
+            [slipway.auth :as auth]
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
@@ -49,18 +49,18 @@
                                                    (merge https-connector https-proxied)]
                                    :error-handler app/server-error-handler}
 
-   :jaas-auth            #::authz{:realm               "slipway"
-                                  :login-service       "jaas"
-                                  :authenticator       form-authenticator
-                                  :constraint-mappings app/constraints}
+   :jaas-auth            #::auth{:realm               "slipway"
+                                 :login-service       "jaas"
+                                 :authenticator       form-authenticator
+                                 :constraint-mappings app/constraints}
 
-   :hash-auth            #::authz{:realm               "slipway"
-                                  :login-service       "hash"
-                                  :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                                  :authenticator       form-authenticator
-                                  :constraint-mappings app/constraints}
+   :hash-auth            #::auth{:realm               "slipway"
+                                 :login-service       "hash"
+                                 :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                                 :authenticator       form-authenticator
+                                 :constraint-mappings app/constraints}
 
-   :basic-auth           #::authz{:authenticator (BasicAuthenticator.)}
+   :basic-auth           #::auth{:authenticator (BasicAuthenticator.)}
 
    :gzip-nil             #::gzip{:enabled? nil}
 

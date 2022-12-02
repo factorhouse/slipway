@@ -1,6 +1,6 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
-            [slipway.authz :as authz]
+            [slipway.auth :as auth]
             [slipway.common.websockets :as common.ws]
             [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
@@ -15,7 +15,7 @@
 (defn request-map
   [^Request base-request ^HttpServletRequest request]
   (merge (servlet/build-request-map request)
-         (authz/user base-request)
+         (auth/user base-request)
          {::base-request base-request}))
 
 (defn uri-without-chsk
@@ -60,13 +60,13 @@
 
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "using default server handler")
+  (log/infof "default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
   (let [context (doto (ContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
                   (.setHandler (handler-list ring-handler opts)))]
     (when login-service
-      (.insertHandler context (authz/handler login-service opts))
+      (.insertHandler context (auth/handler login-service opts))
       (.insertHandler context (session/handler opts)))
     (some->> (gzip/handler opts) (.insertHandler context))
     context))

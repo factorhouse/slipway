@@ -154,8 +154,7 @@
 
 (defn upgrade-websocket
   [req res ws opts]
-  (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size
-                 max-binary-message-size max-frame-size auto-fragment]
+  (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size max-binary-message-size max-frame-size auto-fragment]
          :or    {idle-timeout 500000}} opts
         creator   (reify-ws-creator ws)
         container (JettyWebSocketServerContainer/getContainer (servlet/get-context req))]

@@ -1,6 +1,6 @@
 (ns slipway
   (:require [clojure.tools.logging :as log]
-            [slipway.authz :as authz]
+            [slipway.auth :as auth]
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.handler]
@@ -47,11 +47,11 @@
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
                            :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
-  #:slipway.authz{:realm               "the Jetty authentication realm"
-                  :hash-user-file      "the path to a Jetty Hash User File"
-                  :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
+  #:slipway.auth{:realm               "the Jetty authentication realm"
+                 :hash-user-file      "the path to a Jetty Hash User File"
+                 :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                 :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                 :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
 
   #:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
                     :http-only?            "set the http-only flag on session cookies (default true)"
@@ -93,7 +93,7 @@
   [ring-handler {::keys [join?] :as opts}]
   (log/info "starting slipway server")
   (let [server        (server/create-server opts)
-        login-service (authz/login-service opts)]
+        login-service (auth/login-service opts)]
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))
     (some->> login-service (.addBean server))
     (.start server)

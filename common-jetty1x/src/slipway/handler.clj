@@ -1,6 +1,6 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
-            [slipway.authz :as authz]
+            [slipway.auth :as auth]
             [slipway.common.websockets :as common.ws]
             [slipway.handler.gzip :as gzip]
             [slipway.server :as server]
@@ -14,11 +14,14 @@
 (defn request-map
   [base-request request]
   (merge (servlet/build-request-map request)
-         (authz/user base-request)
+         (auth/user base-request)
          {::base-request base-request}))
 
 (defn proxy-handler
-  [handler opts]
+  [handler {::ws/keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size max-binary-message-size max-frame-size auto-fragment] :as opts}]
+  (log/infof "websocket handler with: idle-timeout %s, input-buffer-size %s, output-buffer-size %s, max-text-message-size %s, max-binary-message-size %s, max-frame-size %s, auto-fragment %s"
+             (or idle-timeout "default") (or input-buffer-size "default") (or output-buffer-size "default") (or max-text-message-size "default") (or max-binary-message-size "default")
+             (or max-frame-size "default") (or auto-fragment "default"))
   (proxy [ServletHandler] []
     (doHandle [_ ^Request base-request request response]
       (try
@@ -41,14 +44,14 @@
 
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/info "using default server handler")
+  (log/infof "default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
   (let [context (doto (ServletContextHandler.)
                   (.setContextPath context-path)
                   (.setAllowNullPathInfo (not (false? null-path-info?)))
                   (.setServletHandler (proxy-handler ring-handler opts))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
     (when login-service
-      (.setSecurityHandler context (authz/handler login-service opts))
+      (.setSecurityHandler context (auth/handler login-service opts))
       (.setSessionHandler context (session/handler opts)))
     (some->> (gzip/handler opts) (.insertHandler context))
     context))

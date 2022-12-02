@@ -1,4 +1,4 @@
-(ns slipway.authz
+(ns slipway.auth
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log])
   (:import (java.util List)
@@ -36,11 +36,11 @@
       (p/datafy authentication))))
 
 (comment
-  #:slipway.authz{:realm               "the Jetty authentication realm"
-                  :hash-user-file      "the path to a Jetty Hash User File"
-                  :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"})
+  #:slipway.auth{:realm               "the Jetty authentication realm"
+                 :hash-user-file      "the path to a Jetty Hash User File"
+                 :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                 :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                 :constraint-mappings "a list of concrete Jetty ConstraintMapping"})
 
 (defn handler
   [^LoginService login-service {::keys [realm authenticator constraint-mappings]}]

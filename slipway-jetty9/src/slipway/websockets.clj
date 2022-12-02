@@ -1,6 +1,8 @@
 (ns slipway.websockets
-  (:require [slipway.common.websockets :as common.ws]
-            [slipway.servlet :as servlet])
+  (:require
+   [clojure.tools.logging :as log]
+   [slipway.common.websockets :as common.ws]
+   [slipway.servlet :as servlet])
   (:import (clojure.lang IFn)
            (java.nio ByteBuffer)
            (org.eclipse.jetty.websocket.api RemoteEndpoint Session WebSocketAdapter WriteCallback)
@@ -159,7 +161,10 @@
 
 (defn handler
   [handler {::keys [idle-timeout input-buffer-size max-text-message-size max-binary-message-size]
-            :or    {idle-timeout 500000}}]
+            :or    {idle-timeout 500000}
+            :as    opts}]
+  (log/infof "handler with: idle-timeout %s, input-buffer-size %s, max-text-message-size %s, max-binary-message-size %s"
+             idle-timeout (or input-buffer-size "default") (or max-text-message-size "default") (or max-binary-message-size "default"))
   (proxy [WebSocketHandler] []
     (configure [^WebSocketServletFactory factory]
       (let [policy (.getPolicy factory)]
