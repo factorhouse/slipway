@@ -161,8 +161,7 @@
 
 (defn handler
   [handler {::keys [idle-timeout input-buffer-size max-text-message-size max-binary-message-size]
-            :or    {idle-timeout 500000}
-            :as    opts}]
+            :or    {idle-timeout 500000}}]
   (log/infof "handler with: idle-timeout %s, input-buffer-size %s, max-text-message-size %s, max-binary-message-size %s"
              idle-timeout (or input-buffer-size "default") (or max-text-message-size "default") (or max-binary-message-size "default"))
   (proxy [WebSocketHandler] []
