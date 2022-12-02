@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [1.1.3] - 2022-12-02
+
+- Improve websocket config logging on startup
+- Rename authz namespace to auth
+
 ## [1.1.2] - 2022-11-30
 ### Changed
 - Remove explicit defaulting of Gzip content types
