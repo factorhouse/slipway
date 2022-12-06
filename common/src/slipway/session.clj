@@ -33,7 +33,7 @@
             max-inactive-interval -1
             tracking-modes        #{:cookie}
             cookie-name           "JSESSIONID"}}]
-  (log/infof "max-inactive-interval %s")
+  (log/infof "max-inactive-interval %s" max-inactive-interval)
   (let [same-site       (cookie-same-site same-site)
         tracking-modes  (into #{} (map tracking-mode) tracking-modes)
         session-handler (doto (SessionHandler.)
