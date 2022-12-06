@@ -5,7 +5,7 @@
   :url "https://github.com/factorhouse/slipway"
 
   :license {:name "MIT License"
-            :url  "https://github.com/operatr-io/slipway/blob/main/LICENSE"}
+            :url  "https://github.com/factorhosue/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[clj-kondo "2022.11.02"]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
