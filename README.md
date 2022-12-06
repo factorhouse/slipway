@@ -2,12 +2,6 @@
 
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
-| Jetty Version | Clojars Project |
-| ------------- | --------------- |
-| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
-
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
 
 Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
@@ -118,27 +112,15 @@ Slipway aims to provide first-class, extensible support for:
 
 ## Installation
 
-Slipway will shortly be available from Clojars. 
+| Jetty Version | Clojars Project |
+| ------------- | --------------- |
+| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
+| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 
-Add one of the version-specific dependencies to your project:
-
-```clojure 
-;; Jetty 10: Recommended for general use, requires Java 11+
-
-[io.factorhouse/slipway-jetty10 "1.1.0"]
-```
-
-```clojure 
-;; Jetty 9: If you require running with Java 8
-
-[io.operatr/slipway-jetty9 "1.1.0"]
-```
-
-```clojure 
-;; Jetty 11: If you want to run with Jakarta rather than Javax
-
-[io.operatr/slipway-jetty9 "1.1.0"]
-```
+* Jetty 9: If you require running with Java 8
+* Jetty 10: Recommended for general use, requires Java 11+
+* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ### Configuration
 
