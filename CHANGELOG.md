@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file. This change
 ## [1.1.4] - 2022-12-06
 
 - Rename slipway.auth to slipway.security
-- Improve startup loggin
+- Improve startup logging
+- Permit configurable IdentityService
 - Minor reflection fix
 
 ## [1.1.3] - 2022-12-02
