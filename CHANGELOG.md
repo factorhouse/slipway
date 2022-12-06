@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [1.1.4] - 2022-12-06
+
+- Rename slipway.auth to slipway.security
+- Improve startup loggin
+- Minor reflection fix
+
 ## [1.1.3] - 2022-12-02
 
 - Improve websocket config logging on startup
