@@ -1,12 +1,12 @@
 (ns slipway.example
   (:require [clojure.test :refer :all]
             [slipway :as slipway]
-            [slipway.auth :as auth]
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
             [slipway.handler :as handler]
             [slipway.handler.gzip :as gzip]
+            [slipway.security :as security]
             [slipway.server :as server]
             [slipway.session :as session])
   (:import (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
@@ -49,18 +49,18 @@
                                                    (merge https-connector https-proxied)]
                                    :error-handler app/server-error-handler}
 
-   :jaas-auth            #::auth{:realm               "slipway"
-                                 :login-service       "jaas"
-                                 :authenticator       form-authenticator
-                                 :constraint-mappings app/constraints}
+   :jaas-auth            #::security{:realm               "slipway"
+                                     :login-service       "jaas"
+                                     :authenticator       form-authenticator
+                                     :constraint-mappings app/constraints}
 
-   :hash-auth            #::auth{:realm               "slipway"
-                                 :login-service       "hash"
-                                 :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
-                                 :authenticator       form-authenticator
-                                 :constraint-mappings app/constraints}
+   :hash-auth            #::security{:realm               "slipway"
+                                     :login-service       "hash"
+                                     :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                                     :authenticator       form-authenticator
+                                     :constraint-mappings app/constraints}
 
-   :basic-auth           #::auth{:authenticator (BasicAuthenticator.)}
+   :basic-auth           #::security{:authenticator (BasicAuthenticator.)}
 
    :gzip-nil             #::gzip{:enabled? nil}
 

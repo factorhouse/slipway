@@ -1,9 +1,9 @@
 (ns slipway
   (:require [clojure.tools.logging :as log]
-            [slipway.auth :as auth]
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.handler]
+            [slipway.security :as security]
             [slipway.server :as server]
             [slipway.user])
   (:import (org.eclipse.jetty.server Handler Server)))
@@ -47,11 +47,12 @@
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
                            :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
-  #:slipway.auth{:realm               "the Jetty authentication realm"
-                 :hash-user-file      "the path to a Jetty Hash User File"
-                 :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                 :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                 :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
+  #:slipway.security{:realm               "the Jetty authentication realm"
+                     :hash-user-file      "the path to a Jetty Hash User File"
+                     :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                     :identity-service    "a concrete Jetty IdentityService"
+                     :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                     :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
 
   #:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
                     :http-only?            "set the http-only flag on session cookies (default true)"
@@ -93,7 +94,7 @@
   [ring-handler {::keys [join?] :as opts}]
   (log/info "starting slipway server")
   (let [server        (server/create-server opts)
-        login-service (auth/login-service opts)]
+        login-service (security/login-service opts)]
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))
     (some->> login-service (.addBean server))
     (.start server)

@@ -9,7 +9,7 @@
 
 (defn default-config ^HttpConfiguration
   [{::keys [port http-forwarded? sni-required? sni-host-check?] :or {sni-required? false sni-host-check? false}}]
-  (log/info "sni required? %s, sni host check? %s" sni-required? sni-host-check?)
+  (log/infof "sni required? %s, sni host check? %s" sni-required? sni-host-check?)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion false)

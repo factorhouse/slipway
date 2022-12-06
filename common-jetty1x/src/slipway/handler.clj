@@ -1,8 +1,8 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
-            [slipway.auth :as auth]
             [slipway.common.websockets :as common.ws]
             [slipway.handler.gzip :as gzip]
+            [slipway.security :as security]
             [slipway.server :as server]
             [slipway.servlet :as servlet]
             [slipway.session :as session]
@@ -14,7 +14,7 @@
 (defn request-map
   [base-request request]
   (merge (servlet/build-request-map request)
-         (auth/user base-request)
+         (security/user base-request)
          {::base-request base-request}))
 
 (defn proxy-handler
@@ -51,7 +51,7 @@
                   (.setServletHandler (proxy-handler ring-handler opts))
                   (JettyWebSocketServletContainerInitializer/configure nil))]
     (when login-service
-      (.setSecurityHandler context (auth/handler login-service opts))
+      (.setSecurityHandler context (security/handler login-service opts))
       (.setSessionHandler context (session/handler opts)))
     (some->> (gzip/handler opts) (.insertHandler context))
     context))

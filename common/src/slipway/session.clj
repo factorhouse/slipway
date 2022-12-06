@@ -1,4 +1,5 @@
 (ns slipway.session
+  (:require [clojure.tools.logging :as log])
   (:import (org.eclipse.jetty.http HttpCookie$SameSite)
            (org.eclipse.jetty.server.session SessionHandler)))
 
@@ -32,6 +33,7 @@
             max-inactive-interval -1
             tracking-modes        #{:cookie}
             cookie-name           "JSESSIONID"}}]
+  (log/infof "max-inactive-interval %s")
   (let [same-site       (cookie-same-site same-site)
         tracking-modes  (into #{} (map tracking-mode) tracking-modes)
         session-handler (doto (SessionHandler.)
