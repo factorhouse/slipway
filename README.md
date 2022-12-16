@@ -19,6 +19,8 @@ Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-
 | Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 | Jetty 12 | Available once v12 stabilises. |
 
+### Usage
+
 * Jetty 9: If you require running with Java 8
 * Jetty 10: Recommended for general use, requires Java 11+
 * Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
