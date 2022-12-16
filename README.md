@@ -150,13 +150,11 @@ Your sample application with [property file based authz](https://docs.kpow.io/au
 
 Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
 
------
-
 After login the default home-page presents some useful links for user info and error pages.
 
-![Slipway Home](docs/img/slipway-home.png)
-
 -----
+
+![Slipway Home](docs/img/slipway-home.png)
 
 ## Configuring Slipway
 
