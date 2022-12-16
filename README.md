@@ -20,7 +20,7 @@ Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-
 | Jetty 12 | Available once v12 stabilises. |
 
 
-### Prior Art
+## Prior Art
 
 Slipway is based on and in some cases includes code from the following projects:
 
