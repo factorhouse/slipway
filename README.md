@@ -1,7 +1,23 @@
 # Slipway: a Clojure companion to Jetty
 
-
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
+
+### Installation
+
+| Jetty Version | Clojars Project |
+| ------------- | --------------- |
+| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
+| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
+| Jetty 12 | Available once v12 stabilises. |
+
+### Usage
+
+* Jetty 9: If you require running with Java 8
+* Jetty 10: Recommended for general use, requires Java 11+
+* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
+
+----
 
 * [Introduction](#introduction)
 * [Installation](#installation)
@@ -24,21 +40,6 @@ Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 Slipway provides access to a battle-tested web server with websocket support.
 
 Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
-
-### Installation
-
-| Jetty Version | Clojars Project |
-| ------------- | --------------- |
-| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
-| Jetty 12 | Available once v12 stabilises. |
-
-### Usage
-
-* Jetty 9: If you require running with Java 8
-* Jetty 10: Recommended for general use, requires Java 11+
-* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ## Prior Art
 
