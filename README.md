@@ -41,7 +41,7 @@ Your hello world application is now running on [http://localhost:3000](http://lo
 
 Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
 
-These configurations are used by our integration tests. The stateful start!/stop! functions within that namespace are not considered a guide for your own use of Slipway, but they are convenient for playing with server configurations like so:
+The stateful start!/stop! functions within that namespace are not considered canonical for Slipway, they are a convenience for our integration tests. 
 
 ```clojure
 (require '[slipway.example :as example])
