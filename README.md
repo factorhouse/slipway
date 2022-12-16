@@ -19,6 +19,9 @@ Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-
 | Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 | Jetty 12 | Available once v12 stabilises. |
 
+* Jetty 9: If you require running with Java 8
+* Jetty 10: Recommended for general use, requires Java 11+
+* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ## Prior Art
 
@@ -37,7 +40,9 @@ Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and 
 
 More than a simple web server, Jetty is battle-tested, performant, and feature rich.
 
-## Our Requirements
+## About Slipway
+
+### Our Requirements
 
 Kpow is a secure web-application with a SPA UI served by websockets.
 
@@ -51,7 +56,7 @@ We have a hard requirement to support customers on Java 8 and Java 11+.
 
 Slipway incorporates feedback from external security teams.
 
-## Primary Goals
+### Primary Goals
 
 Slipway aims to provide first-class, extensible support for: 
 
@@ -71,30 +76,28 @@ Slipway aims to provide first-class, extensible support for:
 * Comprehensive integration tests
 * Ring compatibility
 
-## Secondary Goals
+### Secondary Goals
 
 * Broad support for general Jetty use-cases / configuration
 
-## Future Goals
+### Future Goals
 
 * Backport our SAML, OpenID and OAuth authentication implementations
 * Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
 
-## Currently Out Of Scope
+### Currently Out Of Scope
 
 * Http2/3
 * Asynchronous Handlers
 * Ajax (including auto-fallback)
 
-## Non-Goals
+### Non-Goals
 
 * A simplified DSL for Jetty
 
-* Jetty 9: If you require running with Java 8
-* Jetty 10: Recommended for general use, requires Java 11+
-* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
+## Using Slipway
 
-## Quick Start
+### Quick Start
 
 Choose a project by Jetty version, then open a REPL.
 
@@ -114,7 +117,7 @@ Start slipway with a ring-handler and a map of configuration options:
 
 Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
 
-## Example Configurations
+### Example Configurations
 
 Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
 
@@ -142,7 +145,7 @@ After login the default home-page presents some useful links for user info and e
 
 -----
 
-## Configuration
+### Configuration
 
 TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options configuration and [example.clj](common/test/slipway/example.clj) for example usage.
 
