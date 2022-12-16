@@ -8,14 +8,91 @@ Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 
 Slipway provides access to a battle-tested web server with websocket support.
 
-### Prior Art
+Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
 
-Slipway is based on and in some cases includes code from the following projects:
+### Installation
+
+| Jetty Version | Clojars Project |
+| ------------- | --------------- |
+| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
+| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
+| Jetty 12 | Available once v12 stabilises. |
+
+
+## Prior Art
+
+Slipway is based on, and in some cases includes code from the following projects:
 
 * [sunng87/ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) by [Ning Sun](https://github.com/sunng87)
 * [ring-clojure/ring](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) by [James Reeves](https://github.com/weavejester)
 
-We appreciate the great open-source work of Ning and James that allowed us to build our initial product.
+We appreciate the great open-source work of Ning and James that forms the base of this project.
+
+## Why Jetty?
+
+Jetty is a mature, stable, commercially supported project with an [active, experienced](https://github.com/eclipse/jetty.project/graphs/contributors) team of core contributors.
+
+Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
+
+More than a simple web server, Jetty is battle-tested, performant, and feature rich.
+
+## Our Requirements
+
+Kpow is a secure web-application with a rich SPA UI served by websockets.
+
+Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
+
+> User: Can I configure a custom CA certificate to secure my JAAS/LDAPS authentication?
+
+> Kpow Team: Yes (thanks to Jetty).
+
+We have a hard requirement to support customers on Java 8 and Java 11+.
+
+Slipway incorporates feedback from external security teams.
+
+## Primary Goals
+
+Slipway aims to provide first-class, extensible support for: 
+
+* HTTP 1.1
+* HTTPS / SSL
+* Synchronous handlers
+* JAAS Authentication (LDAP, HashUser, etc)
+* Form / basic authentication
+* WebSockets
+* Java 8 / 11+
+* Jetty 9 / 10 / 11
+* Session management
+* Proxy protocol / http forwarded
+* Common / sensible defaults (e.g. gzip compression)
+* Configurable error handling
+* Automated CVE scanning with NVD
+* Comprehensive integration tests
+* Ring compatibility
+
+## Secondary Goals
+
+* Broad support for general Jetty use-cases / configuration
+
+## Future Goals
+
+* Backport our SAML, OpenID and OAuth authentication implementations
+* Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+
+## Currently Out Of Scope
+
+* Http2/3
+* Asynchronous Handlers
+* Ajax (including auto-fallback)
+
+## Non-Goals
+
+* A simplified DSL for Jetty
+
+* Jetty 9: If you require running with Java 8
+* Jetty 10: Recommended for general use, requires Java 11+
+* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ### Quick Start
 
@@ -59,80 +136,11 @@ Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password 
 
 -----
 
+After login the default home-page presents some useful links for user info and error pages.
+
 ![Slipway Home](docs/img/slipway-home.png)
 
 -----
-
-## Why Jetty?
-
-Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
-
-Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvments.
-
-More than a simple web server, Jetty is battle-tested, performant, and feature rich.
-
-## Our Requirements
-
-Kpow is a secure web-application with a rich SPA UI served by websockets. 
-
-Deployed in-cloud and on-premises Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
-
-> User: Can I configure a custom CA certificate to secure my JAAS/LDAPS authentication?
-
-> Kpow Team: Yes (thanks to Jetty).
-
-We have a hard requirement to support customers on Java 8 and Java 11+ and incorporate feedback from external security teams.
-
-## Primary Goals
-
-Slipway aims to provide first-class, extensible support for: 
-
-* HTTP 1.1
-* HTTPS / SSL
-* Synchronous handlers
-* JAAS Authentication (LDAP, HashUser, etc)
-* Form / basic authentication
-* WebSockets
-* Java 8 / 11+
-* Jetty 9 / 10 / 11
-* Session management
-* Proxy protocol / http forwarded
-* Common / sensible defaults (e.g. gzip compression)
-* Configurable error handling
-* Automated CVE scanning with NVD
-* Comprehensive integration tests
-* Ring compatibility
-
-## Secondary Goals
-
-* Broad support for general Jetty use-cases / configuration
-
-## Future Goals
-
-* Backport our SAML, OpenID and OAuth authentication implementations
-* Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
-
-## Currently Out Of Scope
-
-* Http2/3
-* Asynchronous Handlers
-* Ajax (including auto-fallback)
-
-## Non-Goals
-
-* A simplified DSL for Jetty
-
-## Installation
-
-| Jetty Version | Clojars Project |
-| ------------- | --------------- |
-| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
-
-* Jetty 9: If you require running with Java 8
-* Jetty 10: Recommended for general use, requires Java 11+
-* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ### Configuration
 
