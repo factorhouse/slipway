@@ -29,15 +29,17 @@ More than a simple web server, Jetty is battle-tested, performant, and feature r
 
 ## Our Requirements
 
-Kpow is a secure web-application with a rich SPA UI served by websockets. 
+Kpow is a secure web-application with a rich SPA UI served by websockets.
 
-Deployed in-cloud and on-premises Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
+Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
 
 > User: Can I configure a custom CA certificate to secure my JAAS/LDAPS authentication?
 
 > Kpow Team: Yes (thanks to Jetty).
 
-We have a hard requirement to support customers on Java 8 and Java 11+ and incorporate feedback from external security teams.
+We have a hard requirement to support customers on Java 8 and Java 11+.
+
+Slipway incorporates feedback from external security teams.
 
 ## Primary Goals
 
