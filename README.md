@@ -8,6 +8,8 @@ Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 
 Slipway provides access to a battle-tested web server with websocket support.
 
+Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
+
 ### Prior Art
 
 Slipway is based on and in some cases includes code from the following projects:
@@ -16,54 +18,6 @@ Slipway is based on and in some cases includes code from the following projects:
 * [ring-clojure/ring](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) by [James Reeves](https://github.com/weavejester)
 
 We appreciate the great open-source work of Ning and James that forms the base of this project.
-
-### Quick Start
-
-Choose a project by Jetty version, then open a REPL.
-
-Start slipway with a ring-handler and a map of configuration options:
-
-```clojure 
-(require '[slipway :as slipway])
-(require '[slipway.server :as server])
-(require '[slipway.connector.http :as http])
-
-(defn handler [_] {:status 200 :body "Hello world"})
-
-(def http-connector #::http{:port 3000})
-
-(slipway/start handler #::server{:connectors [http-connector]})
-```
-
-Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
-
-### Example Configurations
-
-Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
-
-The stateful start!/stop! functions within that namespace are not considered canonical for Slipway, they are a convenience for our integration tests. 
-
-```clojure
-(require '[slipway.example :as example])
-
-(example/start! [:http :hash-auth])
-```
-
-Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
-
-Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
-
------
-
-![Slipway Login](docs/img/slipway-auth.png)
-
------
-
-After login the default home-page presents some useful links for user info and error pages.
-
-![Slipway Home](docs/img/slipway-home.png)
-
------
 
 ## Why Jetty?
 
@@ -135,6 +89,54 @@ Slipway aims to provide first-class, extensible support for:
 * Jetty 9: If you require running with Java 8
 * Jetty 10: Recommended for general use, requires Java 11+
 * Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
+
+### Quick Start
+
+Choose a project by Jetty version, then open a REPL.
+
+Start slipway with a ring-handler and a map of configuration options:
+
+```clojure 
+(require '[slipway :as slipway])
+(require '[slipway.server :as server])
+(require '[slipway.connector.http :as http])
+
+(defn handler [_] {:status 200 :body "Hello world"})
+
+(def http-connector #::http{:port 3000})
+
+(slipway/start handler #::server{:connectors [http-connector]})
+```
+
+Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
+
+### Example Configurations
+
+Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
+
+The stateful start!/stop! functions within that namespace are not considered canonical for Slipway, they are a convenience for our integration tests. 
+
+```clojure
+(require '[slipway.example :as example])
+
+(example/start! [:http :hash-auth])
+```
+
+Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
+
+Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
+
+-----
+
+![Slipway Login](docs/img/slipway-auth.png)
+
+-----
+
+After login the default home-page presents some useful links for user info and error pages.
+
+![Slipway Home](docs/img/slipway-home.png)
+
+-----
 
 ### Configuration
 
