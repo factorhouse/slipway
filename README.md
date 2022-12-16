@@ -94,7 +94,7 @@ Slipway aims to provide first-class, extensible support for:
 * Jetty 10: Recommended for general use, requires Java 11+
 * Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
-### Quick Start
+## Quick Start
 
 Choose a project by Jetty version, then open a REPL.
 
@@ -114,7 +114,7 @@ Start slipway with a ring-handler and a map of configuration options:
 
 Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
 
-### Example Configurations
+## Example Configurations
 
 Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
 
@@ -142,7 +142,7 @@ After login the default home-page presents some useful links for user info and e
 
 -----
 
-### Configuration
+## Configuration
 
 TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options configuration and [example.clj](common/test/slipway/example.clj) for example usage.
 
@@ -228,7 +228,7 @@ TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options conf
   #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
 ```
 
-### TBD Update Below This Line
+### TBD Below this line is out of date, will be updated shortly.
 ----
 
 ### WebSockets
