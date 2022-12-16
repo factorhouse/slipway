@@ -286,7 +286,7 @@ The `ws` object passed to each handler function implements the `slipway.websocke
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box. 
 
-Simply include Sente in your project's dependencies and follow Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started), and use the slipway web-server adapter:
+Include Sente in your project's dependencies and follow Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started), and use the slipway web-server adapter:
 
 ```clojure 
 (require '[slipway.sente :refer [get-sch-adapter]])
@@ -298,52 +298,14 @@ JAAS implements a Java version of the standard Pluggable Authentication Module (
 
 JAAS can be used for two purposes:
 
-* for authentication of users, to reliably and securely determine who is currently executing Java code, regardless of whether the code is running as an application, an applet, a bean, or a servlet; and
+* for authentication of users, to reliably and securely determine who is currently executing Java code
 * for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
-
-JAAS implements a Java version of the standard Pluggable Authentication Module (PAM) framework. See Making Login Services Independent from Authentication Technologies for further information.
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
 
-Slipway is the only ring adapter that supports Jetty JAAS out of the box. Thus, one of the few ways to authenticate using LDAP in the Clojure world. Oftentimes a requirement for the enterprise.
-
 #### Usage
 
-Pass an `:auth` key to your `run-jetty` options map:
-
-```clojure 
-(require '[slipway.auth.constraints :as constraints])
-
-{:auth-method         "basic"                               ;; either "basic" (basic authentication) or "form" (form based authencation, with a HTML login form served at :login-uri)
- :auth-type           "jaas"                                ;; either "jaas" or "hash"
- :login-uri           "/login"                              ;; the URI where the login form is hosted
- :login-retry-uri     "/login-retry"
- :realm               "my-app"
- :logout-uri          "/logout"
- :session             {:http-only?            true
-                       :same-site             :strict       ;; can be :lax, :strict or :none
-                       :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
-                       :max-inactive-interval -1}           ;; set the max period of inactivity, after which the session is invalidated, in seconds.
- :constraint-mappings (constraints/constraint-mappings
-                       ;; /css/* is not protected. Everyone (including unauthenticated users) can access
-                       ["/css/*" (constraints/no-auth)]
-                       ;; /api/* is protected. Any authenticated user can access
-                       ["/api/*" (constraints/basic-auth-any-constraint)])}
-```
-
-Successfully authenticated users will have their details assoced into the Ring request map under the key `:slipway.auth/user` - it contains: 
-
-```clojure
-{:provider :jetty
- :name     "Jane"
- :roles    ["admin"]}
-```
-
-#### Constraints
-
-[Constraints](https://www.eclipse.org/jetty/javadoc/jetty-10/org/eclipse/jetty/util/security/Constraint.html) describe an auth and/or data constraint. 
-
-The `slipway.auth.constraints` namespace has a few useful helper functions for working with constraints. 
+TODO
 
 #### jaas.config
 
