@@ -8,6 +8,8 @@ Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 
 Slipway provides access to a battle-tested web server with websocket support.
 
+Slipway supports Jetty 9, 10, 11, and will support 12 once it stabilises.
+
 Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
 
 ### Prior Art
