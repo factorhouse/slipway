@@ -1,5 +1,8 @@
 # Slipway: a Clojure companion to Jetty
 
+
+[![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
+
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [Prior Art](#prior-art)
@@ -8,9 +11,11 @@
 * [Using Slipway](#using-slipway)
 * [Configuring Slipway](#configuring-slipway)
 
-# Introduction
+----
 
-[![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
+![Slipway Login](docs/img/slipway-auth.png)
+
+# Introduction
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
 
@@ -144,10 +149,6 @@ The stateful start!/stop! functions within that namespace are not considered can
 Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
 
 Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
-
------
-
-![Slipway Login](docs/img/slipway-auth.png)
 
 -----
 
