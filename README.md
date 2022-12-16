@@ -95,7 +95,7 @@ Slipway aims to provide first-class, extensible support for:
 ### Future Goals
 
 * Backport our SAML, OpenID and OAuth authentication implementations
-* Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+* Open-source a full-stack example application using slipway in [Shortcut](https://github.com/factorhouse/shortcut).
 
 ### Currently Out Of Scope
 
