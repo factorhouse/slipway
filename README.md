@@ -22,7 +22,7 @@ Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-
 
 ## Prior Art
 
-Slipway is based on and in some cases includes code from the following projects:
+Slipway is based on, and in some cases includes code from the following projects:
 
 * [sunng87/ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) by [Ning Sun](https://github.com/sunng87)
 * [ring-clojure/ring](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) by [James Reeves](https://github.com/weavejester)
