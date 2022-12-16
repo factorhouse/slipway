@@ -59,6 +59,8 @@ Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password 
 
 -----
 
+After login the default home-page presents some useful links for user info and error pages.
+
 ![Slipway Home](docs/img/slipway-home.png)
 
 -----
