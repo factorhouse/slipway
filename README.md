@@ -69,7 +69,7 @@ After login the default home-page presents some useful links for user info and e
 
 Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
 
-Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvments.
+Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
 
 More than a simple web server, Jetty is battle-tested, performant, and feature rich.
 
