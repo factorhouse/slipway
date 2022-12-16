@@ -1,6 +1,21 @@
 # Slipway: a Clojure companion to Jetty
 
+
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
+
+* [Introduction](#introduction)
+* [Installation](#installation)
+* [Prior Art](#prior-art)
+* [Why Jetty?](#why-jetty)
+* [Why Slipway?](#why-slipway)
+* [Using Slipway](#using-slipway)
+* [Configuring Slipway](#configuring-slipway)
+
+----
+
+![Slipway Login](docs/img/slipway-auth.png)
+
+# Introduction
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
 
@@ -19,6 +34,11 @@ Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-
 | Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 | Jetty 12 | Available once v12 stabilises. |
 
+### Usage
+
+* Jetty 9: If you require running with Java 8
+* Jetty 10: Recommended for general use, requires Java 11+
+* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
 
 ## Prior Art
 
@@ -37,9 +57,11 @@ Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and 
 
 More than a simple web server, Jetty is battle-tested, performant, and feature rich.
 
-## Our Requirements
+## Why Slipway?
 
-Kpow is a secure web-application with a rich SPA UI served by websockets.
+### Our Requirements
+
+Kpow is a secure web-application with a SPA UI served by websockets.
 
 Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
 
@@ -51,7 +73,7 @@ We have a hard requirement to support customers on Java 8 and Java 11+.
 
 Slipway incorporates feedback from external security teams.
 
-## Primary Goals
+### Primary Goals
 
 Slipway aims to provide first-class, extensible support for: 
 
@@ -71,28 +93,26 @@ Slipway aims to provide first-class, extensible support for:
 * Comprehensive integration tests
 * Ring compatibility
 
-## Secondary Goals
+### Secondary Goals
 
 * Broad support for general Jetty use-cases / configuration
 
-## Future Goals
+### Future Goals
 
 * Backport our SAML, OpenID and OAuth authentication implementations
-* Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+* Open-source a full-stack example application using slipway in [Shortcut](https://github.com/factorhouse/shortcut).
 
-## Currently Out Of Scope
+### Currently Out Of Scope
 
 * Http2/3
 * Asynchronous Handlers
 * Ajax (including auto-fallback)
 
-## Non-Goals
+### Non-Goals
 
 * A simplified DSL for Jetty
 
-* Jetty 9: If you require running with Java 8
-* Jetty 10: Recommended for general use, requires Java 11+
-* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
+## Using Slipway
 
 ### Quick Start
 
@@ -130,21 +150,15 @@ Your sample application with [property file based authz](https://docs.kpow.io/au
 
 Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
 
------
-
-![Slipway Login](docs/img/slipway-auth.png)
-
------
-
 After login the default home-page presents some useful links for user info and error pages.
+
+-----
 
 ![Slipway Home](docs/img/slipway-home.png)
 
------
+## Configuring Slipway
 
-### Configuration
-
-TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options configuration and [example.clj](common/test/slipway/example.clj) for example usage.
+Slipway is configured with maps of namespaced-keys.
 
 ```clojure
   #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
@@ -228,7 +242,7 @@ TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options conf
   #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
 ```
 
-### TBD Update Below This Line
+### TBD Below this line is out of date, will be updated shortly.
 ----
 
 ### WebSockets
@@ -272,7 +286,7 @@ The `ws` object passed to each handler function implements the `slipway.websocke
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box. 
 
-Simply include Sente in your project's dependencies and follow Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started), and use the slipway web-server adapter:
+Include Sente in your project's dependencies and follow Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started), and use the slipway web-server adapter:
 
 ```clojure 
 (require '[slipway.sente :refer [get-sch-adapter]])
@@ -284,52 +298,14 @@ JAAS implements a Java version of the standard Pluggable Authentication Module (
 
 JAAS can be used for two purposes:
 
-* for authentication of users, to reliably and securely determine who is currently executing Java code, regardless of whether the code is running as an application, an applet, a bean, or a servlet; and
+* for authentication of users, to reliably and securely determine who is currently executing Java code
 * for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
-
-JAAS implements a Java version of the standard Pluggable Authentication Module (PAM) framework. See Making Login Services Independent from Authentication Technologies for further information.
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
 
-Slipway is the only ring adapter that supports Jetty JAAS out of the box. Thus, one of the few ways to authenticate using LDAP in the Clojure world. Oftentimes a requirement for the enterprise.
-
 #### Usage
 
-Pass an `:auth` key to your `run-jetty` options map:
-
-```clojure 
-(require '[slipway.auth.constraints :as constraints])
-
-{:auth-method         "basic"                               ;; either "basic" (basic authentication) or "form" (form based authencation, with a HTML login form served at :login-uri)
- :auth-type           "jaas"                                ;; either "jaas" or "hash"
- :login-uri           "/login"                              ;; the URI where the login form is hosted
- :login-retry-uri     "/login-retry"
- :realm               "my-app"
- :logout-uri          "/logout"
- :session             {:http-only?            true
-                       :same-site             :strict       ;; can be :lax, :strict or :none
-                       :tracking-modes        #{:cookie}    ;; can be :url, :cookie :ssl
-                       :max-inactive-interval -1}           ;; set the max period of inactivity, after which the session is invalidated, in seconds.
- :constraint-mappings (constraints/constraint-mappings
-                       ;; /css/* is not protected. Everyone (including unauthenticated users) can access
-                       ["/css/*" (constraints/no-auth)]
-                       ;; /api/* is protected. Any authenticated user can access
-                       ["/api/*" (constraints/basic-auth-any-constraint)])}
-```
-
-Successfully authenticated users will have their details assoced into the Ring request map under the key `:slipway.auth/user` - it contains: 
-
-```clojure
-{:provider :jetty
- :name     "Jane"
- :roles    ["admin"]}
-```
-
-#### Constraints
-
-[Constraints](https://www.eclipse.org/jetty/javadoc/jetty-10/org/eclipse/jetty/util/security/Constraint.html) describe an auth and/or data constraint. 
-
-The `slipway.auth.constraints` namespace has a few useful helper functions for working with constraints. 
+TODO
 
 #### jaas.config
 
