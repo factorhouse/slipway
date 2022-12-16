@@ -46,18 +46,21 @@ These configurations are used by our integration tests. The stateful start!/stop
 ```clojure
 (require '[slipway.example :as example])
 
-(example/start! [:http :hash-auth :short-session])
+(example/start! [:http :hash-auth])
 ```
 
 Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
 
-You can login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
-
-Thanks to the `:short-session` configuration your session will expire after 10s of inactivity.
+Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
 
 -----
 
-![Slipway Login](docs/img/slipway-login.png)
+![Slipway Login](docs/img/slipway-auth.png)
+
+----
+
+![Slipway Home](docs/img/slipway-home.png)
+
 
 ## Why Jetty?
 
