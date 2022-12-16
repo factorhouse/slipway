@@ -57,10 +57,11 @@ Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password 
 
 ![Slipway Login](docs/img/slipway-auth.png)
 
-----
+-----
 
 ![Slipway Home](docs/img/slipway-home.png)
 
+-----
 
 ## Why Jetty?
 
