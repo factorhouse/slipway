@@ -1,5 +1,15 @@
 # Slipway: a Clojure companion to Jetty
 
+* [Introduction](#introduction)
+* [Installation](#installation)
+* [Prior Art](#prior-art)
+* [Why Jetty?](#why-jetty)
+* [Why Slipway?](#why-slipway)
+* [Using Slipway](#using-slipway)
+* [Configuring Slipway](#configuring-slipway)
+
+# Introduction
+
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
@@ -42,7 +52,7 @@ Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and 
 
 More than a simple web server, Jetty is battle-tested, performant, and feature rich.
 
-## About Slipway
+## Why Slipway?
 
 ### Our Requirements
 
@@ -147,9 +157,9 @@ After login the default home-page presents some useful links for user info and e
 
 -----
 
-### Configuration
+## Configuring Slipway
 
-TBD: short-term check out [slipway.clj](common/src/slipway.clj) for options configuration and [example.clj](common/test/slipway/example.clj) for example usage.
+Slipway is configured with maps of namespaced-keys.
 
 ```clojure
   #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
