@@ -4,9 +4,9 @@
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
 
-Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty, providing access to a battle-tested web server with websocket support.
+Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 
-We will (eventually) open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+Slipway provides access to a battle-tested web server with websocket support.
 
 ### Prior Art
 
@@ -106,6 +106,7 @@ Slipway aims to provide first-class, extensible support for:
 ## Future Goals
 
 * Backport our SAML, OpenID and OAuth authentication implementations
+* Open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
 
 ## Currently Out Of Scope
 
