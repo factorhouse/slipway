@@ -8,9 +8,17 @@ Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty.
 
 Slipway provides access to a battle-tested web server with websocket support.
 
-Slipway supports Jetty 9, 10, 11, and will support 12 once it stabilises.
-
 Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
+
+### Installation
+
+| Jetty Version | Clojars Project |
+| ------------- | --------------- |
+| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
+| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
+| Jetty 12 | Available once v12 stabilises. |
+
 
 ### Prior Art
 
@@ -81,14 +89,6 @@ Slipway aims to provide first-class, extensible support for:
 ## Non-Goals
 
 * A simplified DSL for Jetty
-
-## Installation
-
-| Jetty Version | Clojars Project |
-| ------------- | --------------- |
-| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 
 * Jetty 9: If you require running with Java 8
 * Jetty 10: Recommended for general use, requires Java 11+
