@@ -6,7 +6,16 @@
 
 Slipway is our [Clojure](https://clojure.org/) companion to embedded Jetty, providing access to a battle-tested web server with websocket support.
 
-We intend (eventually) to open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+We will (eventually) open-source a full-stack example application using slipway in [shortcut](https://github.com/factorhouse/shortcut).
+
+### Prior Art
+
+Slipway is based on and in some cases includes code from the following projects:
+
+* [sunng87/ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) by [Ning Sun](https://github.com/sunng87)
+* [ring-clojure/ring](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) by [James Reeves](https://github.com/weavejester)
+
+We appreciate the great open-source work of Ning and James that allowed us to build our initial product.
 
 ### Quick Start
 
@@ -246,7 +255,7 @@ The `ws` object passed to each handler function implements the `slipway.websocke
   (req-of [this]))
 ```
 
-#### Sente integration
+#### Sente Integration
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box. 
 
@@ -383,8 +392,6 @@ ldaploginmodule {
 ## Examples
 
 Check back soon! 
-
-Slipway is the first step towards us releasing [shortcut](https://github.com/operatr-io/shortcut): an opinionated template for enterprise Clojure development.
 
 ## License
 
