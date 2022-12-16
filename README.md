@@ -39,7 +39,7 @@ More than a simple web server, Jetty is battle-tested, performant, and feature r
 
 ## Our Requirements
 
-Kpow is a secure web-application with a rich SPA UI served by websockets.
+Kpow is a secure web-application with a SPA UI served by websockets.
 
 Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
 
