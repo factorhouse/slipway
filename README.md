@@ -21,7 +21,7 @@ We appreciate the great open-source work of Ning and James that forms the base o
 
 ## Why Jetty?
 
-Jetty is a mature, stable, commercially supported project with an [active, deeply experienced](https://github.com/eclipse/jetty.project/graphs/contributors) core team of contributors.
+Jetty is a mature, stable, commercially supported project with an [active, experienced](https://github.com/eclipse/jetty.project/graphs/contributors) team of core contributors.
 
 Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
 
