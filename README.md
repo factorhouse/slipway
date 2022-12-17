@@ -50,7 +50,7 @@ Jetty is a mature, stable, commercially supported project with an [active, exper
 
 Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
 
-More than a simple web server, Jetty is battle-tested, performant, and feature rich.
+Jetty is a great choice of web-server for a general purpose web-application.
 
 ## Why Slipway?
 
