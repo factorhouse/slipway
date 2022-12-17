@@ -17,6 +17,13 @@
 * [Prior Art](#prior-art)
 * [Why Jetty?](#why-jetty)
 * [Why Slipway?](#why-slipway)
+  * [Our Requirements](#our-requirements)
+  * [Primary Goals](#primary-goals)
+  * [Secondary Goals](#secondary-goals)
+  * [Future Goals](#future-goals)
+  * [Out of Scope](#out-of-scope)
+  * [Non-Goals](#non-goals)
+  * [Which Version to Use?](#which-version-to-use)  
 * [Using Slipway](#using-slipway)
 * [Configuring Slipway](#configuring-slipway)
 
@@ -92,7 +99,7 @@ Slipway aims to provide first-class, extensible support for:
 * Backport our SAML, OpenID and OAuth authentication implementations
 * Open-source a full-stack example application using slipway in [Shortcut](https://github.com/factorhouse/shortcut).
 
-### Currently Out of Scope
+### Out of Scope
 
 * Http2/3
 * Asynchronous Handlers
@@ -130,7 +137,7 @@ Start slipway with a ring-handler and a map of configuration options:
 
 Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
 
-### Example Configurations
+### Example Servers
 
 Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
 
