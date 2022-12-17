@@ -13,7 +13,7 @@
 
 ----
 
-#### Slipway by Factor House
+### Slipway by Factor House
 
 * [Introduction](#introduction)
 * [Prior Art](#prior-art)
