@@ -166,6 +166,12 @@ After login the default home-page presents some useful links for user info and e
 
 ## Configuring Slipway
 
+Slipway holds close to Jetty idioms for configuration rather than presenting a distinct DSL.
+
+Jetty is sophisticated as it addresses a complex domain with flexibility and configurability.
+
+Our goal is to support configuring Jetty in the style that Jetty intends, providing the means to leverage all of Jetty's capabilities if you require, while providing sensible defaults for basic behaviour.
+
 Slipway is configured with maps of namespaced-keys.
 
 ```clojure
