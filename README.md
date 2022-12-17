@@ -14,7 +14,6 @@
 ----
 
 * [Introduction](#introduction)
-* [Installation](#installation)
 * [Prior Art](#prior-art)
 * [Why Jetty?](#why-jetty)
 * [Why Slipway?](#why-slipway)
