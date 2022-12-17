@@ -25,6 +25,8 @@
   * [Non-Goals](#non-goals)
   * [Which Version to Use?](#which-version-to-use)  
 * [Using Slipway](#using-slipway)
+  * [Quick Start](#quick-start)
+  * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
 
 ----
