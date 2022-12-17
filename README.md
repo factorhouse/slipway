@@ -55,17 +55,13 @@ Jetty is a great choice of web-server for a general purpose web-application.
 
 ### Our Requirements
 
-Kpow is a secure web-application with a SPA UI served by websockets.
-
-Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
-
-> User: Can I configure a custom CA certificate to secure my JAAS/LDAPS authentication?
-
-> Kpow Team: Yes (thanks to Jetty).
+Kpow is a web-application with a SPA UI served by websockets.
 
 We have a hard requirement to support customers on Java 8 and Java 11+.
 
-Slipway incorporates feedback from external security teams.
+Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
+
+We incorporate automated NVD scanning and feedback from external security teams.
 
 ### Primary Goals
 
@@ -96,7 +92,7 @@ Slipway aims to provide first-class, extensible support for:
 * Backport our SAML, OpenID and OAuth authentication implementations
 * Open-source a full-stack example application using slipway in [Shortcut](https://github.com/factorhouse/shortcut).
 
-### Currently Out Of Scope
+### Currently Out of Scope
 
 * Http2/3
 * Asynchronous Handlers
@@ -106,7 +102,7 @@ Slipway aims to provide first-class, extensible support for:
 
 * A simplified DSL for Jetty
 
-### Usage
+### Which Version to Use?
 
 * Jetty 9: If you require running with Java 8
 * Jetty 10: Recommended for general use, requires Java 11+
