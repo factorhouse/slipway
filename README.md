@@ -228,6 +228,18 @@ Slipway accepts a list of server-connectors, allowing you to run multi-connector
 (def server #::server{:connectors [http-connector https-connector]})
 ```
 
+#### :slipway.server/thread-pool
+
+Leave nil for the sensible default threadpool, or provide a concrete `org.eclipse.jetty.util.thread.ThreadPool`.
+
+#### :slipway.server/error-handler
+
+Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring / application level errors which will be handled separately within your application. This error handler is triggered rarely for server-level 500's, etc.
+
+Slipway provides a convenience namespace for basic Jetty error-handling:
+
+1. [common-javax/src/slipway/error.clj](common-javax/src/slipway/error.clj#L14): Jetty 9 and 10.
+2. [common-jakarta/src/slipway/error.clj](common-jakarta/src/slipway/error.clj#L14): Jetty 11.
 
 ----
 
