@@ -32,6 +32,7 @@
 * [Configuring Slipway](#configuring-slipway)
   * [:slipway](#slipway)
   * [:slipway.server](#slipwayserver)
+  * [:slipway.handler](#slipwayhandler)  
   * [All Options](#all-options)
 
 ----
@@ -240,6 +241,17 @@ Slipway provides a utility namespace for general-purpose ErrorHandler creation a
 
 1. [common-javax/src/slipway/error.clj](common-javax/src/slipway/error.clj#L14): Jetty 9 and 10.
 2. [common-jakarta/src/slipway/error.clj](common-jakarta/src/slipway/error.clj#L14): Jetty 11.
+
+### :slipway.handler
+
+The handler namespace allows configuration of the default server-handler (same for all versions of Jetty).
+
+```clojure
+#:slipway.handler{:context-path    "the root context path, default '/'"
+                  :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                  :null-path-info? "true if /path is not redirected to /path/, default true"}
+```
+
 
 ----
 
