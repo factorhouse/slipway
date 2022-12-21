@@ -31,6 +31,7 @@
   * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
   * [:slipway](#slipway)
+  * [:slipway.server](#slipway.server)
   * [All Options](#all-options)
 
 ----
