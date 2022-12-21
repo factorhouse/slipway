@@ -52,7 +52,7 @@ Slipway is based on, and in some cases includes code from the following projects
 * [sunng87/ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) by [Ning Sun](https://github.com/sunng87)
 * [ring-clojure/ring](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) by [James Reeves](https://github.com/weavejester)
 
-We appreciate the great open-source work of Ning and James that forms the base of this project.
+We appreciate the great open-source work of Ning Sun and James that forms the base of this project.
 
 ## Why Jetty?
 
