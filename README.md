@@ -39,6 +39,8 @@
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
+* [Sente Integration](#sente-integration)
+
 
 ----
 
@@ -368,55 +370,24 @@ Configuration of the Gzip Handler.
                        :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 ```
 
-### TBD Below this line is out of date, will be updated shortly.
-----
+### Sente Integration
 
-### WebSockets
+Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box.
 
-Slipway provides the same API as the [ring-jetty9-adapter](https://github.com/sunng87/ring-jetty9-adapter) for upgrading HTTP requests to WebSockets. 
-
-```clojure 
-(require '[slipway.websockets :as ws])
-(require '[slipway.server :as slipway])
-
-(def ws-handler {:on-connect (fn [ws] (ws/send! ws "Hello world"))
-                 :on-error (fn [ws e])
-                 :on-close (fn [ws status-code reason])
-                 :on-text (fn [ws text-message])
-                 :on-bytes (fn [ws bytes offset len])
-                 :on-ping (fn [ws bytebuffer])
-                 :on-pong (fn [ws bytebuffer])})
-
-(defn handler [req]
-  (if (ws/upgrade-request? req)
-    (ws/upgrade-response ws-handler)
-    {:status 406}))
-    
-(slipway/run-jetty handler {:port 3000 :join? false})
-```
-
-The `ws` object passed to each handler function implements the `slipway.websockets.WebSockets` protocol:
+The entry-point can be found in the [slipway/sente.clj namespace](/common/src/slipway/sente.clj#L66)
 
 ```clojure 
-(defprotocol WebSockets
-  (send! [this msg] [this msg callback])
-  (ping! [this] [this msg])
-  (close! [this] [this status-code reason])
-  (remote-addr [this])
-  (idle-timeout! [this ms])
-  (connected? [this])
-  (req-of [this]))
+(defn start-server
+  [opts]
+  (let [server (sente/make-channel-socket-server! (slipway.sente/get-sch-adapter) opts)
+        {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
+    {:ws-handshake   ajax-get-or-ws-handshake-fn
+     :ch-chsk        ch-recv
+     :chsk-send!     (partial send-msg connected-uids send-fn)
+     :connected-uids connected-uids}))
 ```
 
-#### Sente Integration
-
-Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box. 
-
-Include Sente in your project's dependencies and follow Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started), and use the slipway web-server adapter:
-
-```clojure 
-(require '[slipway.sente :refer [get-sch-adapter]])
-```
+Refer to Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started) for more information.
 
 ### JAAS integration
 
