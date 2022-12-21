@@ -39,7 +39,7 @@
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
-* [Sente Webscocket Integration](#sente-websocker-integration)
+* [Sente Webscocket Integration](#sente-websocket-integration)
 
 
 ----
@@ -389,7 +389,7 @@ The entry-point can be found in the [slipway/sente.clj namespace](/common/src/sl
 
 Refer to Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started) for more information.
 
-### JAAS integration
+### JAAS Authentication Integration
 
 JAAS implements a Java version of the standard Pluggable Authentication Module (PAM) framework.
 
@@ -399,10 +399,6 @@ JAAS can be used for two purposes:
 * for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
-
-#### Usage
-
-TODO
 
 #### jaas.config
 
@@ -474,10 +470,6 @@ ldaploginmodule {
    roleObjectClass="groupOfUniqueNames";
    };
 ```
-
-## Examples
-
-Check back soon! 
 
 ## License
 
