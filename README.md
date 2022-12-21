@@ -410,7 +410,7 @@ Start your application (JAR or REPL session) with the additional JVM option
 
 `-Djava.security.auth.login.config=/some/path/to/jaas.config`
 
-For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService)
+For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService).
 
 #### Hash Authentication
 
