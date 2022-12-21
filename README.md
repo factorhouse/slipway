@@ -187,12 +187,25 @@ The top-level namespace provides configuration to determine if slipway joins the
 
 ### :slipway.server
 
+The server namespace allows configuration of core server options.
+
 ```clojure
 #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
                  :connectors    "the connectors supported by this server"
                  :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
                  :error-handler "the error-handler used by this server for Jetty level errors"}
-```                   
+```
+
+#### :slipway.server/handler
+
+Slipway provides the following default server-handler implementations:
+
+1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj): Jetty 9 
+2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj): Jetty 10/11
+
+The correct default implemetation will be chosen automatically for the version of slipway in use.
+
+Provide a custom server handler by implementing the server/handler defmethod and configuring the dispatch key.
             
 ----
 
