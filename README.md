@@ -34,6 +34,7 @@
   * [:slipway.server](#slipwayserver)
   * [:slipway.handler](#slipwayhandler)
   * [:slipway.websockets](#slipwaywebsockets)
+  * [:slipway.session](#slipwaysession)
   * [All Options](#all-options)
 
 ----
@@ -276,7 +277,93 @@ Jetty 10/11 provides more configurability of websockets, as you can see in the d
                      :max-binary-message-size "max websocket binary message size"}
 ```
 
-See Jetty docs to understand how to tune websockets for your own purposes.
+See the Jetty docs to understand how to tune websockets for your own purposes.
+
+### :slipway.session
+
+Configuration of http session options.
+
+```clojure
+#:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
+                  :http-only?            "set the http-only flag on session cookies (default true)"
+                  :same-site             "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
+                  :max-inactive-interval "max session idle time (in s, default -1)"
+                  :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
+                  :cookie-name           "the name of the session cookie"
+                  :session-id-manager    "the meta manager used for cross context session management"
+                  :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
+                  :path-parameter-name   "name of path parameter used for URL session tracking"}
+```
+
+### :slipway.security
+
+Configuration of Jetty authz options.
+
+See examples below for configuration guides to JAAS and HASH authentication.
+
+```clojure
+#:slipway.security{:realm               "the Jetty authentication realm"
+                   :hash-user-file      "the path to a Jetty Hash User File"
+                   :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                   :identity-service    "a concrete Jetty IdentityService"
+                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+```                     
+
+### :slipway.connector.http
+
+Configuration of an HTTP server connector.
+
+```clojure
+#:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
+                         :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                         :idle-timeout    "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                         :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                         :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+                         :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
+                         :configurator    "a fn taking the final connector as argument, allowing further configuration"}
+````
+
+### :slipway.connector.https
+
+Configuration of an HTTPS server connector.
+
+```clojure
+#:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                          :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
+                          :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                          :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                          :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+                          :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                          :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                          :keystore                   "keystore to use, either path (String) or concrete KeyStore"
+                          :keystore-type              "type of keystore, e.g. JKS"
+                          :keystore-password          "password of the keystore"
+                          :key-manager-password       "password for the specific key within the keystore"
+                          :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+                          :truststore-password        "password of the truststore"
+                          :truststore-type            "type of the truststore, eg. JKS"
+                          :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+                          :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+                          :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+                          :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+                          :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+                          :security-provider          "the security provider name"
+                          :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+                          :ssl-context                "a concrete pre-configured SslContext"
+                          :sni-required?              "true if a SNI certificate is required, default false"
+                          :sni-host-check?            "true if the SNI Host name must match, default false"}
+```
+
+### :slipway.handler.gzip
+
+Configuration of the Gzip Handler.
+
+```clojure
+#:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
+                       :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
+                       :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
+                       :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
+```
 
 ----
 
