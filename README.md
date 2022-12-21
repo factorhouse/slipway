@@ -231,7 +231,7 @@ Slipway accepts a list of server-connectors, allowing you to run multi-connector
 
 #### :slipway.server/thread-pool
 
-Leave nil for the sensible default threadpool, or provide a concrete `org.eclipse.jetty.util.thread.ThreadPool`.
+Leave nil for the sensible default threadpool or provide a concrete `org.eclipse.jetty.util.thread.ThreadPool`.
 
 #### :slipway.server/error-handler
 
