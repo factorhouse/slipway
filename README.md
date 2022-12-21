@@ -41,6 +41,7 @@
   * [:slipway.handler.gzip](#slipwayhandlergzip)
 * [Sente Websockets](#sente-websockets)
 * [JAAS Authentication](#jaas-authentication)
+  * [-Djava.security.auth.login.config](#djavasecurityauthloginconfig)
 
 ----
 
