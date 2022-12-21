@@ -39,8 +39,8 @@
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
-* [Sente Webscocket Integration](#sente-websocket-integration)
-* [JAAS Authentication Integration](#jaas-authentication-integration)
+* [Sente Webscockets](#sente-websocket)
+* [JAAS Authentication](#jaas-authentication)
 
 ----
 
@@ -370,7 +370,7 @@ Configuration of the Gzip Handler.
                        :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 ```
 
-### Sente Websocket Integration
+### Sente Websockets
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box.
 
@@ -389,7 +389,7 @@ The entry-point can be found in the [slipway/sente.clj](/common/src/slipway/sent
 
 Refer to Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started) for more information.
 
-### JAAS Authentication Integration
+### JAAS Authentication
 
 JAAS implements a Java version of the standard Pluggable Authentication Module (PAM) framework.
 
