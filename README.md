@@ -31,6 +31,7 @@
   * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
   * [:slipway](#slipway)
+  * [All Options](#all-options)
 
 ----
 
@@ -183,6 +184,7 @@ Slipway takes a map of namespaced configuration.
 
 **:slipway** provides a configuration option that determines if the Jetty thread is joined on startup.
 
+### All Options
 
 ```clojure
   #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
