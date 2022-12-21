@@ -40,7 +40,7 @@
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
 * [Sente Webscocket Integration](#sente-websocket-integration)
-
+* [JAAS Authentication Integration](#jaas-authentication-integration)
 
 ----
 
