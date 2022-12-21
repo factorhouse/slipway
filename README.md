@@ -19,7 +19,7 @@
 * [Prior Art](#prior-art)
 * [Why Jetty?](#why-jetty)
 * [Why Slipway?](#why-slipway)
-  * [Our Requirements](#our-requirements)
+  * [Requirements](#requirements)
   * [Primary Goals](#primary-goals)
   * [Secondary Goals](#secondary-goals)
   * [Future Goals](#future-goals)
@@ -30,6 +30,7 @@
   * [Quick Start](#quick-start)
   * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
+  * [:slipway](#:slipway)
 
 ----
 
@@ -64,7 +65,7 @@ Jetty is a great choice of web-server for a general purpose web-application.
 
 ## Why Slipway?
 
-### Our Requirements
+### Requirements
 
 Kpow is a web-application with a SPA UI served by websockets.
 
@@ -166,13 +167,22 @@ After login the default home-page presents some useful links for user info and e
 
 ## Configuring Slipway
 
-Slipway holds close to Jetty idioms for configuration rather than presenting a distinct DSL.
-
 Jetty is sophisticated as it addresses a complex domain with flexibility and configurability.
 
-Our goal is to support configuring Jetty in the style that Jetty intends, providing the means to leverage all of Jetty's capabilities if you require, while providing sensible defaults for basic behaviour.
+Slipway holds close to Jetty idioms for configuration rather than presenting a simplified DSL.
 
-Slipway is configured with maps of namespaced-keys.
+Our goal is to support Jetty configuration in the style that Jetty intends, providing the means to leverage all of Jetty's capabilities if you require, while providing sensible defaults for basic behaviour.
+
+Slipway takes a map of namespaced configuration.
+
+### :slipway
+
+```
+#:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
+```
+
+The top-level **slipway** namespace provides a single configuration option that determines if the Jetty thread is joined on startup.
+
 
 ```clojure
   #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
