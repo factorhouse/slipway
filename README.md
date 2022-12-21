@@ -200,8 +200,8 @@ The server namespace allows configuration of core server options.
 
 Slipway provides the following default server-handler implementations:
 
-1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj): Jetty 9 
-2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj): Jetty 10/11
+1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj#L61): Jetty 9 
+2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj#L45): Jetty 10/11
 
 The correct default implemetation will be chosen automatically for the version of slipway in use.
 
