@@ -32,7 +32,8 @@
 * [Configuring Slipway](#configuring-slipway)
   * [:slipway](#slipway)
   * [:slipway.server](#slipwayserver)
-  * [:slipway.handler](#slipwayhandler)  
+  * [:slipway.handler](#slipwayhandler)
+  * [:slipway.websockets](#slipwaywebsockets)
   * [All Options](#all-options)
 
 ----
@@ -188,7 +189,7 @@ The top-level namespace provides configuration to determine if slipway joins the
 
 ### :slipway.server
 
-The server namespace allows configuration of core server options.
+Configuration of core server options.
 
 ```clojure
 #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
@@ -244,7 +245,7 @@ Slipway provides a utility namespace for general-purpose ErrorHandler creation a
 
 ### :slipway.handler
 
-The handler namespace allows configuration of the default server-handler (same for all versions of Jetty).
+Configuration of the default server-handler (same for all versions of Jetty).
 
 ```clojure
 #:slipway.handler{:context-path    "the root context path, default '/'"
@@ -252,6 +253,30 @@ The handler namespace allows configuration of the default server-handler (same f
                   :null-path-info? "true if /path is not redirected to /path/, default true"}
 ```
 
+### :slipway-websockets
+
+Configuration of websockets options.
+
+Jetty 10/11 provides more configurability of websockets, as you can see in the different options below:
+
+```clojure
+;; Jetty 10 / Jetty 11 Websockets
+#:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
+                     :input-buffer-size       "max websocket input buffer size (in bytes)"
+                     :output-buffer-size      "max websocket output buffer size (in bytes)"
+                     :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
+                     :max-binary-message-size "max websocket binary message size (in bytes)"
+                     :max-frame-size          "max websocket frame size (in bytes)"
+                     :auto-fragment           "websocket auto fragment (boolean)"}
+
+;; Jetty 9 Websockets
+#:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
+                     :input-buffer-size       "max websocket input buffer size"
+                     :max-text-message-size   "max websocket text message size"
+                     :max-binary-message-size "max websocket binary message size"}
+```
+
+The defaults should be reasonable for general use. Read the source and Jetty documentation to understand how to tune websockets for your own purposes.
 
 ----
 
