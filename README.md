@@ -178,11 +178,22 @@ Slipway takes a map of namespaced configuration.
 
 ### :slipway
 
+The top-level namespace provides configuration to determine if slipway joins the Jetty threadpool.
+
 ```clojure
 #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
 ```
 
-**:slipway** provides a configuration option that determines if the Jetty thread is joined on startup.
+### :slipway.server
+
+```clojure
+#:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
+                 :connectors    "the connectors supported by this server"
+                 :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
+                 :error-handler "the error-handler used by this server for Jetty level errors"}
+```                   
+            
+----
 
 ### All Options
 
