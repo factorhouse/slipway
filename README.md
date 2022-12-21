@@ -44,7 +44,8 @@
   * [-Djava.security.auth.login.config](#-djavasecurityauthloginconfig)
   * [Hash Authentication](#hash-authentication)
   * [LDAP Authentication](#ldap-authentication)
-* [License](#license) 
+* [License](#license)
+  * [Source Notes](#source-notes)
 
 ----
 
@@ -482,5 +483,10 @@ my-realm {
 ## License
 
 Distributed under the MIT License.
+
+### Source Notes
+
+1. The slipway.websockets namespace is an adaption of Ning Sun's Websockets implementation.
+2. The slipway.servlet namespace includes some functions from James Reeves ring project.
 
 Copyright (c) 2022 Factor House
