@@ -31,7 +31,7 @@
   * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
   * [:slipway](#slipway)
-  * [:slipway.server](#slipway.server)
+  * [:slipway.server](#slipwayserver)
   * [All Options](#all-options)
 
 ----
@@ -237,12 +237,13 @@ The top-level namespace provides configuration to determine if slipway joins the
                            :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
                            :configurator    "a fn taking the final connector as argument, allowing further configuration"}
 
-  #:slipway.authz{:realm               "the Jetty authentication realm"
-                  :hash-user-file      "the path to a Jetty Hash User File"
-                  :login-service       "pluggable Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                  :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                  :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
-
+  #:slipway.security{:realm               "the Jetty authentication realm"
+                     :hash-user-file      "the path to a Jetty Hash User File"
+                     :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                     :identity-service    "a concrete Jetty IdentityService"
+                     :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                     :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
+                     
   #:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
                     :http-only?            "set the http-only flag on session cookies (default true)"
                     :same-site             "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
