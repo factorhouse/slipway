@@ -39,7 +39,7 @@
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
-* [Sente Integration](#sente-integration)
+* [Sente Webscocket Integration](#sente-websocker-integration)
 
 
 ----
@@ -370,7 +370,7 @@ Configuration of the Gzip Handler.
                        :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
 ```
 
-### Sente Integration
+### Sente Websocket Integration
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box.
 
