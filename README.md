@@ -177,11 +177,11 @@ Slipway takes a map of namespaced configuration.
 
 ### :slipway
 
-```
+```clojure
 #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
 ```
 
-The top-level **slipway** namespace provides a single configuration option that determines if the Jetty thread is joined on startup.
+**:slipway** provides a configuration option that determines if the Jetty thread is joined on startup.
 
 
 ```clojure
