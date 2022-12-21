@@ -30,7 +30,7 @@
   * [Quick Start](#quick-start)
   * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
-  * [:slipway](#:slipway)
+  * [:slipway](#slipway)
 
 ----
 
