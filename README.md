@@ -253,7 +253,7 @@ Configuration of the default server-handler (same for all versions of Jetty).
                   :null-path-info? "true if /path is not redirected to /path/, default true"}
 ```
 
-### :slipway-websockets
+### :slipway.websockets
 
 Configuration of websockets options.
 
@@ -276,7 +276,7 @@ Jetty 10/11 provides more configurability of websockets, as you can see in the d
                      :max-binary-message-size "max websocket binary message size"}
 ```
 
-The defaults should be reasonable for general use. See Jetty docs to understand how to tune websockets for your own purposes.
+See Jetty docs to understand how to tune websockets for your own purposes.
 
 ----
 
