@@ -39,7 +39,7 @@
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
   * [:slipway.handler.gzip](#slipwayhandlergzip)
-* [Sente Webscockets](#sente-websocket)
+* [Sente Websockets](#sente-websockets)
 * [JAAS Authentication](#jaas-authentication)
 
 ----
