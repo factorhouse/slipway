@@ -234,9 +234,9 @@ Leave nil for the sensible default threadpool, or provide a concrete `org.eclips
 
 #### :slipway.server/error-handler
 
-Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring / application level errors which will be handled separately within your application. This error handler is triggered rarely for server-level 500's, etc.
+Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring / application level errors which will be handled separately within your application.
 
-Slipway provides a convenience namespace for basic Jetty error-handling:
+Slipway provides a utility namespace for general-purpose ErrorHandler creation and error logging:
 
 1. [common-javax/src/slipway/error.clj](common-javax/src/slipway/error.clj#L14): Jetty 9 and 10.
 2. [common-jakarta/src/slipway/error.clj](common-jakarta/src/slipway/error.clj#L14): Jetty 11.
