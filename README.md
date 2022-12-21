@@ -44,6 +44,7 @@
   * [-Djava.security.auth.login.config](#-djavasecurityauthloginconfig)
   * [Hash Authentication](#hash-authentication)
   * [LDAP Authentication](#ldap-authentication)
+* [License](#license) 
 
 ----
 
