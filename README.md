@@ -374,7 +374,7 @@ Configuration of the Gzip Handler.
 
 Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box.
 
-The entry-point can be found in the [slipway/sente.clj namespace](/common/src/slipway/sente.clj#L66)
+The entry-point can be found in the [slipway/sente.clj](/common/src/slipway/sente.clj#L66) namespace.
 
 ```clojure 
 (defn start-server
@@ -400,20 +400,20 @@ JAAS can be used for two purposes:
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
 
-#### jaas.config
+#### -Djava.security.auth.login.config
 
 Start your application (JAR or REPL session) with the additional JVM opt `-Djava.security.auth.login.config=/some/path/to/jaas.config`
 
 For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService)
 
-#### Hash realm authentication
+#### Hash Authentication
 
 The simplest JAAS authentication module. A static list of hashed users in a file. 
 
-Example `jaas.config`: ('my-app' must be the same as the configured :realm)
+Example `jaas.config`: ('my-realm' must be the same as the configured :realm)
 
 ``` 
-my-app {
+my-realm {
            org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
            debug="true"
            file="dev-resources/jaas/hash-realm.properties";
@@ -444,31 +444,31 @@ user: password,kafka-users
 digest: MD5:6e120743ad67abfbc385bc2bb754e297,kafka-users
 ```
 
-#### LDAP authentication
+#### LDAP Authentication
 
-Example `jaas.config`:
+Example `jaas.config`: ('my-realm' must be the same as the configured :realm)
 
 ``` 
-ldaploginmodule {
-   org.eclipse.jetty.plus.jaas.spi.LdapLoginModule required
-   debug="true"
-   contextFactory="com.sun.jndi.ldap.LdapCtxFactory"
-   hostname="ldap.example.com"
-   port="389"
-   bindDn="cn=Directory Manager"
-   bindPassword="directory"
-   authenticationMethod="simple"
-   forceBindingLogin="false"
-   userBaseDn="ou=people,dc=alcatel"
-   userRdnAttribute="uid"
-   userIdAttribute="uid"
-   userPasswordAttribute="userPassword"
-   userObjectClass="inetOrgPerson"
-   roleBaseDn="ou=groups,dc=example,dc=com"
-   roleNameAttribute="cn"
-   roleMemberAttribute="uniqueMember"
-   roleObjectClass="groupOfUniqueNames";
-   };
+my-realm {
+  org.eclipse.jetty.jaas.spi.LdapLoginModule required
+  useLdaps="false"
+  debug="true"
+  contextFactory="com.sun.jndi.ldap.LdapCtxFactory"
+  hostname="localhost"
+  port="10389"
+  bindDn="uid=admin,ou=system"
+  bindPassword="AES:ARClD4Hz3A2VpdCGqZArl/OglnIawMHRzW0cVjraODxIeg=="
+  authenticationMethod="simple"
+  forceBindingLogin="true"
+  userBaseDn="OU=Users,DC=example,DC=com"
+  userRdnAttribute="uid"
+  userIdAttribute="uid"
+  userPasswordAttribute="userPassword"
+  roleBaseDn="OU=Groups,DC=example,DC=com"
+  roleNameAttribute="roleName"
+  roleMemberAttribute="uniqueMember"
+  roleObjectClass="groupOfUniqueNames";
+};
 ```
 
 ## License
