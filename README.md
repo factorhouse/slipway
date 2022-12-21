@@ -200,13 +200,35 @@ The server namespace allows configuration of core server options.
 
 Slipway provides the following default server-handler implementations:
 
-1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj#L61): Jetty 9 
-2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj#L45): Jetty 10/11
+1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj#L61): for Jetty 9 
+2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj#L45): for Jetty 10/11
 
-The correct default implemetation will be chosen automatically for the version of slipway in use.
+Use a custom server-handler by implementing a new server/handler defmethod and configuring the dispatch key.
 
-Provide a custom server handler by implementing the server/handler defmethod and configuring the dispatch key.
-            
+#### :slipway.server/connectors
+
+Slipway accepts a list of server-connectors, allowing you to run multi-connector setups, e.g.
+
+```clojure
+(ns slipway.example
+  (:require [slipway.connector.http :as http]
+            [slipway.connector.https :as https]
+            [slipway.server :as server]))
+
+(def http-connector #::http{:port 3000})
+
+(def https-connector #::https{:port                3443
+                              :keystore            "dev-resources/my-keystore.jks"
+                              :keystore-type       "PKCS12"
+                              :keystore-password   "password"
+                              :truststore          "dev-resources/my-truststore.jks"
+                              :truststore-password "password"
+                              :truststore-type     "PKCS12"})
+
+(def server #::server{:connectors [http-connector https-connector]})
+```
+
+
 ----
 
 ### All Options
