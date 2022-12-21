@@ -488,5 +488,6 @@ Distributed under the MIT License.
 
 1. The slipway.websockets namespace is an adaption of Ning Sun's Websockets implementation.
 2. The slipway.servlet namespace includes some functions from James Reeves ring project.
+3. The example application uses Tailwind UI CSS, this is permitted under the terms of our license.
 
 Copyright (c) 2022 Factor House
