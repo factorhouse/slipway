@@ -406,7 +406,9 @@ For more information visit the [Jetty documentation](https://www.eclipse.org/jet
 
 #### -Djava.security.auth.login.config
 
-Start your application (JAR or REPL session) with the additional JVM opt `-Djava.security.auth.login.config=/some/path/to/jaas.config`
+Start your application (JAR or REPL session) with the additional JVM option
+
+`-Djava.security.auth.login.config=/some/path/to/jaas.config`
 
 For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService)
 
