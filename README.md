@@ -1,4 +1,4 @@
-# Slipway: a Clojure companion to Jetty
+# Slipway: a Clojure Companion to Jetty
 
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
