@@ -35,6 +35,10 @@
   * [:slipway.handler](#slipwayhandler)
   * [:slipway.websockets](#slipwaywebsockets)
   * [:slipway.session](#slipwaysession)
+  * [:slipway.security](#slipwaysecurity)
+  * [:slipway.connector.http](#slipwayconnectorhttp)
+  * [:slipway.connector.https](#slipwayconnectorhttps)
+  * [:slipway.handler.gzip](#slipwayhandlergzip)
   * [All Options](#all-options)
 
 ----
