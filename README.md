@@ -159,7 +159,7 @@ Your hello world application is now running on [http://localhost:3000](http://lo
 
 ### Example Servers
 
-Various configuration of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
+Various configurations of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
 
 The stateful start!/stop! functions within that namespace are not considered canonical for Slipway, they are a convenience for our integration tests. 
 
@@ -403,6 +403,8 @@ JAAS can be used for two purposes:
 * for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
+
+Various configurations of Slipway with JAAS authz can be found in the example.clj namespace.
 
 #### -Djava.security.auth.login.config
 
