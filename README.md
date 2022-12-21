@@ -276,7 +276,7 @@ Jetty 10/11 provides more configurability of websockets, as you can see in the d
                      :max-binary-message-size "max websocket binary message size"}
 ```
 
-The defaults should be reasonable for general use. Read the source and Jetty documentation to understand how to tune websockets for your own purposes.
+The defaults should be reasonable for general use. See Jetty docs to understand how to tune websockets for your own purposes.
 
 ----
 
