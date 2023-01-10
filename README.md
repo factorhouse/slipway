@@ -170,7 +170,7 @@ The stateful start!/stop! functions within that namespace are not considered can
 (example/start! [:http :hash-auth])
 ```
 
-Your sample application with [property file based authz](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
+Your sample application with [property file based auth](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
 
 Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
 
@@ -305,7 +305,7 @@ Configuration of http session options.
 
 ### :slipway.security
 
-Configuration of Jetty authz options.
+Configuration of Jetty auth options.
 
 See examples below for configuration guides to JAAS and HASH authentication.
 
@@ -403,7 +403,7 @@ JAAS can be used for two purposes:
 
 For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
 
-Various configurations of Slipway with JAAS authz can be found in the example.clj namespace.
+Various configurations of Slipway with JAAS auth can be found in the example.clj namespace.
 
 #### -Djava.security.auth.login.config
 
