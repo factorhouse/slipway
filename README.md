@@ -57,7 +57,7 @@
 
 Slipway is a [Clojure](https://clojure.org/) companion to embedded Jetty with Websocket support.
 
-Slipway configuration models Jetty instead of exposing a simplified DSL. This approach provides the means to leverage all of Jetty's capabilities if you require while providing sensible defaults for basic behaviour. If in doubt, read the [Jetty docs](https://www.eclipse.org/jetty/documentation/jetty-10/).
+Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty capabilities while providing sensible defaults for basic behaviour. If in doubt, read the [Jetty docs](https://www.eclipse.org/jetty/documentation/jetty-10/).
 
 Use the [Community Edition](https://kpow.io/community/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
 
