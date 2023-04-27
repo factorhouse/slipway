@@ -14,24 +14,24 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Java8
         if: ${{ matrix.project == 'slipway-jetty9' }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '8'
 
       - name: Setup Java11
         if: ${{ matrix.project != 'slipway-jetty9' }}
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
 
       - name: Install clojure tools
-        uses: DeLaGuardo/setup-clojure@4.0
+        uses: DeLaGuardo/setup-clojure@10.3
         with:
           lein: 'latest' 
           github-token: ${{ secrets.GITHUB_TOKEN }}
