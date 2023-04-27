@@ -8,7 +8,7 @@
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.14.2"] ;; required for internal inconsistency within clj-kondo
-                                      [clj-kondo "2023.04.14" :exclusions [org.ow2.asm/asm]]
+                                      [clj-kondo "2023.04.14" :exclusions [org.ow2.asm/asm]] ;; asm transitive issue with websocket-jetty-server
                                       [clj-http "3.12.3" :exclusions [commons-io]]
                                       [ch.qos.logback/logback-classic "1.2.11"]
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
