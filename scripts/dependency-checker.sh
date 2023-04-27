@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="7.3.0"
+VERSION="8.2.1"
 JARS="$1"
 
 if [ ! -d "dependency-check" ]
