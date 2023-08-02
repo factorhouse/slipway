@@ -7,4 +7,11 @@
         <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
         <cve>CVE-2023-24998</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: slipway-jetty9-1.1.7-standalone.jar (shaded: org.apache.mina:mina-core:2.2.1)
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.mina/mina\-core@.*$</packageUrl>
+        <cve>CVE-2023-35887</cve>
+    </suppress>
 </suppressions>
