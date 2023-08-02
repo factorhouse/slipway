@@ -154,10 +154,10 @@
           (.sendError resp 400 "Bad Request"))))))
 
 (comment
-  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms), default 500000"
-                        :input-buffer-size       "max websocket input buffer size"
-                        :max-text-message-size   "max websocket text message size"
-                        :max-binary-message-size "max websocket binary message size"})
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
+                       :input-buffer-size       "max websocket input buffer size"
+                       :max-text-message-size   "max websocket text message size"
+                       :max-binary-message-size "max websocket binary message size"})
 
 (defn handler
   [handler {::keys [idle-timeout input-buffer-size max-text-message-size max-binary-message-size]

@@ -1,8 +1,8 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
-            [slipway.security :as security]
             [slipway.common.websockets :as common.ws]
             [slipway.handler.gzip :as gzip]
+            [slipway.security :as security]
             [slipway.server :as server]
             [slipway.servlet :as servlet]
             [slipway.session :as session]
@@ -54,9 +54,9 @@
   (HandlerList. (into-array Handler [(handler ring-handler opts) (ws/handler ring-handler opts)])))
 
 (comment
-  #:slipway.handler {:context-path    "the root context path, default '/'"
-                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
-                     :null-path-info? "true if /path is not redirected to /path/, default true"})
+  #:slipway.handler{:context-path    "the root context path, default '/'"
+                    :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
+                    :null-path-info? "true if /path is not redirected to /path/, default true"})
 
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]

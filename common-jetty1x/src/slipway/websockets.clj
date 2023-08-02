@@ -144,13 +144,13 @@
       (proxy-ws-adapter ws-fns))))
 
 (comment
-  #:slipway.websockets {:idle-timeout            "max websocket idle time (in ms), default 500000"
-                        :input-buffer-size       "max websocket input buffer size"
-                        :output-buffer-size      "max websocket output buffer size"
-                        :max-text-message-size   "max websocket text message size"
-                        :max-binary-message-size "max websocket binary message size"
-                        :max-frame-size          "max websocket frame size"
-                        :auto-fragment           "websocket auto fragment (boolean)"})
+  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
+                       :input-buffer-size       "max websocket input buffer size"
+                       :output-buffer-size      "max websocket output buffer size"
+                       :max-text-message-size   "max websocket text message size"
+                       :max-binary-message-size "max websocket binary message size"
+                       :max-frame-size          "max websocket frame size"
+                       :auto-fragment           "websocket auto fragment (boolean)"})
 
 (defn upgrade-websocket
   [req res ws opts]

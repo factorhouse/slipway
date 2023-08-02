@@ -13,15 +13,15 @@
     :strict HttpCookie$SameSite/STRICT))
 
 (comment
-  #:slipway.session {:secure-request-only?  "set the secure flag on session cookies"
-                     :http-only?            "set the http-only flag on session cookies"
-                     :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
-                     :max-inactive-interval "max session idle time (in s)"
-                     :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
-                     :cookie-name           "the name of the session cookie"
-                     :session-id-manager    "the meta manager used for cross context session management"
-                     :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
-                     :path-parameter-name   "name of path parameter used for URL session tracking"})
+  #:slipway.session{:secure-request-only?  "set the secure flag on session cookies"
+                    :http-only?            "set the http-only flag on session cookies"
+                    :same-site             "set session cookie same-site policy to :none, :lax, or :strict"
+                    :max-inactive-interval "max session idle time (in s)"
+                    :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
+                    :cookie-name           "the name of the session cookie"
+                    :session-id-manager    "the meta manager used for cross context session management"
+                    :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
+                    :path-parameter-name   "name of path parameter used for URL session tracking"})
 
 (defn handler ^SessionHandler
   [{::keys [secure-request-only? http-only? same-site max-inactive-interval tracking-modes cookie-name
