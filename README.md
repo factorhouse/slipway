@@ -92,7 +92,7 @@ We incorporate automated NVD scanning and feedback from external security teams.
 
 ### Primary Goals
 
-Slipway aims to provide first-class, extensible support for: 
+Slipway provides first-class, extensible support for: 
 
 * Core Jetty capabilities in Jetty-style
 * HTTP 1.1
