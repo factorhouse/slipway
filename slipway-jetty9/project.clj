@@ -7,10 +7,10 @@
   :license {:name "MIT License"
             :url  "https://github.com/factorhosue/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.14.2"] ;; required for internal inconsistency within clj-kondo
-                                      [clj-kondo "2023.04.14"]
+  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.15.2"] ;; required for internal inconsistency within clj-kondo
+                                      [clj-kondo "2023.07.13"]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
-                                      [ch.qos.logback/logback-classic "1.2.11"]
+                                      [ch.qos.logback/logback-classic "1.3.11"]
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
                                       [metosin/reitit-ring "0.5.18"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
@@ -25,11 +25,11 @@
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.5"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty/jetty-server "9.4.51.v20230217"]
-                 [org.eclipse.jetty.websocket/websocket-server "9.4.51.v20230217"]
-                 [org.eclipse.jetty.websocket/websocket-servlet "9.4.51.v20230217"]
-                 [org.eclipse.jetty/jetty-jaas "9.4.51.v20230217"]
-                 [org.slf4j/slf4j-api "1.7.36"]]
+                 [org.eclipse.jetty/jetty-server "9.4.52.v20230823"]
+                 [org.eclipse.jetty.websocket/websocket-server "9.4.52.v20230823"]
+                 [org.eclipse.jetty.websocket/websocket-servlet "9.4.52.v20230823"]
+                 [org.eclipse.jetty/jetty-jaas "9.4.52.v20230823"]
+                 [org.slf4j/slf4j-api "2.0.9"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
   :test-paths ["test" "common/test"]
