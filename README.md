@@ -4,12 +4,12 @@
 
 ### Installation
 
-| Jetty Version | Clojars Project | Current Jetty Dependency |
+| Jetty Version | Current Jetty Dependency | Clojars Project | 
 | ------------- | --------------- | -----------------|
-| Jetty 9 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) | 9.4.52.v20230823 |
-| Jetty 10 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) | 10.0.16 |
-| Jetty 11 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) | 11.0.16 |
-| Jetty 12 | Available once Jetty 12 stabilises. | - |
+| Jetty 9 | 9.4.52.v20230823 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
+| Jetty 10 | 10.0.16 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | 11.0.16 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
+| Jetty 12 | - | Available once Jetty 12 stabilises. |
 
 ----
 
