@@ -4,7 +4,7 @@
 
 ### Installation
 
-| Jetty Version | Current Jetty Dependency | Clojars Project | 
+| Jetty Version | Current Jetty Dependency | Clojars Project |
 | ------------- | ------------------------ | --------------- |
 | Jetty 9 | 9.4.52.v20230823 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
 | Jetty 10 | 10.0.16 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
