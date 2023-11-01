@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
-## [1.1.9] - 2023-16-05
+## [1.1.10] - 2023-11-01
+
+Bump to latest Jetty version (11.0.18 or equivalent)
+
+## [1.1.9] - 2023-10-16
 
 Bump to latest Jetty version (11.0.17 or equivalent)
 
