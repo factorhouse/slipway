@@ -13,7 +13,7 @@
 
 ----
 
-### Slipway by Factor House
+### Slipway by [Factor House](https://factorhouse.io)
 
 * [Introduction](#introduction)
 * [Prior Art](#prior-art)
@@ -53,7 +53,7 @@
 
 # Introduction
 
-[Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://kpow.io).
+[Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://factorhouse.io/kpow).
 
 Slipway is a [Clojure](https://clojure.org/) companion to embedded Jetty with Websocket support.
 
