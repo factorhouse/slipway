@@ -7,12 +7,12 @@
   :license {:name "MIT License"
             :url  "https://github.com/factorhosue/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.15.3"] ;; required for internal inconsistency within clj-kondo
-                                      [clj-kondo "2023.10.20"]
+  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.16.1"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
+                                      [clj-kondo "2023.12.15"]
                                       [clj-http "3.12.3" :exclusions [commons-io]]
-                                      [ch.qos.logback/logback-classic "1.3.11"]
-                                      [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random]]
-                                      [metosin/reitit-ring "0.5.18"]]
+                                      [ch.qos.logback/logback-classic "1.3.14"]
+                                      [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random crypto-equality]]
+                                      [metosin/reitit-ring "0.6.0"]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
                      :plugins        [[lein-cljfmt "0.8.2"]]}
              :smoke {:pedantic? :abort}}
@@ -23,13 +23,13 @@
 
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.logging "1.2.4"]
-                 [ring/ring-servlet "1.9.5"]
+                 [ring/ring-servlet "1.9.6"]
                  [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty/jetty-server "9.4.53.v20231009"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.53.v20231009"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.53.v20231009"]
                  [org.eclipse.jetty/jetty-jaas "9.4.53.v20231009"]
-                 [org.slf4j/slf4j-api "2.0.9"]]
+                 [org.slf4j/slf4j-api "2.0.10"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
   :test-paths ["test" "common/test"]
