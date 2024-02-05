@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty9 "1.1.11"
+(defproject io.factorhouse/slipway-jetty9 "1.1.12"
 
   :description "A Clojure Companion for Jetty"
 
@@ -29,7 +29,7 @@
                  [org.eclipse.jetty.websocket/websocket-server "9.4.53.v20231009"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.53.v20231009"]
                  [org.eclipse.jetty/jetty-jaas "9.4.53.v20231009"]
-                 [org.slf4j/slf4j-api "2.0.10"]]
+                 [org.slf4j/slf4j-api "2.0.11"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
   :test-paths ["test" "common/test"]

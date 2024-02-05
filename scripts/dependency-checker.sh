@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="8.4.0"
+VERSION="9.0.9"
 
 if [ ! -d "dependency-check" ]
 then
