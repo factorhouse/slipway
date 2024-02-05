@@ -25,12 +25,12 @@
                  [org.clojure/tools.logging "1.2.4"]
                  [ring/ring-servlet "1.9.6"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.19"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.19" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-servlet "10.0.19" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-server "10.0.19" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-jaas "10.0.19" :exclusions [org.slf4j/slf4j-api]]
-                 [org.slf4j/slf4j-api "2.0.10"]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "10.0.20"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "10.0.20" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "10.0.20" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "10.0.20" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-jaas "10.0.20" :exclusions [org.slf4j/slf4j-api]]
+                 [org.slf4j/slf4j-api "2.0.11"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-javax/src"]
   :test-paths ["test" "common/test"])
