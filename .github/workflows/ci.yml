@@ -64,6 +64,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nvd-${{ matrix.project.profile }}-${{ github.sha }}
+          name: nvd-${{ matrix.project }}-${{ github.sha }}
           path: ./${{ matrix.project }}/dependency-check/report/*
           retention-days: 1
