@@ -7,4 +7,9 @@
         <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
         <cve>CVE-2023-24998</cve>
     </suppress>
+    <suppress>
+        <notes>Clojure false positive</notes>
+        <packageUrl regex="true">^pkg:maven/org\.clojure/.*$</packageUrl>
+        <cve>CVE-2017-20189</cve>
+    </suppress>
 </suppressions>
