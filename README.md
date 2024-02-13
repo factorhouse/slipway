@@ -2,7 +2,7 @@
 
 [![Slipway Test](https://github.com/operatr-io/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/operatr-io/slipway/actions/workflows/ci.yml)
 
-# Versions
+## Versions
 
 | Jetty Version | Current Jetty Dependency | Clojars Project |
 | ------------- | ------------------------ | --------------- |
@@ -13,7 +13,7 @@
 
 ----
 
-# Slipway by [Factor House](https://factorhouse.io)
+## Slipway by [Factor House](https://factorhouse.io)
 
 * [Introduction](#introduction)
 * [Prior Art](#prior-art)
