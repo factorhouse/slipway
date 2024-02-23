@@ -46,7 +46,7 @@
   * [LDAP Authentication](#ldap-authentication)
 * [License](#license)
   * [Source Notes](#source-notes)
-
+* [Contributing](#contributing)
 ----
 
 ![Slipway Login](docs/img/slipway-auth.png)
@@ -487,5 +487,9 @@ Distributed under the MIT License.
 1. The slipway.websockets namespace is an adaption of Ning Sun's Websockets implementation.
 2. The slipway.servlet namespace includes some functions from James Reeves ring project.
 3. The example application uses Tailwind UI CSS, this is permitted under the terms of our license.
+
+## Contributing
+
+We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions. Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities. If it should be supported we will support it in time.
 
 Copyright (c) 2022 Factor House
