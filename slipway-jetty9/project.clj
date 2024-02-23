@@ -8,7 +8,7 @@
             :url  "https://github.com/factorhosue/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.16.1"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
-                                      [clj-kondo "2024.02.12"]
+                                      [clj-kondo "2023.12.15"]
                                       [clj-http "3.12.3" :exclusions [commons-io commons-codec]]
                                       [ch.qos.logback/logback-classic "1.3.14"] ;; 1.3 branch is for Java EE / Java 8 so we will keep aligned here.
                                       [ring/ring-anti-forgery "1.3.0" :exclusions [crypto-random crypto-equality]]
