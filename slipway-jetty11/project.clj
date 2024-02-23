@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty11 "1.1.12"
+(defproject io.factorhouse/slipway-jetty11 "1.1.13"
 
   :description "A Clojure Companion for Jetty"
 
@@ -22,7 +22,7 @@
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [org.clojure/tools.logging "1.2.4"]
+                 [org.clojure/tools.logging "1.3.0"]
                  [ring/ring-servlet "1.9.6"]
                  [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.20"]
@@ -30,7 +30,7 @@
                  [org.eclipse.jetty.websocket/websocket-servlet "11.0.20" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty/jetty-server "11.0.20" :exclusions [org.slf4j/slf4j-api]]
                  [org.eclipse.jetty/jetty-jaas "11.0.20" :exclusions [org.slf4j/slf4j-api]]
-                 [org.slf4j/slf4j-api "2.0.11"]]
+                 [org.slf4j/slf4j-api "2.0.12"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
   :test-paths ["test" "common/test"])

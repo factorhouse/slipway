@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [1.1.13] - 2024-02-23
+
+Bump to latest Jetty9 sponsored support version (9.4.54.v20240208) other Jetty versions remain the same at 11.0.20 or equivalent.
+
 ## [1.1.12] - 2024-02-05
 
 Bump to latest Jetty version (11.0.20 or equivalent)
