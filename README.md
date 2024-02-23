@@ -490,6 +490,8 @@ Distributed under the MIT License.
 
 ## Contributing
 
-We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions. Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities. If it should be supported we will support it in time.
+We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions. 
+
+Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities.
 
 Copyright (c) 2022 Factor House
