@@ -21,7 +21,7 @@
             "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:common/src:test:common/test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
-  :dependencies [[org.clojure/clojure "1.11.1"]
+  :dependencies [[org.clojure/clojure "1.11.2"]
                  [org.clojure/tools.logging "1.3.0"]
                  [ring/ring-servlet "1.9.6"]
                  [com.taoensso/sente "1.17.0"]
