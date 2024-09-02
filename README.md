@@ -7,8 +7,8 @@
 | Jetty Version | Current Jetty Dependency | Clojars Project |
 | ------------- | ------------------------ | --------------- |
 | Jetty 9 | 9.4.55.v20240627 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | 10.0.22 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | 11.0.22 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
+| Jetty 10 | 10.0.23 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
+| Jetty 11 | 11.0.23 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
 | Jetty 12 | - | Available once Jetty 12 stabilises. |
 
 ----
