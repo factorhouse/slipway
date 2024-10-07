@@ -478,10 +478,6 @@ my-realm {
 };
 ```
 
-## License
-
-Distributed under the MIT License.
-
 ### Source Notes
 
 1. The slipway.websockets namespace is an adaption of Ning Sun's Websockets implementation.
@@ -493,5 +489,9 @@ Distributed under the MIT License.
 We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions. 
 
 Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities.
+
+## License
+
+Distributed under the MIT License.
 
 Copyright (c) 2022 Factor House
