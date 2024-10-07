@@ -492,6 +492,6 @@ Slipway is at the heart of our commercial software and as such we take a conserv
 
 ## License
 
-Distributed under the MIT License.
+Distributed under the Apache 2.0 License.
 
-Copyright (c) 2022 Factor House
+Copyright (c) [Factor House](https://factorhouse.io)
