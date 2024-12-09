@@ -36,8 +36,10 @@
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                             :ssl-context                "a concrete pre-configured SslContext"
-                            :sni-required?              "true if a SNI certificate is required, default false"
-                            :sni-host-check?            "true if the SNI Host name must match, default false"}
+                            :sni-required?              "true if SNI is required, else requests will be rejected with 400 response, default false"
+                            :sni-host-check?            "true if the SNI Host name must match when there is an SNI certificate, default false"
+                            :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
+                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"}
 
   #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
                            :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"

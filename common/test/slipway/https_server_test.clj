@@ -254,3 +254,89 @@
                  (select-keys of-interest)))))
 
     (finally (example/stop!))))
+
+(deftest strict-transport-security
+
+  (testing "no hsts configuration"
+
+    (try
+      (example/start! [:https])
+
+      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                           (select-keys (conj of-interest :headers)))
+            sts-header (get-in result [:headers "Strict-Transport-Security"])
+            result     (dissoc result :headers)]
+
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"
+                :body                  (html/user-page {})}
+               result))
+
+        (is (= nil sts-header)))
+
+      (finally (example/stop!))))
+
+  (testing "sts-max-age and subdomains"
+
+    (try
+      (example/start! [:hsts])
+
+      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                           (select-keys (conj of-interest :headers)))
+            sts-header (get-in result [:headers "Strict-Transport-Security"])
+            result     (dissoc result :headers)]
+
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"
+                :body                  (html/user-page {})}
+               result))
+
+        (is (= "max-age=31536000; includeSubDomains" sts-header)))
+
+      (finally (example/stop!))))
+
+  (testing "sts-max-age without subdomains"
+
+    (try
+      (example/start! [:hsts-no-subdomains])
+
+      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                           (select-keys (conj of-interest :headers)))
+            sts-header (get-in result [:headers "Strict-Transport-Security"])
+            result     (dissoc result :headers)]
+
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"
+                :body                  (html/user-page {})}
+               result))
+
+        (is (= "max-age=31536000" sts-header)))
+
+      (finally (example/stop!))))
+
+  (testing "hsts no max age (incorrect configuration, no header included)"
+
+    (try
+      (example/start! [:hsts-no-max-age])
+
+      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                           (select-keys (conj of-interest :headers)))
+            sts-header (get-in result [:headers "Strict-Transport-Security"])
+            result     (dissoc result :headers)]
+
+        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+                :status                200
+                :reason-phrase         "OK"
+                :orig-content-encoding "gzip"
+                :body                  (html/user-page {})}
+               result))
+
+        (is (= nil sts-header)))
+
+      (finally (example/stop!)))))

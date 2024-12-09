@@ -32,6 +32,7 @@
 
 (extend-protocol common.ws/WebSocketSend
 
+  #_:clj-kondo/ignore
   (Class/forName "[B")
   (-send!
     ([ba ws]
@@ -70,6 +71,7 @@
 
 (extend-protocol common.ws/WebSocketPing
 
+  #_:clj-kondo/ignore
   (Class/forName "[B")
   (-ping! [ba ws] (common.ws/-ping! (ByteBuffer/wrap ba) ws)))
 
