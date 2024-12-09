@@ -8,6 +8,8 @@ Introduce ability configure HSTS (HTTP Strict Transport Security) with new slipw
 * :sts-max-age
 * :sts-include-subdomains?
 
+For more informmation, see: https://github.com/factorhouse/kpow/issues/35
+
 Also made these http/https settings configurable (default false, previously hard-coded to false):
 
 * :send-server-version?
