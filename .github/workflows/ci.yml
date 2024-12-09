@@ -59,7 +59,7 @@ jobs:
       - name: Uberjar
         working-directory: ./${{ matrix.project }}
         run: lein uberjar
-      
+
       - name: NVD
         working-directory: ./${{ matrix.project }}
         uses: dependency-check/Dependency-Check_Action@main
