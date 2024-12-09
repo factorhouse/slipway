@@ -23,7 +23,8 @@
 
   :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.logging "1.3.0"]
-                 [ring/ring-servlet "1.9.6"]
+                 [ring/ring-servlet "1.10.0"]
+                 [commons-io "2.16.1"]                      ;; replaces old version with CVE in ring-servlet, remove when ring bumped to latest
                  [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty/jetty-server "9.4.56.v20240826"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.56.v20240826"]
