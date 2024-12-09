@@ -67,9 +67,9 @@ jobs:
           JAVA_HOME: /opt/jdk
         with:
           project: ${{ matrix.project }}
-          path: ./${{ matrix.project }}/target
+          path: ${{ matrix.project }}/target
           format: 'HTML'
-          out: ./${{ matrix.project }}/reports
+          out: ${{ matrix.project }}/reports
           args: >
             --suppression ./dependency-check-suppressions.xml
 
@@ -78,5 +78,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nvd-${{ matrix.project }}-${{ github.sha }}
-          path: ./${{ matrix.project }}/reports/*
+          path: ${{ matrix.project }}/reports/*
           retention-days: 1
