@@ -8,15 +8,22 @@
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn default-config ^HttpConfiguration
-  [{::keys [port http-forwarded? sni-required? sni-host-check?] :or {sni-required? false sni-host-check? false}}]
-  (log/infof "sni required? %s, sni host check? %s" sni-required? sni-host-check?)
+  [{::keys [port http-forwarded? sni-required? sni-host-check? sts-max-age sts-include-subdomains?]
+    :or    {sni-required?           false
+            sni-host-check?         false
+            sts-max-age             -1
+            sts-include-subdomains? false}}]
+  (log/infof "sni required? %s, sni host check? %s, sts-max-age %s, sts-include-subdomains? %s"
+             sni-required? sni-host-check? sts-max-age sts-include-subdomains?)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion false)
                  (.setSendDateHeader false)
                  (.addCustomizer (doto (SecureRequestCustomizer.)
                                    (.setSniRequired sni-required?)
-                                   (.setSniHostCheck sni-host-check?))))]
+                                   (.setSniHostCheck sni-host-check?)
+                                   (.setStsMaxAge sts-max-age)
+                                   (.setStsIncludeSubDomains sts-include-subdomains?))))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
     config))
 
@@ -98,8 +105,10 @@
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                             :ssl-context                "a concrete pre-configured SslContext"
-                            :sni-required?              "true if a SNI certificate is required, default false"
-                            :sni-host-check?            "true if the SNI Host name must match, default false"})
+                            :sni-required?              "true if SNI is required, else requests will be rejected with 400 response, default false"
+                            :sni-host-check?            "true if the SNI Host name must match when there is an SNI certificate, default false"
+                            :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
+                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]

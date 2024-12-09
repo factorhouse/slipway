@@ -358,8 +358,10 @@ Configuration of an HTTPS server connector.
                           :security-provider          "the security provider name"
                           :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                           :ssl-context                "a concrete pre-configured SslContext"
-                          :sni-required?              "true if a SNI certificate is required, default false"
-                          :sni-host-check?            "true if the SNI Host name must match, default false"}
+                          :sni-required?              "true if SNI is required, else requests will be rejected with 400 response, default false"
+                          :sni-host-check?            "true if the SNI Host name must match when there is an SNI certificate, default false"
+                          :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
+                          :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"}
 ```
 
 ### :slipway.handler.gzip

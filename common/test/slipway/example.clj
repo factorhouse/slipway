@@ -29,6 +29,13 @@
                               :truststore-password "password"
                               :truststore-type     "PKCS12"})
 
+(def hsts #::https{:sts-max-age             31536000
+                   :sts-include-subdomains? true})
+
+(def hsts-no-subdomains #::https{:sts-max-age 31536000})
+
+(def hsts-no-max-age #::https{:sts-include-subdomains? true})
+
 (def form-authenticator (FormAuthenticator. "/login" "/login-retry" false))
 
 (def options
@@ -36,6 +43,16 @@
                                    :error-handler app/server-error-handler}
 
    :https                #::server{:connectors    [https-connector]
+                                   :error-handler app/server-error-handler}
+
+   :hsts                 #::server{:connectors    [(merge https-connector hsts)]
+                                   :error-handler app/server-error-handler}
+
+   :hsts-no-subdomains   #::server{:connectors    [(merge https-connector hsts-no-subdomains)]
+                                   :error-handler app/server-error-handler}
+
+   ;; this is an error condition / incorrect configuration - subdomains requires max-age set
+   :hsts-no-max-age      #::server{:connectors    [(merge https-connector hsts-no-max-age)]
                                    :error-handler app/server-error-handler}
 
    :http+https           #::server{:connectors    [http-connector https-connector]

@@ -254,3 +254,97 @@
                  (select-keys of-interest)))))
 
     (finally (example/stop!))))
+
+(deftest strict-transport-security
+
+  (testing "hsts not configured"
+
+    (try
+      (example/start! [:https])
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding, User-Agent"}
+              :body                  (html/user-page {})}
+             (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                 (select-keys (conj of-interest :headers)))))
+
+      (finally (example/stop!))))
+
+  (testing "no hsts configuration"
+
+    (try
+      (example/start! [:https])
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding, User-Agent"}
+              :body                  (html/user-page {})}
+             (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                 (select-keys (conj of-interest :headers)))))
+
+      (finally (example/stop!))))
+
+  (testing "sts-max-age and subdomains"
+
+    (try
+      (example/start! [:hsts])
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"                "close"
+                                      "Content-Type"              "text/html"
+                                      "Strict-Transport-Security" "max-age=31536000; includeSubDomains"
+                                      "Vary"                      "Accept-Encoding, User-Agent"}
+              :body                  (html/user-page {})}
+             (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                 (select-keys (conj of-interest :headers)))))
+
+      (finally (example/stop!))))
+
+  (testing "sts-include without subdomains"
+
+    (try
+      (example/start! [:hsts-no-subdomains])
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"                "close"
+                                      "Content-Type"              "text/html"
+                                      "Strict-Transport-Security" "max-age=31536000"
+                                      "Vary"                      "Accept-Encoding, User-Agent"}
+              :body                  (html/user-page {})}
+             (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                 (select-keys (conj of-interest :headers)))))
+
+      (finally (example/stop!))))
+
+  (testing "hsts no max age (incorrect configuration, no header included)"
+
+    (try
+      (example/start! [:hsts-no-max-age])
+
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding, User-Agent"}
+              :body                  (html/user-page {})}
+             (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+                 (select-keys (conj of-interest :headers)))))
+
+      (finally (example/stop!)))))
