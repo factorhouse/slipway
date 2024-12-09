@@ -7,8 +7,8 @@
   :license {:name "MIT License"
             :url  "https://github.com/factorhosue/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.17.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
-                                      [clj-kondo "2023.12.15"] ;; https://github.com/clj-kondo/clj-kondo/issues/2277 leave at this version until we move to Clojure 1.12.x and can fix
+  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
+                                      [clj-kondo "2024.11.14"]
                                       [clj-http "3.13.0"]
                                       [ch.qos.logback/logback-classic "1.3.14"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.3.1"]
@@ -21,7 +21,7 @@
             "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:common/src:test:common/test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
-  :dependencies [[org.clojure/clojure "1.11.4"]
+  :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.logging "1.3.0"]
                  [ring/ring-servlet "1.9.6"]
                  [com.taoensso/sente "1.17.0"]

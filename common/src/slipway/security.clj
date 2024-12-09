@@ -19,7 +19,7 @@
     (if config
       (when (slurp config)
         (doto (JAASLoginService. realm) (.setConfiguration (Configuration/getConfiguration))))
-      (throw (ex-info (str "start with -Djava.security.auth.login.config=/some/path/to/jaas.config to use Jetty/JAAS auth provider") {})))))
+      (throw (ex-info "start with -Djava.security.auth.login.config=/some/path/to/jaas.config to use Jetty/JAAS auth provider" {})))))
 
 (defmethod login-service "hash"
   [{::keys [realm hash-user-file]}]
@@ -27,7 +27,7 @@
   (if hash-user-file
     (when (slurp hash-user-file)
       (HashLoginService. realm hash-user-file))
-    (throw (ex-info (str "set the path to your hash user realm properties file") {}))))
+    (throw (ex-info "set the path to your hash user realm properties file" {}))))
 
 (defn user
   [^Request base-request]
