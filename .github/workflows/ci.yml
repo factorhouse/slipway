@@ -61,7 +61,7 @@ jobs:
         run: lein uberjar
       
       - name: NVD
-	working-directory: ./${{ matrix.project }}
+        working-directory: ./${{ matrix.project }}
         uses: dependency-check/Dependency-Check_Action@main
         env:
           # actions/setup-java changes JAVA_HOME so it needs to be reset to match the depcheck image
