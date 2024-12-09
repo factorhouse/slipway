@@ -186,7 +186,7 @@ Jetty is sophisticated as it addresses a complex domain with flexibility and con
 
 Slipway holds close to Jetty idioms for configuration rather than presenting a simplified DSL.
 
-Slipway takes a map of namespaced configuration.
+Slipway takes a single map of namespaced configuration. Namespaces correspond to Jetty domain models, and can be considered as separate maps and then merged.
 
 ### :slipway
 

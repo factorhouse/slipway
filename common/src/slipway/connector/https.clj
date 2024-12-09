@@ -111,7 +111,9 @@
                             :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
                             :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
                             :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
-                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"})
+                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
+                            :send-server-version?       "if true, send the Server header in responses"
+                            :send-date-header?          "if true, send the Date header in responses"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]
