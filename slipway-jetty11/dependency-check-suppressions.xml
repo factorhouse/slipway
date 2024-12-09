@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress>
-        <notes><![CDATA[
-   file name: slipway-jetty11-1.1.5-standalone.jar (shaded: commons-fileupload:commons-fileupload:1.4)
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
-        <cve>CVE-2023-24998</cve>
-    </suppress>
+
+    <!-- Only include legitimate suppressions of false-positives in this file -->
+    
 </suppressions>
