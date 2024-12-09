@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [1.1.18] - 2024-12-09
+
+Introduce ability configure HSTS (HTTP Strict Transport Security) with new slipway.connector.https settings:
+
+* :sts-max-age
+* :sts-include-subdomains?
+
+Also made these http/https settings configurable (default false, previously hard-coded to false):
+
+* :send-server-version?
+* :send-date-header?
+
 ## [1.1.17] - 2024-09-05
 
 Bump to latest Jetty version (11.0.24 or equivalent)
