@@ -4,7 +4,7 @@
 
   :url "https://github.com/factorhouse/slipway"
 
-  :license {:name "MIT License"
+  :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
@@ -23,7 +23,7 @@
 
   :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.logging "1.3.0"]
-                 [commons-io "2.16.1"] ;; replaces old version with CVE in ring-servlet, remove when ring bumped to latest
+                 [commons-io "2.16.1"]                      ;; replaces old version with CVE in ring-servlet, remove when ring bumped to latest
                  [ring/ring-servlet "1.10.0"]
                  [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.24"]
@@ -34,4 +34,6 @@
                  [org.slf4j/slf4j-api "2.0.16"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
-  :test-paths ["test" "common/test"])
+  :test-paths ["test" "common/test"]
+
+  :javac-options ["--release" "11"])

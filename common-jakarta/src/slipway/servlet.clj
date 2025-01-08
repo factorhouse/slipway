@@ -8,8 +8,7 @@
   (:import (jakarta.servlet AsyncContext SessionTrackingMode)
            (jakarta.servlet.http HttpServletRequest HttpServletResponse)
            (java.io FilterOutputStream)
-           (java.util Locale)
-           (org.eclipse.jetty.websocket.server JettyWebSocketCreator JettyWebSocketServerContainer)))
+           (java.util Locale)))
 
 (defprotocol RequestMapDecoder
   (build-request-map [r]))
