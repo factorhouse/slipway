@@ -4,7 +4,7 @@
 
   :url "https://github.com/factorhouse/slipway"
 
-  :license {:name "MIT License"
+  :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
