@@ -33,7 +33,7 @@
                  [org.eclipse.jetty.ee10/jetty-ee10-servlet "12.0.16"]
                  [org.slf4j/slf4j-api "2.0.16"]]
 
-  :source-paths ["src" "common/src" "common-jetty1x/src" "common-javax/src"]
+  :source-paths ["src"]
   :test-paths ["common/test"]
 
   :javac-options ["--release" "17"])
