@@ -34,6 +34,6 @@
                  [org.slf4j/slf4j-api "2.0.16"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
-  :test-paths ["test" "common/test"]
+  :test-paths ["common/test"]
 
   :javac-options ["--release" "11"])
