@@ -10,11 +10,11 @@
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
                                       [clj-kondo "2024.11.14"]
                                       [clj-http "3.13.0"]
-                                      [ch.qos.logback/logback-classic "1.3.14"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
+                                      [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.3.1"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
-                     :plugins        [[lein-cljfmt "0.9.2"]]}
+                     :plugins        [[dev.weavejester/lein-cljfmt "0.13.0"]]}
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
