@@ -8,10 +8,10 @@
 (defn get-headers
   [^Request request]
   (reduce
-    (fn [ret ^HttpField field]
-      (assoc ret (.getLowerCaseName field) (.getValue field)))
-    {}
-    (.getHeaders request)))
+   (fn [ret ^HttpField field]
+     (assoc ret (.getLowerCaseName field) (.getValue field)))
+   {}
+   (.getHeaders request)))
 
 (defn character-encoding
   "See: org.eclipse.jetty.server.Request/getCharacterEncoding"
