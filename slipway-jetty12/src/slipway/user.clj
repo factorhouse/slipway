@@ -5,8 +5,8 @@
             [slipway.user.identity]
             [slipway.user.jaas]
             [slipway.user.principal])
-  (:import (org.eclipse.jetty.security AuthenticationState$Succeeded)
-           (org.eclipse.jetty.server Request)))
+  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
+           (org.eclipse.jetty.server Request Response)))
 
 (extend-protocol p/Datafiable
 
@@ -27,11 +27,11 @@
   (-> req identity :roles))
 
 (defn logout
-  [{:keys [^Request slipway.handler/base-request ::identity]}]
-  (when base-request
+  [{:keys [^Request slipway.handler/request ^Response slipway.handler/response ::identity]}]
+  (when request
     (try
       (log/debug "logout" identity)
-      (.logout base-request)
-      (some-> (.getSession base-request false) (.invalidate))
+      (AuthenticationState/logout request response)
+      (some-> (.getSession request false) (.invalidate))
       (catch Exception ex
         (log/error ex "logout error")))))

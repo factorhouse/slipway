@@ -1,12 +1,12 @@
 (ns slipway.security
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log])
-  (:import (java.util List)
-           (javax.security.auth.login Configuration)
-           (org.eclipse.jetty.ee10.servlet.security ConstraintSecurityHandler)
-           (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded Authenticator HashLoginService LoginService SecurityHandler)
+  (:import (javax.security.auth.login Configuration)
+           (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded Authenticator Constraint
+                                       HashLoginService LoginService SecurityHandler SecurityHandler$PathMapped)
            (org.eclipse.jetty.security.jaas JAASLoginService)
-           (org.eclipse.jetty.server Request)))
+           (org.eclipse.jetty.server Request)
+           (org.eclipse.jetty.util.resource ResourceFactory)))
 
 (defmulti login-service ::login-service)
 
@@ -26,12 +26,12 @@
   (log/infof "initializing HashLoginService - realm: %s, realm file: %s" realm hash-user-file)
   (if hash-user-file
     (when (slurp hash-user-file)
-      (HashLoginService. realm hash-user-file))
+      (HashLoginService. realm (.newResource (ResourceFactory/root) ^String hash-user-file)))
     (throw (ex-info "set the path to your hash user realm properties file" {}))))
 
 (defn user
-  [^Request base-request]
-  (when-let [^AuthenticationState authentication-state (Request/getAuthenticationState base-request)]
+  [^Request request]
+  (when-let [^AuthenticationState authentication-state (Request/getAuthenticationState request)]
     (when (instance? AuthenticationState$Succeeded authentication-state)
       (p/datafy authentication-state))))
 
@@ -41,16 +41,17 @@
                      :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
                      :identity-service    "a concrete Jetty IdentityService"
                      :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                     :constraint-mappings "a list of concrete Jetty ConstraintMapping"})
+                     :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 
 (defn handler ^SecurityHandler
   [^LoginService login-service {::keys [realm authenticator constraint-mappings identity-service]}]
   (log/infof "authenticator %s with %s constraints" (type authenticator) (count constraint-mappings))
-  (let [security-handler (doto (ConstraintSecurityHandler.)
-                           (.setConstraintMappings ^List constraint-mappings)
+  (let [security-handler (doto (SecurityHandler$PathMapped.)
                            (.setAuthenticator ^Authenticator authenticator)
                            (.setLoginService login-service)
                            (.setRealmName realm))]
+    (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
+      (.put security-handler path-spec constraint))
     (when identity-service
       (log/infof "identity service %s" (type identity-service))
       (.setIdentityService security-handler identity-service))
