@@ -18,7 +18,7 @@
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
-            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:test:common/test" "--parallel"]
+            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.12.0"]
