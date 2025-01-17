@@ -73,7 +73,7 @@
 
    :hash-auth            #::security{:realm               "slipway"
                                      :login-service       "hash"
-                                     :hash-user-file      "common/dev-resources/jaas/hash-realm.properties"
+                                     :hash-user-file      "dev-resources/jaas/hash-realm.properties"
                                      :authenticator       form-authenticator
                                      :constraint-mappings app/constraints}
 
@@ -97,8 +97,8 @@
     (slipway/stop server)))
 
 "To run a JAAS authenticated server, start a REPL with the following JVM JAAS parameter:
-   - Hash User Auth  ->  -Djava.security.auth.login.config=common/dev-resources/jaas/hash-jaas.conf
-   - LDAP Auth       ->  -Djava.security.auth.login.config=common/dev-resources/jaas/ldap-jaas.conf
+   - Hash User Auth  ->  -Djava.security.auth.login.config=/dev-resources/jaas/hash-jaas.conf
+   - LDAP Auth       ->  -Djava.security.auth.login.config=/dev-resources/jaas/ldap-jaas.conf
 
  E.g: (start! [:http :hash-auth :basic-auth])"
 (defn start!
