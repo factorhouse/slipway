@@ -16,9 +16,10 @@
                      :plugins        [[dev.weavejester/lein-cljfmt "0.13.0"]]}
              :smoke {:pedantic? :abort}}
 
-  :aliases {"check" ["with-profile" "+smoke" "check"]
-            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
-            "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
+  :aliases {"check"  ["with-profile" "+smoke" "check"]
+            "kondo"  ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
+            "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
+            "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
 
   :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.logging "1.3.0"]
