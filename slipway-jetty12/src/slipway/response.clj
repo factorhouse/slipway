@@ -14,6 +14,7 @@
           (.add jetty-headers ^String key ^String val))))))
 
 (defn update-response
+  "Update the Jetty response from a ring-like response map"
   [^Request request ^Response response response-map]
   (let [{:keys [status headers body]} response-map]
     (when (nil? response) (throw (NullPointerException. "Response is nil")))

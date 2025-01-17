@@ -1,5 +1,4 @@
 (ns slipway.request
-  "This ns modelled on request functions in ring.util.servlet, translated to Jetty requests"
   (:import (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
@@ -20,6 +19,7 @@
           (first)))
 
 (defn request-map
+  "Create a ring-like request map from a Jetty request"
   [^Request request]
   (let [^HttpURI uri                 (.getHttpURI request)
         ^ImmutableHttpFields headers (.getHeaders request)]
