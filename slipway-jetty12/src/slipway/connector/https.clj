@@ -9,19 +9,21 @@
 
 (defn default-config ^HttpConfiguration
   [{::keys [port http-forwarded? sni-required? sni-host-check? sts-max-age sts-include-subdomains? send-server-version?
-            send-date-header?]
-    :or    {sni-required?           false
-            sni-host-check?         false
-            sts-max-age             -1
-            sts-include-subdomains? false
-            send-server-version?    false
-            send-date-header?       false}}]
+            send-date-header? relative-redirect-allowed?]
+    :or    {sni-required?              false
+            sni-host-check?            false
+            sts-max-age                -1
+            sts-include-subdomains?    false
+            send-server-version?       false
+            send-date-header?          false
+            relative-redirect-allowed? false}}]
   (log/infof "sni required? %s, sni host check? %s, sts-max-age %s, sts-include-subdomains? %s"
              sni-required? sni-host-check? sts-max-age sts-include-subdomains?)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion send-server-version?)
                  (.setSendDateHeader send-date-header?)
+                 (.setRelativeRedirectAllowed relative-redirect-allowed?)
                  (.addCustomizer (doto (SecureRequestCustomizer.)
                                    (.setSniRequired sni-required?)
                                    (.setSniHostCheck sni-host-check?)
@@ -113,7 +115,8 @@
                             :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
                             :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
                             :send-server-version?       "if true, send the Server header in responses"
-                            :send-date-header?          "if true, send the Date header in responses"})
+                            :send-date-header?          "if true, send the Date header in responses"
+                            :relative-redirect-allowed? "if true, allow relative redirects, default false"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]
