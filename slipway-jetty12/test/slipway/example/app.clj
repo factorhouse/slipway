@@ -69,8 +69,8 @@
   (throw (RuntimeException. "Error Route")))
 
 (defn server-error-body-fn
-  [request code message _]
-  (error/log-error request code message)
+  [_request _charset code message cause _show-stacks]
+  (error/log-error code message cause)
   (html/error-page code "Server Error" message))
 
 (def server-error-handler (error/handler server-error-body-fn))
@@ -110,10 +110,10 @@
                                            "http://localhost:3443"}}
         session-config {:store (ring.session.memory/memory-store)}]
     (-> (reitit/ring-handler
-         (reitit/router (routes (sente/start-server sente-config)))
-         (reitit/routes
-          (reitit/create-resource-handler {:path "/"})
-          (reitit/create-default-handler error-handlers)))
+          (reitit/router (routes (sente/start-server sente-config)))
+          (reitit/routes
+            (reitit/create-resource-handler {:path "/"})
+            (reitit/create-default-handler error-handlers)))
         (wrap-errors)
         (ring.forgery/wrap-anti-forgery)
         (ring.session/wrap-session session-config)
