@@ -86,15 +86,15 @@
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-              :status                303
-              :reason-phrase         "See Other"
+              :status                302
+              :reason-phrase         "Found"
               :orig-content-encoding nil
               :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/"))))
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/user"))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/"))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/user"))))
 
       ;; auth redirect goes to expected login page
       (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "") [:headers "Location"])))
@@ -111,7 +111,7 @@
       (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/login-retry"))))
 
       ;; jetty nukes session and redirects to /login regardless
-      (is (= 303 (:status (client/do-get "http" "localhost" 3000 "/logout")))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/logout")))))
 
     (testing "login"
 
@@ -179,8 +179,8 @@
     (testing "logout"
 
       (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :reason-phrase    "See Other"
-              :status           303}
+              :reason-phrase    "Found"
+              :status           302}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                                (select-keys [:cookies]))]
                (client/do-get "http" "localhost" 3000 "/logout" session)

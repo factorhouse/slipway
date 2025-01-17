@@ -5,25 +5,28 @@
                                      HttpConnectionFactory ProxyConnectionFactory Server ServerConnector)))
 
 (defn default-config ^HttpConfiguration
-  [{::keys [http-forwarded? send-server-version? send-date-header?]
-    :or    {send-server-version? false
-            send-date-header?    false}}]
+  [{::keys [http-forwarded? send-server-version? send-date-header? relative-redirect-allowed?]
+    :or    {send-server-version?       false
+            send-date-header?          false
+            relative-redirect-allowed? false}}]
   (let [config (doto (HttpConfiguration.)
                  (.setSendServerVersion send-server-version?)
-                 (.setSendDateHeader send-date-header?))]
+                 (.setSendDateHeader send-date-header?)
+                 (.setRelativeRedirectAllowed relative-redirect-allowed?))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
     config))
 
 (comment
-  #:slipway.connector.http{:host                 "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                           :port                 "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
-                           :idle-timeout         "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
-                           :http-forwarded?      "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-                           :proxy-protocol?      "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
-                           :http-config          "a concrete HttpConfiguration object to replace the default config entirely"
-                           :configurator         "a fn taking the final connector as argument, allowing further configuration"
-                           :send-server-version? "if true, send the Server header in responses"
-                           :send-date-header?    "if true, send the Date header in responses"})
+  #:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                           :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                           :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                           :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                           :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+                           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                           :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                           :send-server-version?       "if true, send the Server header in responses"
+                           :send-date-header?          "if true, send the Date header in responses"
+                           :relative-redirect-allowed? "if true, allow relative redirects, default false"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout proxy-protocol? http-forwarded? configurator http-config]
