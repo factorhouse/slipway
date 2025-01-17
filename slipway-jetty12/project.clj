@@ -13,7 +13,7 @@
                                       [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.3.1"]
                                       [metosin/reitit-ring "0.7.2"]]
-                     :resource-paths ["dev-resources" "common/dev-resources"]
+                     :resource-paths ["dev-resources"]
                      :plugins        [[dev.weavejester/lein-cljfmt "0.13.0"]]}
              :smoke {:pedantic? :abort}}
 
