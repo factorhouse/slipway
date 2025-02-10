@@ -7,6 +7,40 @@
            (org.eclipse.jetty.websocket.api Session WebSocketAdapter WebSocketPingPongListener WriteCallback)
            (org.eclipse.jetty.websocket.server JettyServerUpgradeRequest JettyWebSocketCreator JettyWebSocketServerContainer)))
 
+;; TODO: Start - Originally from common.websockets, remove this comment after refactor complete.
+(defprotocol WebSockets
+  (send! [this msg] [this msg callback])
+  (ping! [this] [this msg])
+  (close! [this] [this status-code reason])
+  (remote-addr [this])
+  (idle-timeout! [this ms])
+  (connected? [this])
+  (req-of [this]))
+
+(defprotocol WebSocketSend
+  (-send! [x ws] [x ws callback]))
+
+(defprotocol WebSocketPing
+  (-ping! [x ws]))
+
+(defn upgrade-request?
+  [{:keys [headers]}]
+  (and (.equalsIgnoreCase "upgrade" (get headers "connection"))
+       (.equalsIgnoreCase "websocket" (get headers "upgrade"))))
+
+(defn upgrade-response?
+  [{:keys [status ws] :as resp}]
+  (and (= 101 status) (map? ws) (upgrade-request? resp)))
+
+(defn upgrade-response
+  [ws-handler]
+  {:status  101
+   :headers {"Connection" "Upgrade"
+             "Upgrade"    "Websocket"}
+   :ws      ws-handler})
+
+;; TODO: End - Originally from common.websockets, remove this comment after refactor complete.
+
 ;(def no-op (constantly nil))
 ;
 ;(extend-protocol servlet/RequestMapDecoder

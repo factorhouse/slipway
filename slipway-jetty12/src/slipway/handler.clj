@@ -11,7 +11,7 @@
            (org.eclipse.jetty.server.handler ContextHandler)
            (org.eclipse.jetty.util Callback)))
 
-(defn context
+(defn request-map
   [request response]
   (merge (request/request-map request)
          (security/user request)
@@ -26,7 +26,7 @@
   (proxy [Handler$Wrapper] []
     (handle [^Request request ^Response response ^Callback cb]
       (try
-        (->> (context request response)
+        (->> (request-map request response)
              (handler)
              (response/update-response request response))
         (.succeeded cb)
