@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [1.1.19] - 2025-02-10
+
+Resolve CVE-2024-52046. Jetty bumped to latest minor with node JAAS code adjusts, so we can do the same.
+
+https://www.cve.org/CVERecord?id=CVE-2024-52046
+
 ## [1.1.18] - 2024-12-09
 
 Introduce ability configure HSTS (HTTP Strict Transport Security) with new slipway.connector.https settings:
@@ -8,7 +14,7 @@ Introduce ability configure HSTS (HTTP Strict Transport Security) with new slipw
 * :sts-max-age
 * :sts-include-subdomains?
 
-For more informmation, see: https://github.com/factorhouse/kpow/issues/35
+For more information, see: https://github.com/factorhouse/kpow/issues/35
 
 Also made these http/https settings configurable (default false, previously hard-coded to false):
 

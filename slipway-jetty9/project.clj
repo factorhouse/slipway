@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty9 "1.1.18"
+(defproject io.factorhouse/slipway-jetty9 "1.1.19"
 
   :description "A Clojure Companion for Jetty 9"
 
@@ -29,7 +29,8 @@
                  [org.eclipse.jetty/jetty-server "9.4.56.v20240826"]
                  [org.eclipse.jetty.websocket/websocket-server "9.4.56.v20240826"]
                  [org.eclipse.jetty.websocket/websocket-servlet "9.4.56.v20240826"]
-                 [org.eclipse.jetty/jetty-jaas "9.4.56.v20240826"]
+                 [org.apache.mina/mina-core "2.2.4"]        ;; exclude mina-core with CVE and manually bump to latest minor version
+                 [org.eclipse.jetty/jetty-jaas "9.4.56.v20240826" :exclusions [org.apache.mina/mina-core]]
                  [org.slf4j/slf4j-api "2.0.16"]]
 
   :source-paths ["src" "common/src" "common-javax/src"]
