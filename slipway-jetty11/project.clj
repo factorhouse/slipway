@@ -9,7 +9,7 @@
 
   :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.3"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
                                       [clj-kondo "2025.02.20"]
-                                      [clj-http "3.13.0"]
+                                      [clj-http "3.13.0" :exclusions [commons-codec]] ;; later version brought in by jetty-jaas
                                       [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.3.1"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
