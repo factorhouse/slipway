@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty11 "1.1.19"
+(defproject io.factorhouse/slipway-jetty11 "1.1.20"
 
   :description "A Clojure Companion for Jetty 11"
 
@@ -7,10 +7,10 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.2"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
-                                      [clj-kondo "2024.11.14"]
+  :profiles {:dev   {:dependencies   [[com.fasterxml.jackson.core/jackson-core "2.18.3"] ;; required for internal inconsistency within clj-kondo, kept at latest for CVE avoidance
+                                      [clj-kondo "2025.02.20"]
                                       [clj-http "3.13.0"]
-                                      [ch.qos.logback/logback-classic "1.3.14"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
+                                      [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.3.1"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
@@ -26,13 +26,13 @@
                  [commons-io "2.16.1"]                      ;; replaces old version with CVE in ring-servlet, remove when ring bumped to latest
                  [ring/ring-servlet "1.10.0"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.24"]
-                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.24" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.24" :exclusions [org.slf4j/slf4j-api]]
-                 [org.eclipse.jetty/jetty-server "11.0.24" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-jetty-api "11.0.25"]
+                 [org.eclipse.jetty.websocket/websocket-jetty-server "11.0.25" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty.websocket/websocket-servlet "11.0.25" :exclusions [org.slf4j/slf4j-api]]
+                 [org.eclipse.jetty/jetty-server "11.0.25" :exclusions [org.slf4j/slf4j-api]]
                  [org.apache.mina/mina-core "2.2.4"]        ;; exclude mina-core with CVE and manually bump to latest minor version
-                 [org.eclipse.jetty/jetty-jaas "11.0.24" :exclusions [org.slf4j/slf4j-api org.apache.mina/mina-core]]
-                 [org.slf4j/slf4j-api "2.0.16"]]
+                 [org.eclipse.jetty/jetty-jaas "11.0.25" :exclusions [org.slf4j/slf4j-api org.apache.mina/mina-core]]
+                 [org.slf4j/slf4j-api "2.0.17"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
   :test-paths ["test" "common/test"]
