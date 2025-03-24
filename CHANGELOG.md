@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [1.1.20] - 2025-03-24
+
+Update to latest Jetty 9 - 9.4.57.v20241219, 10 - 10.0.25, 11 - 11.0.25 versions.
+
 ## [1.1.19] - 2025-02-10
 
 Resolve CVE-2024-52046. Jetty bumped to latest minor with node JAAS code adjusts, so we can do the same.
