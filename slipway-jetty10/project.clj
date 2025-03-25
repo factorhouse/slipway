@@ -14,11 +14,11 @@
                                       [ring/ring-anti-forgery "1.3.1"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
-                     :plugins        [[lein-cljfmt "0.9.2"]]}
+                     :plugins        [[dev.weavejester/lein-cljfmt "0.13.0"]]}
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
-            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:test:common/test" "--parallel"]
+            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:common/test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.12.0"]
@@ -35,6 +35,6 @@
                  [org.slf4j/slf4j-api "2.0.17"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-javax/src"]
-  :test-paths ["test" "common/test"]
+  :test-paths ["common/test"]
 
   :javac-options ["--release" "11"])
