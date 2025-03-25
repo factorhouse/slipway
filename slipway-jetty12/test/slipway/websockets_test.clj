@@ -1,6 +1,6 @@
 (ns slipway.websockets-test
-  (:require [slipway.websockets :as websocket]
-    [clojure.test :refer :all]))
+  (:require [clojure.test :refer :all]
+            [slipway.websockets :as websocket]))
 
 (deftest upgrade-request?
 
