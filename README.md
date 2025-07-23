@@ -423,7 +423,7 @@ For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jet
 
 The simplest JAAS authentication module. A static list of hashed users in a file. 
 
-Example `jaas.config`: ('my-realm' must be the same as the configured :realm)
+Example `jaas.config`: ('my-realm' must be the same as the configured :slipway.security/realm)
 
 ``` 
 my-realm {
@@ -459,7 +459,7 @@ digest: MD5:6e120743ad67abfbc385bc2bb754e297,kafka-users
 
 #### LDAP Authentication
 
-Example `jaas.config`: ('my-realm' must be the same as the configured :realm)
+Example `jaas.config`: ('my-realm' must be the same as the configured :slipway.security/realm)
 
 ``` 
 my-realm {
