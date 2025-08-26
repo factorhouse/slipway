@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [1.1.21] - 2025-08-26
+
+Update to latest Jetty 9 - 9.4.58.v20250814, 10 - 10.0.26, 11 - 11.0.26 versions.
+
 ## [1.1.20] - 2025-03-24
 
 Update to latest Jetty 9 - 9.4.57.v20241219, 10 - 10.0.25, 11 - 11.0.25 versions.
