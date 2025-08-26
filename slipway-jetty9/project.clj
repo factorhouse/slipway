@@ -10,6 +10,7 @@
   :profiles {:dev   {:dependencies   [[clj-kondo "2025.02.20"]
                                       [clj-http "3.13.1"]
                                       [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
+                                      [hiccup "1.0.5"]
                                       [ring/ring-anti-forgery "1.4.0"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
