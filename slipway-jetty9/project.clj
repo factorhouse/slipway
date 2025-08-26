@@ -13,7 +13,7 @@
                                       [ring/ring-anti-forgery "1.4.0"]
                                       [metosin/reitit-ring "0.7.2" :exclusions [ring/ring-core]]]
                      :resource-paths ["dev-resources" "common/dev-resources"]
-                     :plugins        [[lein-cljfmt "0.9.2"]]}
+                     :plugins        [[dev.weavejester/lein-cljfmt "0.13.1"]]}
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
