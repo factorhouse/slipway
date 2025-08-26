@@ -1,4 +1,5 @@
 (ns slipway.websockets
+  {:clj-kondo/ignore true}
   (:require
    [clojure.tools.logging :as log]
    [slipway.common.websockets :as common.ws]
@@ -32,7 +33,6 @@
 
 (extend-protocol common.ws/WebSocketSend
 
-  #_:clj-kondo/ignore
   (Class/forName "[B")
   (-send!
     ([ba ws]
