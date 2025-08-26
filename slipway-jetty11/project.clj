@@ -7,7 +7,7 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[clj-kondo "2025.07.28" :exclusions [org.clojure/tools.reader]]
+  :profiles {:dev   {:dependencies   [[clj-kondo "2025.02.20"]
                                       [clj-http "3.13.1" :exclusions [commons-codec commons-io]] ;; later version brought in by jetty-jaas and ring-servlet respectively
                                       [ch.qos.logback/logback-classic "1.3.15"] ;; Logback 1.3.x supports the Java EE edition whereas logback 1.4.x supports Jakarta EE, otherwise the two versions are feature identical. The 1.5.x continues the 1.4.x series but with logback-access relocated to its own repository.
                                       [ring/ring-anti-forgery "1.4.0"]
