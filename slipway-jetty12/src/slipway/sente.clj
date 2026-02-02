@@ -1,9 +1,10 @@
-(ns slipway.sente
-  (:require [clojure.core.async :as async]
-            [clojure.tools.logging :as log]
-            [slipway.common.websockets :as common.ws]
-            [taoensso.sente :as sente]
-            [taoensso.sente.interfaces :as i]))
+(ns slipway.sente)
+
+;(:require [clojure.core.async :as async]
+;            [clojure.tools.logging :as log]
+;            [slipway.common.websockets :as common.ws]
+;            [taoensso.sente :as sente]
+;            [taoensso.sente.interfaces :as i])
 
 ;(def ws-cbs
 ;  {:write-failed  (fn [ex] (log/error ex "websocket send failure"))

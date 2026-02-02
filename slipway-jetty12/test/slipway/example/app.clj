@@ -1,5 +1,4 @@
 (ns slipway.example.app
-  (:refer-clojure :exclude [error-handler])
   (:require [clojure.tools.logging :as log]
             [reitit.ring :as reitit]
             [ring.middleware.anti-forgery :as ring.forgery]
@@ -76,7 +75,7 @@
 (def server-error-handler (error/handler server-error-body-fn))
 
 (defn routes
-  [sente]
+  [_sente]
   [""
    ["/up" {:get {:handler up}}]
    ["/login" {:get {:handler login-handler}}]
