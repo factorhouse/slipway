@@ -19,10 +19,12 @@
          {::response response}))
 
 (defn proxy-handler ^Handler
-  [handler {:keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size max-binary-message-size max-frame-size auto-fragment] :as opts}]
-  (log/infof "websocket handler with: idle-timeout %s, input-buffer-size %s, output-buffer-size %s, max-text-message-size %s, max-binary-message-size %s, max-frame-size %s, auto-fragment %s"
-             (or idle-timeout "default") (or input-buffer-size "default") (or output-buffer-size "default") (or max-text-message-size "default") (or max-binary-message-size "default")
-             (or max-frame-size "default") (or auto-fragment "default"))
+  [handler {:keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size max-binary-message-size
+                   max-frame-size auto-fragment] :as opts}]
+  (when (:slipway/enable-info? opts)
+    (log/infof "websocket handler with: idle-timeout %s, input-buffer-size %s, output-buffer-size %s, max-text-message-size %s, max-binary-message-size %s, max-frame-size %s, auto-fragment %s"
+               (or idle-timeout "default") (or input-buffer-size "default") (or output-buffer-size "default") (or max-text-message-size "default") (or max-binary-message-size "default")
+               (or max-frame-size "default") (or auto-fragment "default")))
   (proxy [Handler$Wrapper] []
     (handle [^Request request ^Response response ^Callback cb]
       (try
@@ -43,7 +45,8 @@
 
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
-  (log/infof "default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
+  (when (:slipway/enable-info? opts)
+    (log/infof "default server handler, context path %s, null-path-info? %s" context-path null-path-info?))
   (let [handler         (if login-service
                           (let [security-handler (security/handler login-service opts)
                                 session-handler  (session/handler opts)]

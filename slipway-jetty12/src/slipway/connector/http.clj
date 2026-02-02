@@ -33,7 +33,8 @@
                    :or    {idle-timeout 200000
                            port         80}
                    :as    opts}]
-  (log/infof (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
+  (when (:slipway/enable-info? opts)
+    (log/infof (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port))
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
         factories    (->> (if proxy-protocol? [(ProxyConnectionFactory.) http-factory] [http-factory])
                           (into-array ConnectionFactory))

@@ -16,9 +16,11 @@
             sts-include-subdomains?    false
             send-server-version?       false
             send-date-header?          false
-            relative-redirect-allowed? false}}]
-  (log/infof "sni required? %s, sni host check? %s, sts-max-age %s, sts-include-subdomains? %s"
-             sni-required? sni-host-check? sts-max-age sts-include-subdomains?)
+            relative-redirect-allowed? false}
+    :as    opts}]
+  (when (:slipway/enable-info? opts)
+    (log/infof "sni required? %s, sni host check? %s, sts-max-age %s, sts-include-subdomains? %s"
+               sni-required? sni-host-check? sts-max-age sts-include-subdomains?))
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion send-server-version?)
@@ -39,7 +41,7 @@
   (let [context-factory (SslContextFactory$Server.)]
     (.setProvider context-factory security-provider)
     (if (string? keystore)
-      (.setKeyStorePath context-factory keystore)
+      (.setKeyStorePath context-factory ^String keystore)
       (.setKeyStore context-factory ^KeyStore keystore))
     (when (string? keystore-type)
       (.setKeyStoreType context-factory keystore-type))
@@ -77,14 +79,16 @@
 
 (defn proxied-connector ^ServerConnector
   [^Server server ^HttpConnectionFactory http-factory {::keys [host port http-forwarded?] :as opts}]
-  (log/infof (str "starting proxied HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
+  (when (:slipway/enable-info? opts)
+    (log/infof (str "starting proxied HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port))
   (let [ssl-factory (SslConnectionFactory. (context-factory opts) (.asString HttpVersion/HTTP_1_1))
         factories   (into-array ConnectionFactory [(ProxyConnectionFactory.) ssl-factory http-factory])]
     (ServerConnector. server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
 
 (defn standard-connector ^ServerConnector
   [^Server server ^HttpConnectionFactory http-factory {::keys [host port http-forwarded?] :as opts}]
-  (log/infof (str "starting HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
+  (when (:slipway/enable-info? opts)
+    (log/infof (str "starting HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port))
   (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" (into-array ConnectionFactory [http-factory])))
 
 (comment

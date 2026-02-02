@@ -10,15 +10,19 @@
 
 (defn handler
   [{::keys [enabled? included-mime-types excluded-mime-types min-gzip-size]
-    :or    {min-gzip-size 1024}}]
+    :or    {min-gzip-size 1024}
+    :as    opts}]
   (when (not (false? enabled?))
     (let [gzip-handler (GzipHandler.)]
-      (log/infof "enabling compression with min gzip size %s" min-gzip-size)
+      (when (:slipway/enable-info? opts)
+        (log/infof "enabling compression with min gzip size %s" min-gzip-size))
       (.setMinGzipSize gzip-handler min-gzip-size)
       (when (seq included-mime-types)
-        (log/infof "setting included mime types: %s" included-mime-types)
+        (when (:slipway/enable-info? opts)
+          (log/infof "setting included mime types: %s" included-mime-types))
         (.setIncludedMimeTypes gzip-handler (into-array String included-mime-types)))
       (when (seq excluded-mime-types)
-        (log/infof "setting excluded mime types: %s" excluded-mime-types)
+        (when (:slipway/enable-info? opts)
+          (log/infof "setting excluded mime types: %s" excluded-mime-types))
         (.setExcludedMimeTypes gzip-handler (into-array String excluded-mime-types)))
       gzip-handler)))

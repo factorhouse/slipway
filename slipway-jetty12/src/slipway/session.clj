@@ -39,8 +39,10 @@
             http-only?            true
             same-site             :strict
             max-inactive-interval -1
-            cookie-name           "JSESSIONID"}}]
-  (log/infof "max-inactive-interval %s" max-inactive-interval)
+            cookie-name           "JSESSIONID"}
+    :as    opts}]
+  (when (:slipway/enable-info? opts)
+    (log/infof "max-inactive-interval %s" max-inactive-interval))
   (let [same-site       (cookie-same-site same-site)
         session-handler (doto (SessionHandler.)
                           (.setUsingCookies true)           ;; TODO: using-cookies param, default true
