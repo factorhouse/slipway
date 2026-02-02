@@ -64,7 +64,7 @@
 ;        (send-fn uid msg))))
 
 (defn start-server
-  [opts]
+  [_opts]
   ;(let [server (sente/make-channel-socket-server! (slipway.sente/get-sch-adapter) opts)
   ;      {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
   ;  {:ws-handshake   ajax-get-or-ws-handshake-fn
@@ -74,6 +74,6 @@
   )
 
 (defn stop-server
-  [{:keys [ch-chsk]}]
+  [{:keys [_ch-chsk]}]
   ;(async/close! ch-chsk)
   )
