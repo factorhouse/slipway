@@ -3,7 +3,7 @@
             [clojure.test :refer :all]
             [clojure.tools.logging :as log]
             [slipway.client :as client]
-            [slipway.example :as example])
+            [slipway.test-server :as example])
   (:import (java.security SecureRandom)
            (java.util Base64)))
 

@@ -18,5 +18,6 @@
   (let [server (Server. ^ThreadPool thread-pool)]
     (.setConnectors server (into-array Connector (map #(connector server %) connectors)))
     (.addBean server (ScheduledExecutorScheduler.))
-    (when error-handler (.setErrorHandler server error-handler))
+    (when error-handler
+      (.setErrorHandler server error-handler))
     server))

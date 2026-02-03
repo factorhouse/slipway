@@ -1,8 +1,8 @@
 (ns slipway.forwarded-server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
-            [slipway.example :as example]
-            [slipway.example.html :as html])
+            [slipway.example.html :as html]
+            [slipway.test-server :as example])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
            (org.apache.http ProtocolException)))
@@ -100,7 +100,7 @@
 (deftest form-authentication
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth])
+    (example/start! [:http+https+forwarded] :hash-auth)
 
     (testing "constraints http"
 
@@ -109,13 +109,13 @@
       (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "/up")
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -161,13 +161,13 @@
       (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :body                  ""}
              (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -349,7 +349,7 @@
 (deftest basic-authentication-http
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth :basic-auth])
+    (example/start! [:http+https+forwarded] :basic-auth)
 
     (testing "constraints"
 
@@ -358,13 +358,13 @@
       (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "/up")
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -411,7 +411,7 @@
 (deftest basic-authentication-https
 
   (try
-    (example/start! [:http+https+forwarded :hash-auth :basic-auth])
+    (example/start! [:http+https+forwarded] :basic-auth)
 
     (testing "constraints"
 
@@ -420,13 +420,13 @@
       (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :body                  ""}
              (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}

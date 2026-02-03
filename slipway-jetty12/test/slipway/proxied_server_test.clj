@@ -1,7 +1,7 @@
 (ns slipway.proxied-server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
-            [slipway.example :as example]
+            [slipway.test-server :as example]
             [slipway.example.html :as html])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
@@ -104,7 +104,7 @@
 (deftest form-authentication
 
   (try
-    (example/start! [:http+https+proxied :hash-auth])
+    (example/start! [:http+https+proxied] :hash-auth)
 
     (testing "constraints http"
 
@@ -338,7 +338,7 @@
 (deftest basic-authentication-http
 
   (try
-    (example/start! [:http+https+proxied :hash-auth :basic-auth])
+    (example/start! [:http+https+proxied] :basic-auth)
 
     (testing "constraints"
 
@@ -400,7 +400,7 @@
 (deftest basic-authentication-https
 
   (try
-    (example/start! [:http+https+proxied :hash-auth :basic-auth])
+    (example/start! [:http+https+proxied] :basic-auth)
 
     (testing "constraints"
 

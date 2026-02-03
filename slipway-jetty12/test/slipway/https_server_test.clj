@@ -1,8 +1,8 @@
 (ns slipway.https-server-test
   (:require [clojure.test :refer :all]
             [slipway.client :as client]
-            [slipway.example :as example]
-            [slipway.example.html :as html])
+            [slipway.example.html :as html]
+            [slipway.test-server :as example])
   (:import (java.net ConnectException)
            (org.apache.http ProtocolException)))
 
@@ -69,7 +69,7 @@
 (deftest form-authentication
 
   (try
-    (example/start! [:https :hash-auth])
+    (example/start! [:https] :hash-auth)
 
     (testing "constraints"
 
@@ -196,7 +196,7 @@
 (deftest basic-authentication
 
   (try
-    (example/start! [:https :hash-auth :basic-auth])
+    (example/start! [:https] :basic-auth)
 
     (testing "constraints"
 
