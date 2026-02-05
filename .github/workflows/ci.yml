@@ -42,7 +42,7 @@ jobs:
           java-version: '17'
 
       - name: Install clojure tools
-        uses: DeLaGuardo/setup-clojure@13.0
+        uses: DeLaGuardo/setup-clojure@13.5.2
         with:
           lein: 'latest' 
           github-token: ${{ secrets.GITHUB_TOKEN }}
