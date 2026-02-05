@@ -333,7 +333,6 @@
                                 :cookies    cookies
                                 :sec-ws-key sec-ws-key})))
 
-
     (comment
       (testing "require login to negotiate websocket upgrade"
 
