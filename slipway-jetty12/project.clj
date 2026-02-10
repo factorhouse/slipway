@@ -9,7 +9,7 @@
 
   :profiles {:dev   {:dependencies   [[clj-kondo "2026.01.19"]
                                       [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
-                                      [ch.qos.logback/logback-classic "1.5.27"]
+                                      [ch.qos.logback/logback-classic "1.5.29"]
                                       [hiccup "2.0.0"]
                                       [ring/ring-anti-forgery "1.4.0"]
                                       [metosin/reitit-ring "0.10.0"]]
@@ -31,6 +31,7 @@
                  [org.eclipse.jetty/jetty-server "12.1.6"]
                  [org.eclipse.jetty/jetty-session "12.1.6"]
                  [org.eclipse.jetty/jetty-security "12.1.6"]
+                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.6"]
                  [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.6"]]
 
   :source-paths ["src"]
