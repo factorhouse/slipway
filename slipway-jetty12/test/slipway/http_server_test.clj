@@ -26,7 +26,7 @@
 (deftest compression
 
   (try
-    (server/start! [:http :gzip-nil])
+    (server/start! [:http :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -39,7 +39,7 @@
     (finally (server/stop!)))
 
   (try
-    (server/start! [:http :gzip-true])
+    (server/start! [:http :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -52,7 +52,7 @@
     (finally (server/stop!)))
 
   (try
-    (server/start! [:http :gzip-false])
+    (server/start! [:http :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200

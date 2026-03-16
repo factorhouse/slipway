@@ -7,7 +7,7 @@
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
             [slipway.handler :as handler]
-            [slipway.handler.gzip :as gzip]
+            [slipway.handler.compression :as compression]
             [slipway.security :as security]
             [slipway.server :as server]
             [slipway.session :as session])
@@ -66,11 +66,11 @@
                                                    (merge https-connector https-proxied)]
                                    :error-handler app/server-error-handler}
 
-   :gzip-nil             #::gzip{:enabled? nil}
+   :compression-nil      #::compression{:enabled? nil}
 
-   :gzip-false           #::gzip{:enabled? false}
+   :compression-false    #::compression{:enabled? false}
 
-   :gzip-true            #::gzip{:enabled? true}
+   :compression-true     #::compression{:enabled? true}
 
    :custom-ws            #::handler{:ws-path "/wsx"}
 

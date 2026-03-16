@@ -35,7 +35,7 @@
 (deftest compression
 
   (try
-    (example/start! [:http+https+forwarded :gzip-nil])
+    (example/start! [:http+https+forwarded :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -56,7 +56,7 @@
     (finally (example/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :gzip-true])
+    (example/start! [:http+https+forwarded :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -77,7 +77,7 @@
     (finally (example/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :gzip-false])
+    (example/start! [:http+https+forwarded :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
