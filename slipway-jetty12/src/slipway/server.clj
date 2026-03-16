@@ -1,7 +1,7 @@
 (ns slipway.server
   (:import (org.eclipse.jetty.io ByteBufferPool)
            (org.eclipse.jetty.server Connector Server)
-           (org.eclipse.jetty.util.thread ScheduledExecutorScheduler Scheduler ThreadPool)))
+           (org.eclipse.jetty.util.thread Scheduler ThreadPool)))
 
 (defmulti handler (fn [_ring_handler _login_service opts] (::handler opts)))
 
