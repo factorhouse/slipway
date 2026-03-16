@@ -9,10 +9,11 @@
   (:import (org.eclipse.jetty.server Handler Server)))
 
 (comment
-  #:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
-                         :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
-                         :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
-                         :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
+  #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
+                                :path-spec          "the compression path-spec, default '/*'"
+                                :format             "compression format, defaults to :gzip"
+                                :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
+                                :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
 
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
@@ -86,7 +87,9 @@
 
   #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
                    :connectors    "the connectors supported by this server"
-                   :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
+                   :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
+                   :scheduler     "the scheduler used by this server (nil for default behaviour)"
+                   :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
                    :error-handler "the error-handler used by this server for Jetty level errors"}
 
   #:slipway{:join?        "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"

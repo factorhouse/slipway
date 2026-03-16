@@ -1,6 +1,6 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
-            [slipway.handler.gzip :as gzip]
+            [slipway.handler.compression :as compression]
             [slipway.request :as request]
             [slipway.response :as response]
             [slipway.security :as security]
@@ -60,5 +60,5 @@
                           (.setHandler ^Handler handler)
                           ;(JettyWebSocketServletContainerInitializer/configure nil)
                           )]
-    (some->> (gzip/handler opts) (.insertHandler context-handler))
+    (some->> (compression/handler opts) (.insertHandler context-handler))
     context-handler))
