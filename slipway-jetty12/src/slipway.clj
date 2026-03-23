@@ -6,7 +6,8 @@
             [slipway.security :as security]
             [slipway.server :as server]
             [slipway.user])
-  (:import (org.eclipse.jetty.server Handler Server)))
+  (:import (org.eclipse.jetty.server Handler Server)
+           (org.eclipse.jetty.websocket.server ServerWebSocketContainer)))
 
 (comment
   #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
@@ -100,8 +101,10 @@
   (when enable-info?
     (log/info "starting slipway server"))
   (let [server        (server/create-server opts)
-        login-service (security/login-service opts)]
+        login-service (security/login-service opts)
+        handler       (server/handler ring-handler login-service opts)]
     (.setHandler server ^Handler (server/handler ring-handler login-service opts))
+    (ServerWebSocketContainer/ensure server handler)
     (some->> login-service (.addBean server))
     (.start server)
     (when join?

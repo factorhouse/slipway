@@ -1,8 +1,22 @@
 (ns slipway.request
+  (:require [clojure.string :as string])
   (:import (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
-           (org.eclipse.jetty.server Request)))
+           (org.eclipse.jetty.server Request)
+           (org.eclipse.jetty.websocket.core.server ServerUpgradeRequest)))
+
+(defprotocol Decoder
+  (decode [r]))
+
+(defn upgrade?
+  [{:keys [headers]}]
+  (let [connection (or (get headers "Connection") (get headers "connection"))
+        upgrade    (or (get headers "Upgrade") (get headers "upgrade"))]
+    (and (some? upgrade)
+         (some? connection)
+         (string/includes? (string/lower-case upgrade) "websocket")
+         (string/includes? (string/lower-case connection) "upgrade"))))
 
 (defn get-headers
   [^Request request]
@@ -37,3 +51,26 @@
      :character-encoding (some-> (Request/getCharset request) str)
      :ssl-client-cert    (ssl-client-cert request)
      :body               (Request/asInputStream request)}))
+
+(extend-protocol Decoder
+
+  Request
+  (decode [request]
+    (request-map request))
+
+  ServerUpgradeRequest
+  (decode [request]
+    (assoc (request-map request)
+           ::websocket-protocol-version (.getProtocolVersion request)
+           ::websocket-subprotocols (into [] (.getSubProtocols request))
+           ::websocket-extensions (into [] (.getExtensions request))
+           ::websocket-components (into [] (.getWebSocketComponents request)))))
+
+(defn websocket-protocol
+  [request-map]
+  (first (::websocket-subprotocols request-map)))
+
+(def websocket-subprotocols ::websocket-subprotocols)
+(def websocket-protocol-version ::websocket-protocol-version)
+(def websocket-extensions ::websocket-extensions)
+(def websocket-components ::websocket-components)

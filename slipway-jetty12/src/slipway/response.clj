@@ -1,8 +1,17 @@
 (ns slipway.response
-  "This ns modelled on response functions in ring.util.servlet, translated to Jetty responses"
   (:require [ring.core.protocols :as protocols])
   (:import (org.eclipse.jetty.http HttpFields$Mutable)
            (org.eclipse.jetty.server Request Response)))
+
+(defn upgrade?
+  [{:keys [status ws]}]
+  (and (= 101 status) (map? ws)))
+
+(defn upgrade
+  [ws-listener]
+  {::websocket-listener ws-listener})
+
+(def websocket-listener ::websocket-listener)
 
 (defn set-headers
   [^Response response headers]

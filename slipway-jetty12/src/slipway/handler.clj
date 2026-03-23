@@ -5,7 +5,8 @@
             [slipway.response :as response]
             [slipway.security :as security]
             [slipway.server :as server]
-            [slipway.session :as session])
+            [slipway.session :as session]
+            [slipway.websockets :as ws])
   (:import (org.eclipse.jetty.http HttpStatus)
            (org.eclipse.jetty.server Handler Handler$Wrapper Request Response)
            (org.eclipse.jetty.server.handler ContextHandler)
@@ -13,7 +14,7 @@
 
 (defn request-map
   [request response]
-  (merge (request/request-map request)
+  (merge (request/decode request)
          (security/user request)
          {::request request}
          {::response response}))
@@ -28,9 +29,12 @@
   (proxy [Handler$Wrapper] []
     (handle [^Request request ^Response response ^Callback cb]
       (try
-        (->> (request-map request response)
-             (handler)
-             (response/update-response request response))
+        (let [request-map  (request-map request response)
+              response-map (handler request-map)]
+          (if (and (request/upgrade? request-map) (response/upgrade? response-map))
+            (when-not (ws/upgrade-websocket request response cb request-map response-map opts)
+              (response/update-response request response {:status 400 :body "Bad Request"}))
+            (response/update-response request response response-map)))
         (.succeeded cb)
         (catch Throwable ex
           (log/error ex "Unhandled exception processing HTTP request")
@@ -57,8 +61,6 @@
         context-handler (doto (ContextHandler.)
                           (.setContextPath context-path)
                           (.setAllowNullPathInContext (not (false? null-path-info?)))
-                          (.setHandler ^Handler handler)
-                          ;(JettyWebSocketServletContainerInitializer/configure nil)
-                          )]
+                          (.setHandler ^Handler handler))]
     (some->> (compression/handler opts) (.insertHandler context-handler))
     context-handler))
