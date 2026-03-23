@@ -9,7 +9,7 @@
            (org.eclipse.jetty.websocket.server ServerWebSocketContainer WebSocketCreator)))
 
 (defn proxy-ws-adapter
-  [{:keys [on-open on-close on-error on-message]}]
+  [{:keys [on-open on-close _on-error on-message]}]
   (let [session (atom nil)]
     (reify Session$Listener$AutoDemanding
       (^void onWebSocketOpen [_ ^Session current-session]

@@ -35,4 +35,5 @@
       (.setStatus response status))
     (set-headers response headers)
     (let [output-stream (Response/asBufferedOutputStream request response)]
+      ;; TODO, consider https://github.com/sunng87/ring-jetty9-adapter/issues/122
       (protocols/write-body-to-stream body response-map output-stream))))

@@ -1,42 +1,12 @@
 (ns slipway.handler
   (:require [clojure.tools.logging :as log]
             [slipway.handler.compression :as compression]
-            [slipway.request :as request]
-            [slipway.response :as response]
             [slipway.security :as security]
             [slipway.server :as server]
-            [slipway.session :as session]
-            [slipway.websockets :as ws])
-  (:import (org.eclipse.jetty.http HttpStatus)
-           (org.eclipse.jetty.server Handler Handler$Wrapper Request Response)
+            [slipway.session :as session])
+  (:import (org.eclipse.jetty.server Handler)
            (org.eclipse.jetty.server.handler ContextHandler)
-           (org.eclipse.jetty.util Callback)))
-
-(defn request-map
-  [request response]
-  (merge (request/decode request)
-         (security/user request)
-         {::request request}
-         {::response response}))
-
-(defn proxy-handler ^Handler
-  [handler opts]
-  (log/debugf "creating websocket handler with %s" opts)
-  (proxy [Handler$Wrapper] []
-    (handle [^Request request ^Response response ^Callback cb]
-      (try
-        (let [request-map  (request-map request response)
-              response-map (handler request-map)]
-          (if (and (request/upgrade? request-map) (response/upgrade? response-map))
-            (when-not (ws/upgrade-websocket request response cb request-map response-map opts)
-              (response/update-response request response {:status 400 :body "Bad Request"}))
-            (response/update-response request response response-map)))
-        (.succeeded cb)
-        (catch Throwable ex
-          (log/error ex "Unhandled exception processing HTTP request")
-          (Response/writeError request response cb HttpStatus/INTERNAL_SERVER_ERROR_500 "slipway proxy error" ex)
-          (.failed cb ex)))
-      true)))
+           (slipway.handler SyncHandler)))
 
 (comment
   #:slipway.handler{:context-path    "the root context path, default '/'"
@@ -46,13 +16,14 @@
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/debugf "creating default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
-  (let [handler         (if login-service
+  (let [proxy-handler   (SyncHandler. ring-handler opts)
+        handler         (if login-service
                           (let [security-handler (security/handler login-service opts)
                                 session-handler  (session/handler opts)]
-                            (.setHandler security-handler (proxy-handler ring-handler opts))
+                            (.setHandler security-handler proxy-handler)
                             (.setHandler session-handler security-handler)
                             session-handler)
-                          (proxy-handler ring-handler opts))
+                          proxy-handler)
         context-handler (doto (ContextHandler.)
                           (.setContextPath context-path)
                           (.setAllowNullPathInContext (not (false? null-path-info?)))

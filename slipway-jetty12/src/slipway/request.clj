@@ -1,5 +1,6 @@
 (ns slipway.request
-  (:require [clojure.string :as string])
+  (:require [clojure.string :as string]
+            [slipway.security :as security])
   (:import (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
@@ -32,7 +33,7 @@
           (.peerCertificates)
           (first)))
 
-(defn request-map
+(defn ring-like-map
   "Create a ring-like request map from a Jetty request"
   [^Request request]
   (let [^HttpURI uri                 (.getHttpURI request)
@@ -56,11 +57,11 @@
 
   Request
   (decode [request]
-    (request-map request))
+    (ring-like-map request))
 
   ServerUpgradeRequest
   (decode [request]
-    (assoc (request-map request)
+    (assoc (ring-like-map request)
            ::websocket-protocol-version (.getProtocolVersion request)
            ::websocket-subprotocols (into [] (.getSubProtocols request))
            ::websocket-extensions (into [] (.getExtensions request))
@@ -74,3 +75,10 @@
 (def websocket-protocol-version ::websocket-protocol-version)
 (def websocket-extensions ::websocket-extensions)
 (def websocket-components ::websocket-components)
+
+(defn request-map
+  [request response]
+  (merge (decode request)
+         (security/user request)
+         {::request request}
+         {::response response}))                            ;; TODO: consider slipway.response/response

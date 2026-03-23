@@ -27,7 +27,7 @@
   (-> req identity :roles))
 
 (defn logout
-  [{:keys [^Request slipway.handler/request ^Response slipway.handler/response ::identity]}]
+  [{:keys [^Request slipway.request/request ^Response slipway.request/response ::identity]}]
   (when request
     (try
       (log/debug "logout" identity)
