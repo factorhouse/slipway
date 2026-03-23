@@ -1,5 +1,6 @@
 (ns slipway.websockets
-  (:require [slipway.request :as request]
+  (:require [clojure.tools.logging :as log]
+            [slipway.request :as request]
             [slipway.response :as response])
   (:import (java.nio ByteBuffer)
            (java.time Duration)
@@ -50,6 +51,7 @@
          :or    {idle-timeout 500000}} opts
         creator   (reify-ws-creator request-map response-map)
         container (ServerWebSocketContainer/get (.getContext request))]
+    (log/debug "upgrading to websocket connection")
     (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
     (some->> input-buffer-size (.setInputBufferSize container))
     (some->> output-buffer-size (.setOutputBufferSize container))
@@ -57,4 +59,6 @@
     (some->> max-binary-message-size (.setMaxBinaryMessageSize container))
     (some->> max-frame-size (.setMaxFrameSize container))
     (some->> auto-fragment (.setAutoFragment container))
-    (.upgrade container creator request response cb)))
+    (let [ws-upgraded? (.upgrade container creator request response cb)]
+      (log/debugf "AM I UPGRADED?? %s" ws-upgraded?)         ;; TODO: don't leave this in
+      ws-upgraded?)))

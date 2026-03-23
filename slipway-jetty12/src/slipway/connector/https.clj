@@ -18,9 +18,8 @@
             send-date-header?          false
             relative-redirect-allowed? false}
     :as    opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof "sni required? %s, sni host check? %s, sts-max-age %s, sts-include-subdomains? %s"
-               sni-required? sni-host-check? sts-max-age sts-include-subdomains?))
+  (log/debugf "creating default http configuration "
+              sni-required? sni-host-check? sts-max-age sts-include-subdomains?)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion send-server-version?)
@@ -79,16 +78,14 @@
 
 (defn proxied-connector ^ServerConnector
   [^Server server ^HttpConnectionFactory http-factory {::keys [host port http-forwarded?] :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof (str "starting proxied HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port))
+  (log/debugf (str "starting proxied HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
   (let [ssl-factory (SslConnectionFactory. (context-factory opts) (.asString HttpVersion/HTTP_1_1))
         factories   (into-array ConnectionFactory [(ProxyConnectionFactory.) ssl-factory http-factory])]
     (ServerConnector. server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)))
 
 (defn standard-connector ^ServerConnector
   [^Server server ^HttpConnectionFactory http-factory {::keys [host port http-forwarded?] :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof (str "starting HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port))
+  (log/debugf (str "starting HTTPS connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
   (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" (into-array ConnectionFactory [http-factory])))
 
 (comment

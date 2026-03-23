@@ -75,7 +75,7 @@
 (def server-error-handler (error/handler server-error-body-fn))
 
 (defn routes
-  [_sente]
+  [sente]
   [""
    ["/up" {:get {:handler up}}]
    ["/login" {:get {:handler login-handler}}]
@@ -83,7 +83,7 @@
    ["/logout" {:get {:handler logout-handler}}]
    ["/" {:get {:handler home-handler}}]
    ["/user" {:get {:handler user-handler}}]
-   ;["/chsk" {:get {:handler (:ws-handshake sente)}}]
+   ["/chsk" {:get {:handler (:ws-handshake-fn sente)}}]
    ["/405" {:get {:handler error-405-handler}}]
    ["/406" {:get {:handler error-406-handler}}]
    ["/500" {:get {:handler deliberately-erroring-handler}}]])

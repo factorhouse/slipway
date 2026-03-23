@@ -13,19 +13,17 @@
 (defmethod login-service :default [_] nil)
 
 (defmethod login-service "jaas"
-  [{::keys [realm] :as opts}]
+  [{::keys [realm]}]
   (let [config (System/getProperty "java.security.auth.login.config")]
-    (when (:slipway/enable-info? opts)
-      (log/infof "initializing JAASLoginService - realm: %s, java.security.auth.login.config: %s " realm config))
+    (log/debugf "initializing JAASLoginService - realm: %s, java.security.auth.login.config: %s " realm config)
     (if config
       (when (slurp config)
         (doto (JAASLoginService. realm) (.setConfiguration (Configuration/getConfiguration))))
       (throw (ex-info "start with -Djava.security.auth.login.config=/some/path/to/jaas.config to use Jetty/JAAS auth provider" {})))))
 
 (defmethod login-service "hash"
-  [{::keys [realm hash-user-file] :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof "initializing HashLoginService - realm: %s, realm file: %s" realm hash-user-file))
+  [{::keys [realm hash-user-file]}]
+  (log/debugf "initializing HashLoginService - realm: %s, realm file: %s" realm hash-user-file)
   (if hash-user-file
     (when (slurp hash-user-file)
       (HashLoginService. realm (.newResource (ResourceFactory/root) ^String hash-user-file)))
@@ -46,9 +44,8 @@
                      :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 
 (defn handler ^SecurityHandler
-  [^LoginService login-service {::keys [realm authenticator constraint-mappings identity-service] :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof "authenticator %s with %s constraints" (type authenticator) (count constraint-mappings)))
+  [^LoginService login-service {::keys [realm authenticator constraint-mappings identity-service]}]
+  (log/debugf "creating security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))
   (let [security-handler (doto (SecurityHandler$PathMapped.)
                            (.setAuthenticator ^Authenticator authenticator)
                            (.setLoginService login-service)
@@ -56,7 +53,6 @@
     (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
       (.put security-handler path-spec constraint))
     (when identity-service
-      (when (:slipway/enable-info? opts)
-        (log/infof "identity service %s" (type identity-service)))
+      (log/debugf "identity service %s" (type identity-service))
       (.setIdentityService security-handler identity-service))
     security-handler))

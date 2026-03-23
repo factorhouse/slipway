@@ -93,30 +93,24 @@
                    :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
                    :error-handler "the error-handler used by this server for Jetty level errors"}
 
-  #:slipway{:join?        "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"
-            :enable-info? "enable info-level startup, shutdown, and configuration logging"})
+  #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
-  [ring-handler {::keys [join? enable-info?] :as opts}]
-  (when enable-info?
-    (log/info "starting slipway server"))
+  [ring-handler {::keys [join?] :as opts}]
+  (log/debug "starting slipway server")
   (let [server        (server/create-server opts)
         login-service (security/login-service opts)
         handler       (server/handler ring-handler login-service opts)]
-    (.setHandler server ^Handler (server/handler ring-handler login-service opts))
+    (.setHandler server ^Handler handler)
     (ServerWebSocketContainer/ensure server handler)
     (some->> login-service (.addBean server))
     (.start server)
     (when join?
-      (when enable-info?
-        (log/info "joining jetty thread"))
+      (log/debug "joining jetty thread")
       (.join server))
     server))
 
 (defn stop
-  ([^Server server]
-   (stop server nil))
-  ([^Server server {::keys [enable-info?]}]
-   (when enable-info?
-     (log/info "stopping slipway server"))
-   (.stop server)))
+  [^Server server]
+  (log/debug "stopping slipway server")
+  (.stop server))

@@ -19,15 +19,13 @@
 
 (defn compression
   [{::keys [compress-min-bytes] :or {compress-min-bytes 1024} :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof "enabling %s compression with compress-min-bytes %s" (or (:format opts) :gzip) compress-min-bytes))
+  (log/debugf "enabling %s compression with compress-min-bytes %s" (or (:format opts) :gzip) compress-min-bytes)
   (doto (format opts)
     (.setMinCompressSize compress-min-bytes)))
 
 (defn config ^CompressionConfig
-  [{::keys [compression-config] :as opts}]
-  (when (:slipway/enable-info? opts)
-    (log/infof "using %s compression configuration" (if compression-config "specific" "default")))
+  [{::keys [compression-config]}]
+  (log/debugf "using %s compression configuration" (if compression-config "specific" "default"))
   (or compression-config
       (let [builder (CompressionConfig/builder)]
         (.build (.defaults builder)))))

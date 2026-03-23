@@ -7,11 +7,13 @@
 (defn do-get
   ([location opts]
    (log/infof "GET %s with %s" location (or opts {}))
-   (client/request (merge {:url               location
-                           :method            "GET"
-                           :redirect-strategy :none
-                           :throw-exceptions  false}
-                          opts)))
+   (let [response (client/request (merge {:url               location
+                                          :method            "GET"
+                                          :redirect-strategy :none
+                                          :throw-exceptions  false}
+                                         opts))]
+     (log/infof "GET RESPONSE %s / %s %s for %s" (:status response) (:reason-phrase response) response location)
+     response))
   ([scheme host port uri]
    (do-get scheme host port uri nil))
   ([scheme host port uri opts]

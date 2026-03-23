@@ -1,17 +1,21 @@
 (ns slipway.response
-  (:require [ring.core.protocols :as protocols])
+  (:require [clojure.tools.logging :as log]
+            [ring.core.protocols :as protocols])
   (:import (org.eclipse.jetty.http HttpFields$Mutable)
            (org.eclipse.jetty.server Request Response)))
 
+(def websocket-listener ::websocket-listener)
+
 (defn upgrade?
-  [{:keys [status ws]}]
-  (and (= 101 status) (map? ws)))
+  [{:keys [status ::websocket-listener]}]
+  (and (= 101 status) websocket-listener))
 
 (defn upgrade
   [ws-listener]
-  {::websocket-listener ws-listener})
-
-(def websocket-listener ::websocket-listener)
+  {:status              101
+   :headers             {"Connection" "Upgrade"
+                         "Upgrade"    "Websocket"}
+   ::websocket-listener ws-listener})
 
 (defn set-headers
   [^Response response headers]

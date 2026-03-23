@@ -5,8 +5,7 @@
             [slipway.response :as response]
             [taoensso.sente :as sente]
             [taoensso.sente.interfaces :as i])
-  (:import (org.eclipse.jetty.util Callback)
-           (org.eclipse.jetty.websocket.api Session)))
+  (:import (org.eclipse.jetty.websocket.api Callback Session)))
 
 (extend-type Session
   i/IServerChan
@@ -51,6 +50,7 @@
 
 (defn start-server
   [opts]
+
   (let [server (sente/make-channel-socket-server! (JettyServerChanAdapter.) opts)
         {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
     {:ch-recv         ch-recv
