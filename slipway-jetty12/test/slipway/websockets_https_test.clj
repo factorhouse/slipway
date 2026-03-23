@@ -52,6 +52,21 @@
         (is (seq cookies))
 
         (comment
+          ;; print curl command you can use to validate externally to this test at this point
+          ;; if running this as an individual test to use with this curl, alter the finally to not shut the server
+          ;;
+          ;; when running this test with https you will also need to:
+          ;;  - add the '-k' switch to the curl command to enable permissive ssl (ignore the self signed certs)
+          ;;  - adjust example.app/handler to have https for allowed origins rather than http
+          (print-ws-upgrade-curl {:scheme     "https"
+                                  :host       "localhost"
+                                  :port       3443
+                                  :client-id  client-id
+                                  :csrf-token csrf-token
+                                  :cookies    cookies
+                                  :sec-ws-key sec-ws-key}))
+
+        (comment
 
           ; full websocket upgrade (test hangs in the handshake/upgrade process as we switch from http to wss)
           (is (= 400 (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
@@ -397,18 +412,7 @@
                                      :headers            {"Connection" "Upgrade"
                                                           "Upgrade"    "Websocket"
                                                           "Origin"     "https://localhost:2999"}})
-                     :status)))
-
-      ;; set true to print curl command you can use to validate externally to this test ns
-      (comment
-
-        (print-ws-upgrade-curl {:scheme     "http"
-                                :host       "localhost"
-                                :port       3443
-                                :client-id  client-id
-                                :csrf-token csrf-token
-                                :cookies    cookies
-                                :sec-ws-key sec-ws-key})))
+                     :status))))
 
     (testing "require login to negotiate websocket upgrade"
 

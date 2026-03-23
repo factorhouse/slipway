@@ -1,5 +1,6 @@
 (ns slipway.websockets
-  (:require [slipway.request :as request]
+  (:require [clojure.tools.logging :as log]
+            [slipway.request :as request]
             [slipway.response :as response])
   (:import (java.nio ByteBuffer)
            (java.time Duration)
@@ -18,7 +19,11 @@
         (reset! session nil)
         (when cb (cb)))
       (^void onWebSocketError [_ ^Throwable error]
-        (on-error @session error))
+       ;; sente currently log/errors, we mute down to log/debug because the common ChannelClosedException when a user
+       ;; hards shuts their browser session can be a bit chatty in the logs. If sente does something further on-error
+       ;; we should consider reapplying here
+       ;; (on-error @session error)
+        (log/debug "websocket error" error))
       (^void onWebSocketText [_ ^String message]
         (on-message @session message))
       (^void onWebSocketBinary [_ ^ByteBuffer payload ^Callback cb]
