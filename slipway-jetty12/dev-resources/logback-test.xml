@@ -6,13 +6,11 @@
         </encoder>
     </appender>
 
-<!--    <logger name="org.eclipse.jetty.security" level="DEBUG"/>-->
+    <!--    <logger name="org.eclipse.jetty.security" level="DEBUG"/>-->
     <logger name="slipway" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
-
-
 
 </configuration>
