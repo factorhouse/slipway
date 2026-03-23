@@ -18,8 +18,7 @@
             send-date-header?          false
             relative-redirect-allowed? false}
     :as    opts}]
-  (log/debugf "creating default http configuration "
-              sni-required? sni-host-check? sts-max-age sts-include-subdomains?)
+  (log/debugf "creating default http configuration %s" opts)
   (let [config (doto (HttpConfiguration.)
                  (.setSecurePort port)
                  (.setSendServerVersion send-server-version?)

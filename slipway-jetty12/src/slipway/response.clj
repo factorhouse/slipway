@@ -1,6 +1,5 @@
 (ns slipway.response
-  (:require [clojure.tools.logging :as log]
-            [ring.core.protocols :as protocols])
+  (:require [ring.core.protocols :as protocols])
   (:import (org.eclipse.jetty.http HttpFields$Mutable)
            (org.eclipse.jetty.server Request Response)))
 
