@@ -1,6 +1,5 @@
 (ns slipway.websockets
-  (:require [clojure.tools.logging :as log]
-            [slipway.request :as request]
+  (:require [slipway.request :as request]
             [slipway.response :as response])
   (:import (java.nio ByteBuffer)
            (java.time Duration)
