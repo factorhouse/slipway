@@ -1,4 +1,4 @@
-(ns slipway.client
+(ns slipway.test-client
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [clojure.tools.logging :as log])

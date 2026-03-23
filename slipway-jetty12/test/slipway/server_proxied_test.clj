@@ -1,6 +1,6 @@
-(ns slipway.proxied-server-test
+(ns slipway.server-proxied-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.client :as client]
+            [slipway.test-client :as client]
             [slipway.test-server :as example]
             [slipway.example.html :as html])
   (:import (java.net ConnectException)

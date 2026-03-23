@@ -1,6 +1,6 @@
-(ns slipway.forwarded-server-test
+(ns slipway.server-forwarded-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.client :as client]
+            [slipway.test-client :as client]
             [slipway.example.html :as html]
             [slipway.test-server :as example])
   (:import (java.net ConnectException)
