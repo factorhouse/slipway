@@ -30,10 +30,10 @@
                               :truststore-password "password"
                               :truststore-type     "PKCS12"})
 
-(def hsts #::https{:sts-max-age             31536000
+(def hsts #::https{:sts-max-age-s           31536000
                    :sts-include-subdomains? true})
 
-(def hsts-no-subdomains #::https{:sts-max-age 31536000})
+(def hsts-no-subdomains #::https{:sts-max-age-s 31536000})
 
 (def hsts-no-max-age #::https{:sts-include-subdomains? true})
 
@@ -73,7 +73,7 @@
 
    :custom-ws            #::handler{:ws-path "/wsx"}
 
-   :short-session        #::session{:max-inactive-interval 10}
+   :short-session        #::session{:max-inactive-interval-s 10}
 
    :join                 #::slipway{:join? true}})
 

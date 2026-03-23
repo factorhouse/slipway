@@ -8,11 +8,11 @@
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn default-config ^HttpConfiguration
-  [{::keys [port http-forwarded? sni-required? sni-host-check? sts-max-age sts-include-subdomains? send-server-version?
+  [{::keys [port http-forwarded? sni-required? sni-host-check? sts-max-age-s sts-include-subdomains? send-server-version?
             send-date-header? relative-redirect-allowed?]
     :or    {sni-required?              false
             sni-host-check?            false
-            sts-max-age                -1
+            sts-max-age-s              -1
             sts-include-subdomains?    false
             send-server-version?       false
             send-date-header?          false
@@ -27,7 +27,7 @@
                  (.addCustomizer (doto (SecureRequestCustomizer.)
                                    (.setSniRequired sni-required?)
                                    (.setSniHostCheck sni-host-check?)
-                                   (.setStsMaxAge sts-max-age)
+                                   (.setStsMaxAge sts-max-age-s)
                                    (.setStsIncludeSubDomains sts-include-subdomains?))))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
     config))
@@ -90,7 +90,7 @@
 (comment
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
-                            :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                            :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                             :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -112,21 +112,21 @@
                             :ssl-context                "a concrete pre-configured SslContext"
                             :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
                             :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
-                            :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
+                            :sts-max-age-s              "set the Strict-Transport-Security max age in seconds, default -1"
                             :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
                             :send-server-version?       "if true, send the Server header in responses"
                             :send-date-header?          "if true, send the Date header in responses"
                             :relative-redirect-allowed? "if true, allow relative redirects, default false"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout proxy-protocol? http-config configurator]
-                   :or    {idle-timeout 200000
-                           port         443}
+  [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-config configurator]
+                   :or    {idle-timeout-ms 200000
+                           port            443}
                    :as    opts}]
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
         connector    (if proxy-protocol? (proxied-connector server http-factory opts) (standard-connector server http-factory opts))]
     (.setHost connector host)
     (.setPort connector port)
-    (.setIdleTimeout connector idle-timeout)
+    (.setIdleTimeout connector idle-timeout-ms)
     (when configurator (configurator connector))
     connector))
