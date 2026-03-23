@@ -1,6 +1,6 @@
 (ns slipway.http-websockets-test
   (:require [clj-http.conn-mgr :as conn]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
             [slipway.client :as client]
             [slipway.test-server :as example])

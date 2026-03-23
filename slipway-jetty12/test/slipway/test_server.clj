@@ -1,8 +1,7 @@
 (ns slipway.test-server
   "This ns contains helper functions for stopping/starting test servers.
    Feel free to add any further configuration in the same style."
-  (:require [clojure.test :refer :all]
-            [slipway :as slipway]
+  (:require [slipway :as slipway]
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]

@@ -1,5 +1,5 @@
 (ns slipway.proxied-server-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [slipway.client :as client]
             [slipway.test-server :as example]
             [slipway.example.html :as html])

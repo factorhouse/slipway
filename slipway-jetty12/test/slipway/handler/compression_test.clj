@@ -1,5 +1,5 @@
 (ns slipway.handler.compression-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [slipway.handler.compression :as compression])
   (:import (org.eclipse.jetty.compression.gzip GzipCompression)
            (org.eclipse.jetty.compression.server CompressionConfig CompressionHandler)))

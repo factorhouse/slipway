@@ -1,8 +1,7 @@
 (ns slipway.example.html
   (:require
    [clojure.string :as str]
-   [clojure.test :refer :all]
-   [hiccup.core :as hiccup]
+   [hiccup2.core :as hiccup]
    [hiccup.page :as hiccup.page]
    [ring.middleware.anti-forgery :as ring.forgery]
    [slipway.user :as user]))
