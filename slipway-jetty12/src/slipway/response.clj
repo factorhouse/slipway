@@ -5,16 +5,9 @@
 
 (def websocket-listener ::websocket-listener)
 
-(defn upgrade?
-  [{:keys [status ::websocket-listener]}]
-  (and (= 101 status) websocket-listener))
-
 (defn upgrade
   [ws-listener]
-  {:status              101
-   :headers             {"Connection" "Upgrade"
-                         "Upgrade"    "Websocket"}
-   ::websocket-listener ws-listener})
+  {::websocket-listener ws-listener})
 
 (defn set-headers
   [^Response response headers]

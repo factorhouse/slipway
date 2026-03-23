@@ -33,7 +33,7 @@
 (defn reify-ws-creator
   [request-map response-map]
   (reify WebSocketCreator
-    (createWebSocket [_this _requrest response _cb]
+    (createWebSocket [_this _request response _cb]
       (let [listener (response/websocket-listener response-map)
             protocol (request/websocket-protocol request-map)]
         (when (some? protocol)

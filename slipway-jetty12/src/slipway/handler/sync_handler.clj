@@ -28,10 +28,11 @@
     (try
       (let [request-map  (request/request-map request response)
             response-map (handler request-map)]
-        (if (and (request/upgrade? request-map) (response/upgrade? response-map))
+        (if (and (request/upgrade? request-map) (response/websocket-listener response-map))
           (when-not (ws/upgrade-websocket request response cb request-map response-map opts)
             (response/update-response request response {:status 400 :body "Bad Request"}))
           (response/update-response request response response-map)))
+      ;; TODO, consider succeeded here, when/how it applies and the true/false below
       (.succeeded cb)
       (catch Throwable ex
         (log/error ex "Unhandled exception processing HTTP request")
