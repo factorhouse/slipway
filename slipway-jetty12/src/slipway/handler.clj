@@ -27,7 +27,6 @@
       (try
         (let [request-map  (request-map request response)
               response-map (handler request-map)]
-          (log/debug "attempting upgrade?" (and (request/upgrade? request-map) (response/upgrade? response-map)) (request/upgrade? request-map) (response/upgrade? response-map))
           (if (and (request/upgrade? request-map) (response/upgrade? response-map))
             (when-not (ws/upgrade-websocket request response cb request-map response-map opts)
               (response/update-response request response {:status 400 :body "Bad Request"}))

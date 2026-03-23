@@ -35,7 +35,7 @@
 
   ;; Uncomment above and below as necessary to test full websocket negotiation with no auth
 
-  (deftest full-connection-tests-no-auth
+  (deftest full-connection-no-auth
 
     (try
       (example/start! [:http])
@@ -77,7 +77,7 @@
 
   ;; Uncomment above and below as necessary to test full websocket negotiation with form auth
 
-  (deftest full-connection-tests-form-auth
+  (deftest full-connection-form-auth
 
     (try
       (example/start! [:http] :hash-auth)
@@ -118,7 +118,7 @@
 
 (comment
 
-  (deftest full-connection-tests-basic-auth
+  (deftest full-connection-basic-auth
 
     (try
       (example/start! [:http] :basic-auth)
