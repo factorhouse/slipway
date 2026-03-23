@@ -37,28 +37,26 @@
         (proxy-ws-adapter listener)))))
 
 (comment
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
-                       :input-buffer-size       "max websocket input buffer size"
-                       :output-buffer-size      "max websocket output buffer size"
-                       :max-text-message-size   "max websocket text message size"
-                       :max-binary-message-size "max websocket binary message size"
-                       :max-frame-size          "max websocket frame size"
-                       :auto-fragment           "websocket auto fragment (boolean)"})
+  #:slipway.websockets{:idle-timeout-ms          "max websocket idle time, default 500000"
+                       :input-buffer-bytes       "max websocket input buffer size"
+                       :output-buffer-bytes      "max websocket output buffer size"
+                       :max-text-message-bytes   "max websocket text message size"
+                       :max-binary-message-bytes "max websocket binary message size"
+                       :max-frame-bytes          "max websocket frame size"
+                       :auto-fragment            "websocket auto fragment (boolean)"})
 
 (defn upgrade-websocket
   [^Request request ^Response response ^Callback cb request-map response-map opts]
-  (let [{::keys [idle-timeout input-buffer-size output-buffer-size max-text-message-size max-binary-message-size max-frame-size auto-fragment]
-         :or    {idle-timeout 500000}} opts
+  (let [{::keys [idle-timeout-ms input-buffer-bytes output-buffer-bytes max-text-message-bytes max-binary-message-bytes
+                 max-frame-bytes auto-fragment]
+         :or    {idle-timeout-ms 500000}} opts
         creator   (reify-ws-creator request-map response-map)
         container (ServerWebSocketContainer/get (.getContext request))]
-    (log/debug "upgrading to websocket connection")
-    (some->> idle-timeout (Duration/ofMillis) (.setIdleTimeout container))
-    (some->> input-buffer-size (.setInputBufferSize container))
-    (some->> output-buffer-size (.setOutputBufferSize container))
-    (some->> max-text-message-size (.setMaxTextMessageSize container))
-    (some->> max-binary-message-size (.setMaxBinaryMessageSize container))
-    (some->> max-frame-size (.setMaxFrameSize container))
+    (some->> idle-timeout-ms (Duration/ofMillis) (.setIdleTimeout container))
+    (some->> input-buffer-bytes (.setInputBufferSize container))
+    (some->> output-buffer-bytes (.setOutputBufferSize container))
+    (some->> max-text-message-bytes (.setMaxTextMessageSize container))
+    (some->> max-binary-message-bytes (.setMaxBinaryMessageSize container))
+    (some->> max-frame-bytes (.setMaxFrameSize container))
     (some->> auto-fragment (.setAutoFragment container))
-    (let [ws-upgraded? (.upgrade container creator request response cb)]
-      (log/debugf "AM I UPGRADED?? %s" ws-upgraded?)         ;; TODO: don't leave this in
-      ws-upgraded?)))
+    (.upgrade container creator request response cb)))

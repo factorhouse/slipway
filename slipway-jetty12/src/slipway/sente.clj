@@ -50,7 +50,7 @@
 
 (defn start-server
   [opts]
-
+  (log/debugf "starting sente server %s" opts)
   (let [server (sente/make-channel-socket-server! (JettyServerChanAdapter.) opts)
         {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
     {:ch-recv         ch-recv

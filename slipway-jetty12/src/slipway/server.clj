@@ -1,4 +1,5 @@
 (ns slipway.server
+  (:require [clojure.tools.logging :as log])
   (:import (org.eclipse.jetty.io ByteBufferPool)
            (org.eclipse.jetty.server Connector Server)
            (org.eclipse.jetty.util.thread Scheduler ThreadPool)))
@@ -16,8 +17,9 @@
                    :error-handler "the error-handler used by this server for Jetty level errors"})
 
 (defn create-server ^Server
-  [{::keys [connectors thread-pool scheduler buffer-pool error-handler]}]
+  [{::keys [connectors thread-pool scheduler buffer-pool error-handler] :as opts}]
   {:pre [connectors]}
+  (log/debugf "creating server %s" opts)
   (let [server (Server. ^ThreadPool thread-pool ^Scheduler scheduler ^ByteBufferPool buffer-pool)]
     (.setConnectors server (into-array Connector (map #(connector server %) connectors)))
     (when error-handler

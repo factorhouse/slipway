@@ -104,8 +104,7 @@
                                         "Sec-WebSocket-Key"     sec-ws-key}})))
 
         (comment
-          ; full websocket upgrade with lower case headers
-          ; jetty capitalizes headers prior to WebSocketServerfactory(j9) / RFC6455Negotiation(j10/11)
+          ; full websocket upgrade with lower case headers, jetty capitalizes headers prior to negotiation
           ; hangs on http->wss protocol switch as above
           (is (client/do-get (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                              {:cookies cookies
@@ -146,8 +145,7 @@
                           "Sec-WebSocket-Key"     sec-ws-key}})))
 
         (comment
-          ; full websocket upgrade with lower case headers
-          ; jetty capitalizes headers prior to WebSocketServerfactory(j9) / RFC6455Negotiation(j10/11)
+          ; full websocket upgrade with lower case headers, jetty capitalizes headers prior to negotiation
           ; hangs on http->wss protocol switch as above
           (is (client/do-get
                (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)

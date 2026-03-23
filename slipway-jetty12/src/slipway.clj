@@ -67,20 +67,13 @@
                     :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
                     :path-parameter-name   "name of path parameter used for URL session tracking"}
 
-  ;; Jetty 10 / Jetty 11 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
-                       :input-buffer-size       "max websocket input buffer size (in bytes)"
-                       :output-buffer-size      "max websocket output buffer size (in bytes)"
-                       :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
-                       :max-binary-message-size "max websocket binary message size (in bytes)"
-                       :max-frame-size          "max websocket frame size (in bytes)"
-                       :auto-fragment           "websocket auto fragment (boolean)"}
-
-  ;; Jetty 9 Websockets
-  #:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
-                       :input-buffer-size       "max websocket input buffer size"
-                       :max-text-message-size   "max websocket text message size"
-                       :max-binary-message-size "max websocket binary message size"}
+  #:slipway.websockets{:idle-timeout-ms          "max websocket idle time, default 500000"
+                       :input-buffer-bytes       "max websocket input buffer size"
+                       :output-buffer-bytes      "max websocket output buffer size"
+                       :max-text-message-bytes   "max websocket text message size"
+                       :max-binary-message-bytes "max websocket binary message size"
+                       :max-frame-bytes          "max websocket frame size"
+                       :auto-fragment            "websocket auto fragment (boolean)"}
 
   #:slipway.handler{:context-path    "the root context path, default '/'"
                     :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
