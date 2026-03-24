@@ -1,9 +1,8 @@
 (ns slipway.handler.sync-handler
-  (:require
-   [clojure.tools.logging :as log]
-   [slipway.request :as request]
-   [slipway.response :as response]
-   [slipway.websockets :as ws])
+  (:require [clojure.tools.logging :as log]
+            [slipway.request :as request]
+            [slipway.response :as response]
+            [slipway.websockets :as ws])
   (:import (org.eclipse.jetty.http HttpStatus)
            (org.eclipse.jetty.server Request Response)
            (org.eclipse.jetty.util Callback)
@@ -28,8 +27,9 @@
     (try
       (let [request-map  (request/request-map request response)
             response-map (handler request-map)]
-        (if (and (request/upgrade? request-map) (response/websocket-listener response-map))
-          (when-not (ws/upgrade-websocket request response cb request-map response-map opts)
+        (if (request/websocket-upgrade? request-map)
+          (when-not (and (response/websocket-listener response-map)
+                         (ws/upgrade-websocket request response cb request-map response-map opts))
             (response/update-response request response {:status 400 :body "Bad Request"}))
           (response/update-response request response response-map)))
       ;; TODO, consider succeeded here, when/how it applies and the true/false below

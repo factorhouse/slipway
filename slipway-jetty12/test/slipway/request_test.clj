@@ -2,17 +2,17 @@
   (:require [clojure.test :refer [deftest is]]
             [slipway.request :as request]))
 
-(deftest upgrade?
+(deftest websocket-upgrade?
 
-  (is (not (request/upgrade? {})))
-  (is (not (request/upgrade? {:headers {"Connection" "connection"}})))
-  (is (not (request/upgrade? {:headers {"Upgrade" "upgrade"}})))
+  (is (not (request/websocket-upgrade? {})))
+  (is (not (request/websocket-upgrade? {:headers {"Connection" "connection"}})))
+  (is (not (request/websocket-upgrade? {:headers {"Upgrade" "upgrade"}})))
 
-  (is (request/upgrade? {:headers {"Connection" "upgrade"
-                                   "Upgrade"    "websocket"}}))
+  (is (request/websocket-upgrade? {:headers {"Connection" "upgrade"
+                                             "Upgrade"    "websocket"}}))
 
-  (is (request/upgrade? {:headers {"connection" "UpGrAdE"
-                                   "upgrade"    "wEbSOcket"}})))
+  (is (request/websocket-upgrade? {:headers {"connection" "UpGrAdE"
+                                             "upgrade"    "wEbSOcket"}})))
 
 (deftest websocket-protocol
 

@@ -34,10 +34,11 @@
   [request-map response-map]
   (reify WebSocketCreator
     (createWebSocket [_this _request response _cb]
-      (let [listener (response/websocket-listener response-map)
-            protocol (request/websocket-protocol request-map)]
-        (when (some? protocol)
-          (.setAcceptedSubProtocol response protocol))
+      (let [listener   (response/websocket-listener response-map)
+            protocol   (request/websocket-protocol request-map)
+            extensions (request/websocket-extensions)]
+        (when protocol (.setAcceptedSubProtocol response protocol))
+        (when extensions (.setExtensions response extensions))
         (proxy-ws-adapter listener)))))
 
 (comment

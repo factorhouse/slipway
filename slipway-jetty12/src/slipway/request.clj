@@ -10,7 +10,7 @@
 (defprotocol Decoder
   (decode [r]))
 
-(defn upgrade?
+(defn websocket-upgrade?
   [{:keys [headers]}]
   (let [connection (or (get headers "Connection") (get headers "connection"))
         upgrade    (or (get headers "Upgrade") (get headers "upgrade"))]
@@ -63,18 +63,20 @@
   (decode [request]
     (assoc (ring-like-map request)
            ::websocket-protocol-version (.getProtocolVersion request)
-           ::websocket-subprotocols (into [] (.getSubProtocols request))
-           ::websocket-extensions (into [] (.getExtensions request))
-           ::websocket-components (into [] (.getWebSocketComponents request)))))
+           ::websocket-subprotocols (.getSubProtocols request)
+           ::websocket-extensions (.getExtensions request))))
+
+(defn websocket-protocol-version
+  [request-map]
+  (::websocket-protocol-version request-map))
 
 (defn websocket-protocol
   [request-map]
   (first (::websocket-subprotocols request-map)))
 
-(def websocket-subprotocols ::websocket-subprotocols)
-(def websocket-protocol-version ::websocket-protocol-version)
-(def websocket-extensions ::websocket-extensions)
-(def websocket-components ::websocket-components)
+(defn websocket-extensions
+  [request-map]
+  (seq (::websocket-extensions request-map)))
 
 (defn request-map
   [request response]

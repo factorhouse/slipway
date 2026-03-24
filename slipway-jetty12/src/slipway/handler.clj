@@ -16,14 +16,13 @@
 (defmethod server/handler :default
   [ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/debugf "creating default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
-  (let [proxy-handler   (SyncHandler. ring-handler opts)
-        handler         (if login-service
+  (let [handler         (if login-service
                           (let [security-handler (security/handler login-service opts)
                                 session-handler  (session/handler opts)]
-                            (.setHandler security-handler proxy-handler)
+                            (.setHandler security-handler (SyncHandler. ring-handler opts))
                             (.setHandler session-handler security-handler)
                             session-handler)
-                          proxy-handler)
+                          (SyncHandler. ring-handler opts))
         context-handler (doto (ContextHandler.)
                           (.setContextPath context-path)
                           (.setAllowNullPathInContext (not (false? null-path-info?)))

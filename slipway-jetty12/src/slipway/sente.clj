@@ -37,7 +37,7 @@
 
   i/IServerChanAdapter
   (ring-req->server-ch-resp [_ request callbacks-map]
-    (server-ch-resp (request/upgrade? request) callbacks-map)))
+    (server-ch-resp (request/websocket-upgrade? request) callbacks-map)))
 
 (defn send-message
   [connected-uids send-fn uid msg]
