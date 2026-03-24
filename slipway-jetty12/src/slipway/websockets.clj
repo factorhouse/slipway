@@ -36,7 +36,7 @@
     (createWebSocket [_this _request response _cb]
       (let [listener   (response/websocket-listener response-map)
             protocol   (request/websocket-protocol request-map)
-            extensions (request/websocket-extensions)]
+            extensions (request/websocket-extensions request-map)]
         (when protocol (.setAcceptedSubProtocol response protocol))
         (when extensions (.setExtensions response extensions))
         (proxy-ws-adapter listener)))))

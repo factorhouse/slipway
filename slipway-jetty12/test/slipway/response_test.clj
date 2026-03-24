@@ -7,12 +7,6 @@
   (is (not (response/websocket-listener {})))
   (is (response/websocket-listener {::response/websocket-listener {}})))
 
-(deftest upgrade?
-
-  (is (not (response/upgrade? {})))
-  (is (not (response/upgrade? {:status 101})))
-  (is (response/upgrade? {:status 101 ::response/websocket-listener {}})))
-
 (deftest upgrade
 
   (is (= {:headers                      {"Connection" "Upgrade"

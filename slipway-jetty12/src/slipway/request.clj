@@ -66,10 +66,6 @@
            ::websocket-subprotocols (.getSubProtocols request)
            ::websocket-extensions (.getExtensions request))))
 
-(defn websocket-protocol-version
-  [request-map]
-  (::websocket-protocol-version request-map))
-
 (defn websocket-protocol
   [request-map]
   (first (::websocket-subprotocols request-map)))
