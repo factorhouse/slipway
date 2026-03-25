@@ -236,7 +236,7 @@
                      :status)))
 
       ;; missing csrf-token
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&" client-id)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&" client-id)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -244,21 +244,21 @@
                      :status)))
 
       ;; Missing origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"}})
                      :status)))
 
       ;; Attacker origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
                                                "Origin"     "http://attacker.site"}})
                      :status)))
       ;; wrong scheme origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -266,7 +266,7 @@
                      :status)))
 
       ;; wrong port origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -339,7 +339,7 @@
                      :status)))
 
       ;; missing csrf-token
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s" client-id)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s" client-id)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -347,21 +347,21 @@
                      :status)))
 
       ;; Missing origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"}})
                      :status)))
 
       ;; Attacker origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
                                                "Origin"     "http://attacker.site"}})
                      :status)))
       ;; wrong scheme origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -369,7 +369,7 @@
                      :status)))
 
       ;; wrong port origin header
-      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -458,7 +458,7 @@
                      :status)))
 
       ;; missing csrf-token
-      (is (= 403 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s" client-id)
+      (is (= 400 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s" client-id)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -466,21 +466,21 @@
                      :status)))
 
       ;; Missing origin header
-      (is (= 403 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"}})
                      :status)))
 
       ;; Attacker origin header
-      (is (= 403 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
                                                "Origin"     "http://attacker.site"}})
                      :status)))
       ;; wrong scheme origin header
-      (is (= 403 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
@@ -488,7 +488,7 @@
                      :status)))
 
       ;; wrong port origin header
-      (is (= 403 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 400 (-> (format "http://admin:admin@localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
