@@ -3,7 +3,7 @@
   (:import (org.eclipse.jetty.http HttpFields$Mutable)
            (org.eclipse.jetty.server Request Response)))
 
-(defn upgrade
+(defn websocket-upgrade
   [ws-listener]
   {::websocket-listener ws-listener})
 

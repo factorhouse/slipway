@@ -25,7 +25,7 @@
 (defn server-ch-resp
   [ws? {:keys [on-open on-close on-msg on-error]}]
   (if ws?
-    (response/upgrade
+    (response/websocket-upgrade
      {:on-open    (fn [sch] (on-open sch ws?))
       :on-close   (fn [sch status-code] (on-close sch ws? status-code))
       :on-error   (fn [sch e] (on-error sch ws? e))

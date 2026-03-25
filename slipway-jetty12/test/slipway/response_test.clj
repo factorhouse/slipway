@@ -9,8 +9,5 @@
 
 (deftest upgrade
 
-  (is (= {:headers                      {"Connection" "Upgrade"
-                                         "Upgrade"    "Websocket"}
-          :status                       101
-          ::response/websocket-listener {:some :listener}}
-         (response/upgrade {:some :listener}))))
+  (is (= {::response/websocket-listener {:some :listener}}
+         (response/websocket-upgrade {:some :listener}))))
