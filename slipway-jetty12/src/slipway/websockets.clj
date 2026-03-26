@@ -53,8 +53,9 @@
 (defn upgrade-websocket
   [^Request request ^Response response ^Callback cb request-map response-map opts]
   (let [{::keys [idle-timeout-ms input-buffer-bytes output-buffer-bytes max-text-message-bytes max-binary-message-bytes
-                 max-frame-bytes auto-fragment]
-         :or    {idle-timeout-ms 500000}} opts
+                 max-frame-bytes auto-fragment max-outgoing-frames]
+         :or    {idle-timeout-ms     500000
+                 max-outgoing-frames 100}} opts
         creator   (reify-ws-creator request-map response-map)
         container (ServerWebSocketContainer/get (.getContext request))]
     (some->> idle-timeout-ms (Duration/ofMillis) (.setIdleTimeout container))
@@ -64,4 +65,5 @@
     (some->> max-binary-message-bytes (.setMaxBinaryMessageSize container))
     (some->> max-frame-bytes (.setMaxFrameSize container))
     (some->> auto-fragment (.setAutoFragment container))
+    (some->> max-outgoing-frames (.setMaxOutgoingFrames container))
     (.upgrade container creator request response cb)))
