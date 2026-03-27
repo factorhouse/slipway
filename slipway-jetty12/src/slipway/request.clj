@@ -1,23 +1,9 @@
 (ns slipway.request
-  (:require [clojure.string :as string]
-            [slipway.security :as security])
+  (:require [slipway.security :as security])
   (:import (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
-           (org.eclipse.jetty.server Request)
-           (org.eclipse.jetty.websocket.core.server ServerUpgradeRequest)))
-
-(defprotocol Decoder
-  (decode [r]))
-
-(defn websocket-upgrade?
-  [{:keys [headers]}]
-  (let [connection (or (get headers "Connection") (get headers "connection"))
-        upgrade    (or (get headers "Upgrade") (get headers "upgrade"))]
-    (and (some? upgrade)
-         (some? connection)
-         (string/includes? (string/lower-case upgrade) "websocket")
-         (string/includes? (string/lower-case connection) "upgrade"))))
+           (org.eclipse.jetty.server Request)))
 
 (defn get-headers
   [^Request request]
@@ -53,30 +39,10 @@
      :ssl-client-cert    (ssl-client-cert request)
      :body               (Request/asInputStream request)}))
 
-(extend-protocol Decoder
-
-  Request
-  (decode [request]
-    (ring-like-map request))
-
-  ServerUpgradeRequest
-  (decode [request]
-    (assoc (ring-like-map request)
-           ::websocket-protocol-version (.getProtocolVersion request)
-           ::websocket-subprotocols (.getSubProtocols request)
-           ::websocket-extensions (.getExtensions request))))
-
-(defn websocket-protocol
-  [request-map]
-  (first (::websocket-subprotocols request-map)))
-
-(defn websocket-extensions
-  [request-map]
-  (seq (::websocket-extensions request-map)))
-
+;; TODO: consider slipway.response/response
 (defn request-map
   [request response]
-  (merge (decode request)
+  (merge (ring-like-map request)
          (security/user request)
          {::request request}
-         {::response response}))                            ;; TODO: consider slipway.response/response
+         {::response response}))

@@ -39,7 +39,7 @@
   (deftest full-connection-with-no-auth
 
     (try
-      (example/start! [:https])
+      (example/start! [:https :websockets])
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -99,7 +99,7 @@
   (deftest full-connection-with-form-auth
 
     (try
-      (example/start! [:https] :hash-auth)
+      (example/start! [:https :websockets] :hash-auth)
 
       (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
             client-id  (str (random-uuid))
@@ -145,7 +145,7 @@
   (deftest full-connection-with-basic-auth
 
     (try
-      (example/start! [:https] :basic-auth)
+      (example/start! [:https :websockets] :basic-auth)
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -189,7 +189,7 @@
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (example/start! [:https])
+    (example/start! [:https :websockets])
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))
@@ -304,7 +304,7 @@
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (example/start! [:https] :hash-auth)
+    (example/start! [:https :websockets] :hash-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
           client-id  (str (random-uuid))
@@ -435,7 +435,7 @@
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (example/start! [:https] :basic-auth)
+    (example/start! [:https :websockets] :basic-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))

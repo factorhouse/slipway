@@ -109,7 +109,7 @@
                                            "http://localhost:3443"}}
         session-config {:store (ring.session.memory/memory-store)}]
     (-> (reitit/ring-handler
-         (reitit/router (routes (sente/start-server sente-config)))
+         (reitit/router (routes (sente/start sente-config)))
          (reitit/routes
           (reitit/create-resource-handler {:path "/"})
           (reitit/create-default-handler error-handlers)))

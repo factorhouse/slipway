@@ -5,9 +5,11 @@
             [slipway.handler]
             [slipway.security :as security]
             [slipway.server :as server]
-            [slipway.user])
+            [slipway.user]
+            [slipway.websockets :as websockets])
   (:import (org.eclipse.jetty.server Handler Server)
-           (org.eclipse.jetty.websocket.server ServerWebSocketContainer)))
+           (org.eclipse.jetty.server.handler ContextHandler)
+           (org.eclipse.jetty.websocket.server WebSocketUpgradeHandler)))
 
 (comment
   #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
@@ -67,12 +69,16 @@
                     :refresh-cookie-age-s    "max time before a session cookie is re-set (in s)"
                     :path-parameter-name     "name of path parameter used for URL session tracking"}
 
-  #:slipway.websockets{:idle-timeout-ms          "max websocket idle time, default 500000"
+  #:slipway.sente{:options "A map of options passed directly to sente/make-shannel-socker-server!"}
+
+  #:slipway.websockets{:path-spec                "the websocket path-spec, default '/chsk'"
+                       :idle-timeout-ms          "max websocket idle time, default 500000"
                        :input-buffer-bytes       "max websocket input buffer size"
                        :output-buffer-bytes      "max websocket output buffer size"
                        :max-text-message-bytes   "max websocket text message size"
                        :max-binary-message-bytes "max websocket binary message size"
                        :max-frame-bytes          "max websocket frame size"
+                       :max-outgoing-frames      "max websocket frames waiting to be sent per session, default 50"
                        :auto-fragment            "websocket auto fragment (boolean)"}
 
   #:slipway.handler{:context-path    "the root context path, default '/'"
@@ -90,12 +96,11 @@
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
-  (log/debug "starting slipway server")
+  (log/debug "starting jetty server")
   (let [server        (server/create-server opts)
         login-service (security/login-service opts)
-        handler       (server/handler ring-handler login-service opts)]
+        handler       (server/handler server ring-handler login-service opts)]
     (.setHandler server ^Handler handler)
-    (ServerWebSocketContainer/ensure server handler)
     (some->> login-service (.addBean server))
     (.start server)
     (when join?
@@ -105,5 +110,5 @@
 
 (defn stop
   [^Server server]
-  (log/debug "stopping slipway server")
+  (log/debug "stopping jetty server")
   (.stop server))

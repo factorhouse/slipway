@@ -3,12 +3,6 @@
   (:import (org.eclipse.jetty.http HttpFields$Mutable)
            (org.eclipse.jetty.server Request Response)))
 
-(defn websocket-upgrade
-  [ws-listener]
-  {::websocket-listener ws-listener})
-
-(def websocket-listener ::websocket-listener)
-
 (defn set-headers
   [^Response response headers]
   (let [^HttpFields$Mutable jetty-headers (.getHeaders response)]
@@ -22,11 +16,7 @@
   "Update the Jetty response from a ring-like response map"
   [^Request request ^Response response response-map]
   (let [{:keys [status headers body]} response-map]
-    (when (nil? response) (throw (NullPointerException. "Response is nil")))
-    (when (nil? response-map) (throw (NullPointerException. "Response map is nil")))
     (when status
       (.setStatus response status))
     (set-headers response headers)
-    (let [output-stream (Response/asBufferedOutputStream request response)]
-      ;; TODO, consider https://github.com/sunng87/ring-jetty9-adapter/issues/122
-      (protocols/write-body-to-stream body response-map output-stream))))
+    (protocols/write-body-to-stream body response-map (Response/asBufferedOutputStream request response))))

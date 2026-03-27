@@ -4,7 +4,7 @@
            (org.eclipse.jetty.server Connector Server)
            (org.eclipse.jetty.util.thread Scheduler ThreadPool)))
 
-(defmulti handler (fn [_ring_handler _login_service opts] (::handler opts)))
+(defmulti handler (fn [_server _ring_handler _login_service opts] (::handler opts)))
 
 (defmulti connector (fn [_server opts] (keyword (namespace (first (keys opts))) "connector")))
 

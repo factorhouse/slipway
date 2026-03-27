@@ -174,7 +174,7 @@
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (example/start! [:http])
+    (example/start! [:http :websockets])
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "localhost" 3000)
           client-id  (str (random-uuid))
@@ -185,7 +185,7 @@
       (is (not (nil? csrf-token)))
       (is (seq cookies))
 
-      ; wrong sec-websocket-version header value
+      ;; wrong sec-websocket-version header value
       (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"connection"            "upgrade"
@@ -195,7 +195,7 @@
                                                "sec-websocket-key"     sec-ws-key}})
                      :status)))
 
-      ; missing Sec-WebSocket-Version header
+      ;; missing sec-websocket-version header
       (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
                                      :headers {"Connection"        "Upgrade"
@@ -207,10 +207,10 @@
       ;; missing Sec-WebSocket-Key header
       (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection"        "Upgrade"
-                                               "Upgrade"           "Websocket"
-                                               "Origin"            "http://localhost:3000"
-                                               "Sec-WebSocket-Key" sec-ws-key}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Origin"                "http://localhost:3000"
+                                               "Sec-WebSocket-Version" "13"}})
                      :status)))
 
       ;; Missing both Sec-WebSocket-Version and Sec-WebSocket-Key headers
@@ -224,53 +224,70 @@
       ;; missing upgrade header
       (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Origin"     "http://localhost:3000"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Origin"                "http://localhost:3000"
+                                               "Sec-WebSocket-Version" "13"
+                                               "Sec-WebSocket-Key"     sec-ws-key}})
                      :status)))
 
-      ; missing connection header
+      ;; missing connection header
+      ;; note: Jetty intentionally throws an exception in this case (Upgrade header without Connection)
+      ;;       and thats the error you can see in the test logs
       (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Upgrade" "websocket"
-                                               "Origin"  "http://localhost:3000"}})
+                                     :headers {"Upgrade"               "Websocket"
+                                               "Origin"                "http://localhost:3000"
+                                               "Sec-WebSocket-Version" "13"
+                                               "Sec-WebSocket-Key"     sec-ws-key}})
                      :status)))
 
       ;; missing csrf-token
-      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&" client-id)
+      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&" client-id)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Upgrade"    "Websocket"
-                                               "Origin"     "http://localhost:3000"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Origin"                "http://localhost:3000"
+                                               "Sec-WebSocket-Version" "13"
+                                               "Sec-WebSocket-Key"     sec-ws-key}})
                      :status)))
 
-      ;; Missing origin header
-      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      ; Missing origin header
+      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Upgrade"    "Websocket"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Sec-WebSocket-Version" "13"
+                                               "Sec-WebSocket-Key"     sec-ws-key}})
                      :status)))
 
       ;; Attacker origin header
-      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Upgrade"    "Websocket"
-                                               "Origin"     "http://attacker.site"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Origin"                "http://attacker.site"
+                                               "sec-websocket-version" "13"
+                                               "sec-websocket-key"     sec-ws-key}})
                      :status)))
+
       ;; wrong scheme origin header
-      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Upgrade"    "Websocket"
-                                               "Origin"     "https://localhost:3000"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Origin"                "https://localhost:3000"
+                                               "sec-websocket-version" "13"
+                                               "sec-websocket-key"     sec-ws-key}})
                      :status)))
 
       ;; wrong port origin header
-      (is (= 400 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+      (is (= 403 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies cookies
-                                     :headers {"Connection" "Upgrade"
-                                               "Upgrade"    "Websocket"
-                                               "Origin"     "https://localhost:2999"}})
+                                     :headers {"Connection"            "Upgrade"
+                                               "Upgrade"               "Websocket"
+                                               "Origin"                "https://localhost:2999"
+                                               "sec-websocket-version" "13"
+                                               "sec-websocket-key"     sec-ws-key}})
                      :status))))
 
     (finally (example/stop!))))
@@ -278,7 +295,7 @@
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (example/start! [:http] :hash-auth)
+    (example/start! [:http :websockets] :hash-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
           client-id  (str (random-uuid))
@@ -374,29 +391,29 @@
                                      :headers {"Connection" "Upgrade"
                                                "Upgrade"    "Websocket"
                                                "Origin"     "https://localhost:2999"}})
-                     :status))))
+                     :status)))
 
-    (testing "require login to negotiate websocket upgrade"
+      (testing "require login to negotiate websocket upgrade"
 
-      (is (= 302 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" (str (random-uuid)) "WRONGCSRFTK")
-                     (client/do-get {:cookies {}
-                                     :headers {"Connection"            "Upgrade"
-                                               "Upgrade"               "Websocket"
-                                               "Origin"                "http://localhost:3000"
-                                               "Sec-WebSocket-Version" "13"
-                                               "Sec-WebSocket-Key"     (let [bytes (byte-array 16)]
-                                                                         (.nextBytes (SecureRandom.) bytes)
-                                                                         (String. (.encode
-                                                                                   (Base64/getEncoder)
-                                                                                   bytes)))}})
-                     :status))))
+        (is (= 302 (-> (format "http://localhost:3000/chsk?client-id=%s&csrf-token=%s" (str (random-uuid)) csrf-token)
+                       (client/do-get {:cookies {}
+                                       :headers {"Connection"            "Upgrade"
+                                                 "Upgrade"               "Websocket"
+                                                 "Origin"                "http://localhost:3000"
+                                                 "Sec-WebSocket-Version" "13"
+                                                 "Sec-WebSocket-Key"     (let [bytes (byte-array 16)]
+                                                                           (.nextBytes (SecureRandom.) bytes)
+                                                                           (String. (.encode
+                                                                                     (Base64/getEncoder)
+                                                                                     bytes)))}})
+                       :status)))))
 
     (finally (example/stop!))))
 
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (example/start! [:http] :basic-auth)
+    (example/start! [:http :websockets] :basic-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
           client-id  (str (random-uuid))

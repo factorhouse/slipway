@@ -8,8 +8,10 @@
             [slipway.handler :as handler]
             [slipway.handler.compression :as compression]
             [slipway.security :as security]
+            [slipway.sente]
             [slipway.server :as server]
-            [slipway.session :as session])
+            [slipway.session :as session]
+            [slipway.websockets :as websockets])
   (:import (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def state (atom nil))
@@ -40,6 +42,8 @@
 (def options
   {:http                 #::server{:connectors    [http-connector]
                                    :error-handler app/server-error-handler}
+
+   :websockets           #::websockets{:path-spec "/chsk"}
 
    :https                #::server{:connectors    [https-connector]
                                    :error-handler app/server-error-handler}
