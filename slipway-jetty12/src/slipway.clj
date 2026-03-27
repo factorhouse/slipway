@@ -6,10 +6,8 @@
             [slipway.security :as security]
             [slipway.server :as server]
             [slipway.user]
-            [slipway.websockets :as websockets])
-  (:import (org.eclipse.jetty.server Handler Server)
-           (org.eclipse.jetty.server.handler ContextHandler)
-           (org.eclipse.jetty.websocket.server WebSocketUpgradeHandler)))
+            [slipway.websockets])
+  (:import (org.eclipse.jetty.server Handler Server)))
 
 (comment
   #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
