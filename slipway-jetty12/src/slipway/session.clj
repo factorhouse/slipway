@@ -18,6 +18,8 @@
                     :cookie-name             "the name of the session cookie"
                     :session-id-manager      "the meta manager used for cross context session management"
                     :refresh-cookie-age-s    "max time before a session cookie is re-set (in s)"
+                    :using-cookies           "true if cookies are used to track sessions (default true)"
+                    :using-uri-parameters    "true if uri parameters are used to track sessions (default false)"
                     :path-parameter-name     "name of path parameter used for URL session tracking"})
 
 ;; TODO: consider these cookie options, particularly PARTITIONED
@@ -33,19 +35,21 @@
 
 (defn handler ^SessionHandler
   [{::keys [secure-request-only? http-only? same-site max-inactive-interval-s cookie-name session-id-manager
-            refresh-cookie-age-s path-parameter-name]
+            refresh-cookie-age-s path-parameter-name using-cookies using-uri-parameters]
     ;; in-line with ring https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj#L44
     :or    {secure-request-only?    true
             http-only?              true
             same-site               :strict
             max-inactive-interval-s -1
-            cookie-name             "JSESSIONID"}
+            cookie-name             "JSESSIONID"
+            using-cookies           true
+            using-uri-parameters    false}
     :as    opts}]
   (log/debugf "creating session handler with %s" opts)
   (let [same-site       (cookie-same-site same-site)
         session-handler (doto (SessionHandler.)
-                          (.setUsingCookies true)           ;; TODO: using-cookies param, default true
-                          (.setUsingUriParameters false)    ;; TODO: using-uri-parameters, default false
+                          (.setUsingCookies using-cookies)
+                          (.setUsingUriParameters using-uri-parameters)
                           (.setSecureRequestOnly secure-request-only?)
                           (.setHttpOnly http-only?)
                           (.setSameSite same-site)

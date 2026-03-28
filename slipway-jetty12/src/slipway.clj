@@ -58,13 +58,15 @@
                      :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
                      :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
 
-  #:slipway.session{:secure-request-only?    "set the secure flag on session cookies (default true)"
-                    :http-only?              "set the http-only flag on session cookies (default true)"
-                    :same-site               "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
-                    :max-inactive-interval-s "max session idle time (in s, default -1)"
+  #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
+                    :http-only?              "set the http-only flag on session cookies"
+                    :same-site               "set session cookie same-site policy to :none, :lax, or :strict"
+                    :max-inactive-interval-s "max session idle time (in s)"
                     :cookie-name             "the name of the session cookie"
                     :session-id-manager      "the meta manager used for cross context session management"
                     :refresh-cookie-age-s    "max time before a session cookie is re-set (in s)"
+                    :using-cookies           "true if cookies are used to track sessions (default true)"
+                    :using-uri-parameters    "true if uri parameters are used to track sessions (default false)"
                     :path-parameter-name     "name of path parameter used for URL session tracking"}
 
   #:slipway.sente{:options "A map of options passed directly to sente/make-shannel-socker-server!"}
@@ -94,7 +96,7 @@
 
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
-  (log/debug "starting jetty server")
+  (log/debugf "starting jetty server %s" opts)
   (let [server        (server/create-server opts)
         login-service (security/login-service opts)
         handler       (server/handler server ring-handler login-service opts)]
