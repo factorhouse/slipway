@@ -24,8 +24,7 @@
   [^SyncHandler this ^Request request ^Response response ^Callback cb]
   (let [[handler ^PathSpec ws-path-spec] (.state this)]
     (try
-      (let [request-map  (request/request-map request response)
-            response-map (handler request-map)]
+      (let [response-map (handler (request/request-map request response))]
         (if (some-> ws-path-spec (.matches (Request/getPathInContext request)))
           (response/update-response request response {:status 400 :body "Bad Request"})
           (response/update-response request response response-map)))
