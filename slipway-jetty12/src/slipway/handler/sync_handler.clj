@@ -12,8 +12,7 @@
    :extends org.eclipse.jetty.server.Handler$Abstract
    :state state
    :init init
-   :constructors {[clojure.lang.IFn
-                   java.lang.String] []}
+   :constructors {[clojure.lang.IFn java.lang.String] []}
    :prefix "-"))
 
 (defn -init

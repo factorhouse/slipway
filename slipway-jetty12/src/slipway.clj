@@ -99,7 +99,6 @@
         login-service (security/login-service opts)
         handler       (server/handler server ring-handler login-service opts)]
     (.setHandler server ^Handler handler)
-    (some->> login-service (.addBean server))
     (.start server)
     (when join?
       (log/debug "joining jetty thread")
