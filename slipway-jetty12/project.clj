@@ -21,7 +21,8 @@
             "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
 
-  :aot [slipway.handler.sync-handler]
+  :aot [slipway.handler.sync-handler
+        slipway.websockets.adapter]
 
   :dependencies [[org.clojure/clojure "1.12.4"]
                  [org.clojure/tools.logging "1.3.1"]

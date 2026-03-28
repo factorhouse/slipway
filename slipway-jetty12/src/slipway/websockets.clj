@@ -3,41 +3,18 @@
             [slipway.request :as request]
             [slipway.response :as response]
             [slipway.sente :as sente])
-  (:import (java.nio ByteBuffer)
-           (java.time Duration)
+  (:import (java.time Duration)
            (org.eclipse.jetty.server Server)
            (org.eclipse.jetty.server.handler ContextHandler)
-           (org.eclipse.jetty.websocket.api Callback Session Session$Listener$AutoDemanding)
-           (org.eclipse.jetty.websocket.server WebSocketCreator WebSocketUpgradeHandler)))
-
-(defn proxy-ws-adapter
-  [{:keys [on-open on-close _on-error on-message]}]
-  (let [session (atom nil)]
-    (reify Session$Listener$AutoDemanding
-      (^void onWebSocketOpen [_ ^Session current-session]
-        (on-open (reset! session current-session)))
-      (^void onWebSocketClose [_ ^int status ^String _reason ^Callback cb]
-        (on-close @session status)
-        (reset! session nil)
-        (when cb (cb)))
-      (^void onWebSocketError [_ ^Throwable error]
-       ;; sente currently log/errors, we mute down to log/debug because the common ChannelClosedException when a user
-       ;; hards shuts their browser session can be a bit chatty in the logs. If sente does something further on-error
-       ;; we should consider reapplying here
-       ;; (on-error @session error)
-        (log/debug "websocket error" error))
-      (^void onWebSocketText [_ ^String message]
-        (on-message @session message))
-      (^void onWebSocketBinary [_ ^ByteBuffer payload ^Callback cb]
-        (on-message @session payload)
-        (when cb (cb))))))
+           (org.eclipse.jetty.websocket.server WebSocketCreator WebSocketUpgradeHandler)
+           (slipway.websockets SenteAdapter)))
 
 (defn reify-ws-creator
   ^WebSocketCreator [ring-handler]
   (reify WebSocketCreator
     (createWebSocket [_this request response cb]
       (let [handshake (ring-handler (request/request-map request response))]
-        (or (some-> handshake ::sente/server-adapter proxy-ws-adapter)
+        (or (some-> handshake ::sente/server-adapter (SenteAdapter.))
             (do (response/update-response request response handshake)
                 (.succeeded cb)))))))
 
