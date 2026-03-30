@@ -35,6 +35,8 @@
 (comment
 
   ;; Uncomment above and below as necessary to test full websocket negotiation with no auth
+  ;; clj-http cannot interrogate the response to a websocket upgrade request because it uses the underlying
+  ;; org.apache.http.impl.client CloseableHttpClient library, and that library stalls on 101 Switching Protocols
 
   (deftest full-connection-with-no-auth
 

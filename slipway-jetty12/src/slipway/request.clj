@@ -39,7 +39,6 @@
      :ssl-client-cert    (ssl-client-cert request)
      :body               (Request/asInputStream request)}))
 
-;; TODO: consider slipway.response/response
 (defn request-map
   [request response]
   (merge (ring-like-map request)
