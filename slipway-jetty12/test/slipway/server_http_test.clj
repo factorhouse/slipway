@@ -1,73 +1,132 @@
 (ns slipway.server-http-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.test-client :as client]
             [slipway.example.html :as html]
-            [slipway.test-server :as server])
+            [slipway.test-client :as client]
+            [slipway.test-server :as example])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
-(def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
+(def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
 (deftest simple-http
 
   (try
-    (server/start! [:http])
+    (example/start! [:http])
 
+    ;; gzip/deflate accept-encodings are the default
+    ;; jetty 12 defaults to chunked encoding for compressed payloads
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/user-page {})}
            (-> (client/do-get "http://localhost:3000/user" {})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    ;; we can turn off accept-encodign of gzip/deflate and see the
+    ;; non-compressed response, for some reason this flag also renders
+    ;; headers in lower-case - this is a clj-http thing and nothing to be concerned about
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2961"
+                               "content-type"   "text/html"}
+            :body             (html/user-page {})}
+           (-> (client/do-get "http://localhost:3000/user" {:decompress-body false})
+               (select-keys of-interest))))
+
+    (finally (example/stop!))))
 
 (deftest compression
 
   (try
-    (server/start! [:http :compression-nil])
+    (example/start! [:http :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
+               (select-keys of-interest))))
+
+    (finally (example/stop!)))
 
   (try
-    (server/start! [:http :compression-true])
+    (example/start! [:http :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
+               (select-keys of-interest))))
+
+    (finally (example/stop!)))
 
   (try
-    (server/start! [:http :compression-false])
+    (example/start! [:http :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
+            :headers               {"Connection"     "close"
+                                    "Content-Length" "2479"
+                                    "Content-Type"   "text/html"}
             :body                  (html/login-page false)}
            (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    ;; these tests prove the lower-casing of headers is entirely within clj-http and switches
+    ;; on :decompress-body (oddly enough) as they're both effectively the same except for that param
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
+               (select-keys of-interest))))
+
+    (finally (example/stop!))))
 
 (deftest form-authentication
 
   (try
-    (server/start! [:http] :hash-auth)
+    (example/start! [:http] :hash-auth)
 
     (testing "constraints"
 
@@ -80,6 +139,11 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding nil
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Content-Type"   "text/plain"
+                                      "Vary"           "Accept-Encoding"}
+
               :body                  ""}
              (-> (client/do-get "http" "localhost" 3000 "/up")
                  (select-keys of-interest))))
@@ -89,7 +153,12 @@
               :status                302
               :reason-phrase         "Found"
               :orig-content-encoding nil
-              :body                  ""}
+              :body                  ""
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Expires"        "Thu, 01 Jan 1970 00:00:00 GMT"
+                                      "Location"       "http://localhost:3000/login"
+                                      "Vary"           "Accept-Encoding"}}
              (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
@@ -104,6 +173,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/login-page false)}
              (-> (client/do-get "http" "localhost" 3000 "/login")
                  (select-keys of-interest))))
@@ -119,7 +191,10 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
                  (select-keys of-interest)
@@ -129,7 +204,10 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
                  (select-keys of-interest)
@@ -141,6 +219,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/login-page true)}
              (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "wrong")
                  :ring
@@ -170,6 +251,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                (select-keys [:cookies]))]
@@ -187,12 +271,12 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (server/stop!))))
+    (finally (example/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (server/start! [:http] :basic-auth)
+    (example/start! [:http] :basic-auth)
 
     (testing "constraints"
 
@@ -205,7 +289,11 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding nil
-              :body                  ""}
+              :body                  ""
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Content-Type"   "text/plain"
+                                      "Vary"           "Accept-Encoding"}}
              (-> (client/do-get "http" "localhost" 3000 "/up")
                  (select-keys of-interest))))
 
@@ -214,6 +302,12 @@
               :status                401
               :reason-phrase         "Unauthorized"
               :orig-content-encoding nil
+              :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                      "Connection"       "close"
+                                      "Content-Length"   "1484"
+                                      "Content-Type"     "text/html;charset=iso-8859-1"
+                                      "Vary"             "Accept-Encoding"
+                                      "WWW-Authenticate" "Basic realm=\"slipway\""}
               :body                  (html/error-page 401 "Server Error" "Unauthorized")}
              (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
@@ -226,7 +320,10 @@
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
                  (select-keys of-interest)
                  (dissoc :body))))
@@ -235,6 +332,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
                  (select-keys of-interest)))))
@@ -245,8 +345,14 @@
               :status                401
               :reason-phrase         "Unauthorized"
               :body                  (html/error-page 401 "Server Error" "Unauthorized")
-              :orig-content-encoding nil}
+              :orig-content-encoding nil
+              :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                      "Connection"       "close"
+                                      "Content-Length"   "1484"
+                                      "Content-Type"     "text/html;charset=iso-8859-1"
+                                      "Vary"             "Accept-Encoding"
+                                      "WWW-Authenticate" "Basic realm=\"slipway\""}}
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (server/stop!))))
+    (finally (example/stop!))))

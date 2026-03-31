@@ -1,24 +1,43 @@
 (ns slipway.server-https-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.test-client :as client]
             [slipway.example.html :as html]
+            [slipway.test-client :as client]
             [slipway.test-server :as example])
   (:import (java.net ConnectException)
            (org.apache.http ProtocolException)))
 
-(def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
+(def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
 (deftest simple-https
 
   (try
     (example/start! [:https])
 
+    ;; gzip/deflate accept-encodings are the default
+    ;; jetty 12 defaults to chunked encoding for compressed payloads
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/user-page {})}
            (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+               (select-keys of-interest))))
+
+    ;; we can turn off accept-encodign of gzip/deflate and see the
+    ;; non-compressed response, for some reason this flag also renders
+    ;; headers in lower-case - this is a clj-http thing and nothing to be concerned about
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2961"
+                               "content-type"   "text/html"}
+            :body             (html/user-page {})}
+           (-> (client/do-get "https://localhost:3443/user" {:insecure?       true
+                                                             :decompress-body false})
                (select-keys of-interest))))
 
     (is (thrown? Exception (client/do-get "http://localhost:3443/" {})))
@@ -34,8 +53,22 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+               (select-keys of-interest))))
+
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
+                                                                 :insecure?       true})
                (select-keys of-interest))))
 
     (finally (example/stop!)))
@@ -47,8 +80,22 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding "gzip"
+            :headers               {"Connection"   "close"
+                                    "Content-Type" "text/html"
+                                    "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+               (select-keys of-interest))))
+
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
+                                                                 :insecure?       true})
                (select-keys of-interest))))
 
     (finally (example/stop!)))
@@ -60,8 +107,22 @@
             :status                200
             :reason-phrase         "OK"
             :orig-content-encoding nil
+            :headers               {"Connection"     "close"
+                                    "Content-Length" "2479"
+                                    "Content-Type"   "text/html"}
             :body                  (html/login-page false)}
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+               (select-keys of-interest))))
+
+    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
+            :status           200
+            :reason-phrase    "OK"
+            :headers          {"connection"     "close"
+                               "content-length" "2479"
+                               "content-type"   "text/html"}
+            :body             (html/login-page false)}
+           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
+                                                                 :insecure?       true})
                (select-keys of-interest))))
 
     (finally (example/stop!))))
@@ -78,19 +139,28 @@
       (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Content-Type"   "text/plain"
+                                      "Vary"           "Accept-Encoding"}
+              :body                  ""}
              (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                302
               :reason-phrase         "Found"
               :orig-content-encoding nil
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Expires"        "Thu, 01 Jan 1970 00:00:00 GMT"
+                                      "Location"       "https://localhost:3443/login"
+                                      "Vary"           "Accept-Encoding"}
               :body                  ""}
              (-> (client/do-get "https" "localhost" 3443 "" {:insecure? true})
                  (select-keys of-interest))))
@@ -107,6 +177,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/login-page false)}
              (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                  (select-keys of-interest))))
@@ -122,7 +195,10 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-login "https" "localhost" 3443 "" "admin" "admin" {:insecure? true})
                  :ring
                  (select-keys of-interest)
@@ -132,7 +208,10 @@
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
                  :ring
                  (select-keys of-interest)
@@ -144,6 +223,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/login-page true)}
              (-> (client/do-login "https" "localhost" 3443 "/user" "admin" "wrong" {:insecure? true})
                  :ring
@@ -173,6 +255,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (let [session (-> (client/do-login "https" "localhost" 3443 "" "user" "password" {:insecure? true})
                                (merge {:insecure? true}))]
@@ -205,19 +290,29 @@
       (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
 
       ;; does not require authentication
-      (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-              :status           200
-              :reason-phrase    "OK"
-              ;:orig-content-encoding nil - note jvm11 returns nil, jvm18 returns "gzip", so we ignore in this case
-              :body             ""}
+      (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
+              :status                200
+              :reason-phrase         "OK"
+              :orig-content-encoding nil
+              :headers               {"Connection"     "close"
+                                      "Content-Length" "0"
+                                      "Content-Type"   "text/plain"
+                                      "Vary"           "Accept-Encoding"}
+              :body                  ""}
              (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
-                 (select-keys (vec (butlast of-interest))))))
+                 (select-keys of-interest))))
 
       ;; requires authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                401
               :reason-phrase         "Unauthorized"
               :orig-content-encoding nil
+              :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                      "Connection"       "close"
+                                      "Content-Length"   "1484"
+                                      "Content-Type"     "text/html;charset=iso-8859-1"
+                                      "Vary"             "Accept-Encoding"
+                                      "WWW-Authenticate" "Basic realm=\"slipway\""}
               :body                  (html/error-page 401 "Server Error" "Unauthorized")}
              (-> (client/do-get "https" "localhost" 3443 "" {:insecure? true})
                  (select-keys of-interest))))
@@ -230,7 +325,10 @@
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                200
               :reason-phrase         "OK"
-              :orig-content-encoding "gzip"}
+              :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}}
              (-> (client/do-get "https" "admin:admin@localhost" 3443 "" {:insecure? true})
                  (select-keys of-interest)
                  (dissoc :body))))
@@ -239,6 +337,9 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
+              :headers               {"Connection"   "close"
+                                      "Content-Type" "text/html"
+                                      "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
              (-> (client/do-get "https" "user:password@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
@@ -249,7 +350,13 @@
               :status                401
               :reason-phrase         "Unauthorized"
               :body                  (html/error-page 401 "Server Error" "Unauthorized")
-              :orig-content-encoding nil}
+              :orig-content-encoding nil
+              :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                      "Connection"       "close"
+                                      "Content-Length"   "1484"
+                                      "Content-Type"     "text/html;charset=iso-8859-1"
+                                      "Vary"             "Accept-Encoding"
+                                      "WWW-Authenticate" "Basic realm=\"slipway\""}}
              (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
