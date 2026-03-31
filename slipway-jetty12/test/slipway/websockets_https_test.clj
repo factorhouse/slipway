@@ -71,26 +71,26 @@
         (comment
 
           ; full websocket upgrade (test hangs in the handshake/upgrade process as we switch from http to wss)
-          (is (= 400 (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
-                         (client/do-get {:cookies            cookies
-                                         :connection-manager conn-mgr
-                                         :headers            {"Connection"            "Upgrade"
-                                                              "Upgrade"               "Websocket"
-                                                              "Origin"                "http://localhost:3443"
-                                                              "Sec-WebSocket-Version" "13"
-                                                              "Sec-WebSocket-Key"     sec-ws-key}})))))
+          (is (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+                  (client/do-get {:cookies            cookies
+                                  :connection-manager conn-mgr
+                                  :headers            {"Connection"            "Upgrade"
+                                                       "Upgrade"               "Websocket"
+                                                       "Origin"                "http://localhost:3443"
+                                                       "Sec-WebSocket-Version" "13"
+                                                       "Sec-WebSocket-Key"     sec-ws-key}}))))
 
         (comment
           ; full websocket upgrade with lower case headers, jetty capitalizes headers prior to negotiation
           ; hangs on http->wss protocol switch as above
-          (is (= 400 (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
-                         (client/do-get {:cookies            cookies
-                                         :connection-manager conn-mgr
-                                         :headers            {"connection"            "upgrade"
-                                                              "upgrade"               "websocket"
-                                                              "origin"                "http://localhost:3443"
-                                                              "sec-websocket-version" "13"
-                                                              "sec-websocket-key"     sec-ws-key}}))))))
+          (is (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
+                  (client/do-get {:cookies            cookies
+                                  :connection-manager conn-mgr
+                                  :headers            {"connection"            "upgrade"
+                                                       "upgrade"               "websocket"
+                                                       "origin"                "http://localhost:3443"
+                                                       "sec-websocket-version" "13"
+                                                       "sec-websocket-key"     sec-ws-key}})))))
 
       (finally (example/stop!)))))
 
