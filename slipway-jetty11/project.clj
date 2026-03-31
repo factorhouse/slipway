@@ -18,7 +18,7 @@
              :smoke {:pedantic? :abort}}
 
   :aliases {"check" ["with-profile" "+smoke" "check"]
-            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:test:common/test" "--parallel"]
+            "kondo" ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "common/src:common-jetty1x/src:common/test" "--parallel"]
             "fmt"   ["with-profile" "+smoke" "cljfmt" "check"]}
 
   :dependencies [[org.clojure/clojure "1.12.2"]
@@ -34,6 +34,6 @@
                  [org.slf4j/slf4j-api "2.0.17"]]
 
   :source-paths ["common/src" "common-jetty1x/src" "common-jakarta/src"]
-  :test-paths ["test" "common/test"]
+  :test-paths ["common/test"]
 
   :javac-options ["--release" "11"])
