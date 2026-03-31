@@ -26,7 +26,6 @@
   :dependencies [[org.clojure/clojure "1.12.4"]
                  [org.clojure/tools.logging "1.3.1"]
                  [ring/ring-core "1.15.3"]
-                 [ring/ring-defaults "0.7.0"]
                  [ring/ring-anti-forgery "1.4.0"]
                  [org.ring-clojure/ring-core-protocols "1.15.3"]
                  [com.taoensso/sente "1.21.0"]

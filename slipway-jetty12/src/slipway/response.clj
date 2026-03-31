@@ -19,4 +19,6 @@
     (when status
       (.setStatus response status))
     (set-headers response headers)
+    ;; Note: ring.core.protocols/StreamableResponseBody not supported as a body format
+    ;; See: https://github.com/ring-clojure/ring/issues/491
     (protocols/write-body-to-stream body response-map (Response/asBufferedOutputStream request response))))
