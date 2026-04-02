@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.test-client :as client]
             [slipway.example.html :as html]
-            [slipway.test-server :as example])
+            [slipway.test-server :as server])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
            (org.apache.http ProtocolException)))
@@ -12,7 +12,7 @@
 (deftest simple
 
   (try
-    (example/start! [:http+https+forwarded])
+    (server/start! [:http+https+forwarded])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -30,12 +30,12 @@
            (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest compression
 
   (try
-    (example/start! [:http+https+forwarded :compression-nil])
+    (server/start! [:http+https+forwarded :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -53,10 +53,10 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :compression-true])
+    (server/start! [:http+https+forwarded :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -74,10 +74,10 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:http+https+forwarded :compression-false])
+    (server/start! [:http+https+forwarded :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -95,12 +95,12 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (example/start! [:http+https+forwarded] :hash-auth)
+    (server/start! [:http+https+forwarded] :hash-auth)
 
     (testing "constraints http"
 
@@ -344,12 +344,12 @@
                (-> (client/do-get "https" "localhost" 3443 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest basic-authentication-http
 
   (try
-    (example/start! [:http+https+forwarded] :basic-auth)
+    (server/start! [:http+https+forwarded] :basic-auth)
 
     (testing "constraints"
 
@@ -406,12 +406,12 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest basic-authentication-https
 
   (try
-    (example/start! [:http+https+forwarded] :basic-auth)
+    (server/start! [:http+https+forwarded] :basic-auth)
 
     (testing "constraints"
 
@@ -468,4 +468,4 @@
              (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))

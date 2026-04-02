@@ -3,7 +3,7 @@
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
             [slipway.test-client :as client]
-            [slipway.test-server :as example])
+            [slipway.test-server :as server])
   (:import (java.security SecureRandom)
            (java.util Base64)))
 
@@ -41,7 +41,7 @@
   (deftest full-connection-with-no-auth
 
     (try
-      (example/start! [:https :websockets])
+      (server/start! [:https :websockets])
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -92,7 +92,7 @@
                                                        "sec-websocket-version" "13"
                                                        "sec-websocket-key"     sec-ws-key}})))))
 
-      (finally (example/stop!)))))
+      (finally (server/stop!)))))
 
 (comment
 
@@ -101,7 +101,7 @@
   (deftest full-connection-with-form-auth
 
     (try
-      (example/start! [:https :websockets] :hash-auth)
+      (server/start! [:https :websockets] :hash-auth)
 
       (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
             client-id  (str (random-uuid))
@@ -138,7 +138,7 @@
                                                    "sec-websocket-version" "13"
                                                    "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (example/stop!)))))
+      (finally (server/stop!)))))
 
 (comment
 
@@ -147,7 +147,7 @@
   (deftest full-connection-with-basic-auth
 
     (try
-      (example/start! [:https :websockets] :basic-auth)
+      (server/start! [:https :websockets] :basic-auth)
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -186,12 +186,12 @@
                                      "sec-websocket-version" "13"
                                      "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (example/stop!)))))
+      (finally (server/stop!)))))
 
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (example/start! [:https :websockets])
+    (server/start! [:https :websockets])
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))
@@ -301,12 +301,12 @@
                                                           "Origin"     "https://localhost:2999"}})
                      :status))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (example/start! [:https :websockets] :hash-auth)
+    (server/start! [:https :websockets] :hash-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
           client-id  (str (random-uuid))
@@ -432,12 +432,12 @@
                                                                                      bytes)))}})
                      :status))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (example/start! [:https :websockets] :basic-auth)
+    (server/start! [:https :websockets] :basic-auth)
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))
@@ -590,4 +590,4 @@
                                                                                      bytes)))}})
                      :status))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))

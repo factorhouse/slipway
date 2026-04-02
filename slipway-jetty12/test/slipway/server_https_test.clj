@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.example.html :as html]
             [slipway.test-client :as client]
-            [slipway.test-server :as example])
+            [slipway.test-server :as server])
   (:import (java.net ConnectException)
            (org.apache.http ProtocolException)))
 
@@ -11,7 +11,7 @@
 (deftest simple-https
 
   (try
-    (example/start! [:https])
+    (server/start! [:https])
 
     ;; gzip/deflate accept-encodings are the default
     ;; jetty 12 defaults to chunked encoding for compressed payloads
@@ -42,12 +42,12 @@
 
     (is (thrown? Exception (client/do-get "http://localhost:3443/" {})))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest compression
 
   (try
-    (example/start! [:https :compression-nil])
+    (server/start! [:https :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -71,10 +71,10 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:https :compression-true])
+    (server/start! [:https :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -98,10 +98,10 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:https :compression-false])
+    (server/start! [:https :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -125,12 +125,12 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (example/start! [:https] :hash-auth)
+    (server/start! [:https] :hash-auth)
 
     (testing "constraints"
 
@@ -276,12 +276,12 @@
                (-> (client/do-get "https" "localhost" 3443 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (example/start! [:https] :basic-auth)
+    (server/start! [:https] :basic-auth)
 
     (testing "constraints"
 
@@ -360,14 +360,14 @@
              (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest strict-transport-security
 
   (testing "no hsts configuration"
 
     (try
-      (example/start! [:https])
+      (server/start! [:https])
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -383,12 +383,12 @@
 
         (is (= nil sts-header)))
 
-      (finally (example/stop!))))
+      (finally (server/stop!))))
 
   (testing "sts-max-age and subdomains"
 
     (try
-      (example/start! [:hsts])
+      (server/start! [:hsts])
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -404,12 +404,12 @@
 
         (is (= "max-age=31536000; includeSubDomains" sts-header)))
 
-      (finally (example/stop!))))
+      (finally (server/stop!))))
 
   (testing "sts-max-age without subdomains"
 
     (try
-      (example/start! [:hsts-no-subdomains])
+      (server/start! [:hsts-no-subdomains])
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -425,12 +425,12 @@
 
         (is (= "max-age=31536000" sts-header)))
 
-      (finally (example/stop!))))
+      (finally (server/stop!))))
 
   (testing "hsts no max age (incorrect configuration, no header included)"
 
     (try
-      (example/start! [:hsts-no-max-age])
+      (server/start! [:hsts-no-max-age])
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -446,4 +446,4 @@
 
         (is (= nil sts-header)))
 
-      (finally (example/stop!)))))
+      (finally (server/stop!)))))

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.example.html :as html]
             [slipway.test-client :as client]
-            [slipway.test-server :as example])
+            [slipway.test-server :as server])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)))
 
@@ -11,7 +11,7 @@
 (deftest simple-http
 
   (try
-    (example/start! [:http])
+    (server/start! [:http])
 
     ;; gzip/deflate accept-encodings are the default
     ;; jetty 12 defaults to chunked encoding for compressed payloads
@@ -39,12 +39,12 @@
            (-> (client/do-get "http://localhost:3000/user" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest compression
 
   (try
-    (example/start! [:http :compression-nil])
+    (server/start! [:http :compression-nil])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -67,10 +67,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:http :compression-true])
+    (server/start! [:http :compression-true])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -93,10 +93,10 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (example/stop!)))
+    (finally (server/stop!)))
 
   (try
-    (example/start! [:http :compression-false])
+    (server/start! [:http :compression-false])
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -121,12 +121,12 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (example/start! [:http] :hash-auth)
+    (server/start! [:http] :hash-auth)
 
     (testing "constraints"
 
@@ -271,12 +271,12 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (example/start! [:http] :basic-auth)
+    (server/start! [:http] :basic-auth)
 
     (testing "constraints"
 
@@ -355,4 +355,4 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (example/stop!))))
+    (finally (server/stop!))))

@@ -5,7 +5,6 @@
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
-            [slipway.handler :as handler]
             [slipway.handler.compression :as compression]
             [slipway.security :as security]
             [slipway.sente]
@@ -74,8 +73,6 @@
    :compression-false    #::compression{:enabled? false}
 
    :compression-true     #::compression{:enabled? true}
-
-   :custom-ws            #::handler{:ws-path "/wsx"}
 
    :short-session        #::session{:max-inactive-interval-s 10}
 
