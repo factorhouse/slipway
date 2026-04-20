@@ -33,8 +33,9 @@
             :status           200
             :reason-phrase    "OK"
             :headers          {"connection"     "close"
-                               "content-length" "2961"
-                               "content-type"   "text/html"}
+                               "content-length" "2961"      ;; this is the uncompressed bytes-size of content
+                               "content-type"   "text/html"
+                               "vary"           "Accept-Encoding"}
             :body             (html/user-page {})}
            (-> (client/do-get "https://localhost:3443/user" {:insecure?       true
                                                              :decompress-body false})
@@ -65,7 +66,8 @@
             :reason-phrase    "OK"
             :headers          {"connection"     "close"
                                "content-length" "2479"
-                               "content-type"   "text/html"}
+                               "content-type"   "text/html"
+                               "vary"           "Accept-Encoding"}
             :body             (html/login-page false)}
            (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
                                                                  :insecure?       true})
@@ -92,7 +94,8 @@
             :reason-phrase    "OK"
             :headers          {"connection"     "close"
                                "content-length" "2479"
-                               "content-type"   "text/html"}
+                               "content-type"   "text/html"
+                               "vary"           "Accept-Encoding"}
             :body             (html/login-page false)}
            (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
                                                                  :insecure?       true})
