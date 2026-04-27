@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.0.0-rc3"
+(defproject io.factorhouse/slipway-jetty12 "2.0.0"
 
   :description "A Clojure Companion for Jetty 12"
 

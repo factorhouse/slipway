@@ -39,7 +39,7 @@
         (send-fn uid msg))))
 
 (comment
-  #:slipway.sente{:options "A map of options passed directly to sente/make-shannel-socker-server!"})
+  #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"})
 
 (defn start
   [opts]
