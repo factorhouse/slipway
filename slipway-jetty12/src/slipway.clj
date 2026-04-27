@@ -69,7 +69,7 @@
                     :using-uri-parameters    "true if uri parameters are used to track sessions (default false)"
                     :path-parameter-name     "name of path parameter used for URL session tracking"}
 
-  #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"})
+  #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"}
 
   #:slipway.websockets{:path-spec                "the websocket path-spec, default '/chsk'"
                        :idle-timeout-ms          "max websocket idle time, default 500000"
