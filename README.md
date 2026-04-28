@@ -1,15 +1,7 @@
 # Slipway: a Clojure Companion to Jetty
 
 [![Slipway Test](https://github.com/factorhouse/slipway/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/factorhouse/slipway/actions/workflows/ci.yml)
-
-### Versions
-
-| Jetty Version | Current Jetty Dependency | Clojars Project |
-| ------------- | ------------------------ | --------------- |
-| Jetty 9 | 9.4.58.v20250814 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty9.svg)](https://clojars.org/io.factorhouse/slipway-jetty9) |
-| Jetty 10 | 10.0.26 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty10.svg)](https://clojars.org/io.factorhouse/slipway-jetty10) |
-| Jetty 11 | 11.0.26 | [![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty11.svg)](https://clojars.org/io.factorhouse/slipway-jetty11) |
-| Jetty 12 | - | Available once Jetty 12 stabilises. |
+[![Clojars Project](https://img.shields.io/clojars/v/io.factorhouse/slipway-jetty12.svg)](https://clojars.org/io.factorhouse/slipway-jetty12)
 
 ----
 
