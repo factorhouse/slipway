@@ -61,7 +61,7 @@ jobs:
           format: 'HTML'
           out: /reports
           args: >
-            --suppression /dependency-check-suppressions.xml
+            --suppression ./dependency-check-suppressions.xml
 
       - name: Persist NVD
         if: always()
