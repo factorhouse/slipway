@@ -59,7 +59,7 @@ jobs:
           project: slipway-jetty12
           path: /target
           format: 'HTML'
-          out: /reports
+          out: ./reports
           args: >
             --suppression ./dependency-check-suppressions.xml
 
@@ -68,5 +68,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: nvd-slipway-jetty12-${{ github.sha }}
-          path: /reports/*
+          path: ./reports/*
           retention-days: 1
