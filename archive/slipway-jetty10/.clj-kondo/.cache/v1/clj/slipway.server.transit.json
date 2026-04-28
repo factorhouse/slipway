@@ -1,0 +1,1 @@
+["^ ","~$handler",["^ ","~:row",5,"~:col",1,"~:name","^0","~:ns","~$slipway.server","~:top-ns","^5"],"~$connector",["^ ","^1",7,"^2",1,"^3","^7","^4","^5","^6","^5"],"~$create-server",["^ ","^1",15,"^2",1,"~:fixed-arities",["~#set",[1]],"^3","^8","^4","^5","^6","^5","~:type","~:fn"],"~:filename","common/src/slipway/server.clj"]

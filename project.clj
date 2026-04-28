@@ -7,21 +7,21 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev   {:dependencies   [[clj-kondo "2026.04.15"]
-                                      [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
-                                      [ch.qos.logback/logback-classic "1.5.32"]
-                                      [hiccup "2.0.0"]
-                                      [ring/ring-core "1.15.4"]
-                                      [ring/ring-anti-forgery "1.4.0"]
-                                      [metosin/reitit-ring "0.10.1"]]
-                     :resource-paths ["dev-resources"]
-                     :plugins        [[dev.weavejester/lein-cljfmt "0.16.3"]]}
-             :smoke {:pedantic? :abort}}
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.04.15"]
+                                         [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
+                                         [ch.qos.logback/logback-classic "1.5.32"]
+                                         [hiccup "2.0.0"]
+                                         [ring/ring-core "1.15.4"]
+                                         [ring/ring-anti-forgery "1.4.0"]
+                                         [metosin/reitit-ring "0.10.1"]]
+                        :resource-paths ["dev-resources"]
+                        :plugins        [[dev.weavejester/lein-cljfmt "0.16.3"]]}
+             :pedantic {:pedantic? :abort}}
 
-  :aliases {"check"  ["with-profile" "+smoke" "check"]
-            "kondo"  ["with-profile" "+smoke" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
-            "fmt"    ["with-profile" "+smoke" "cljfmt" "check"]
-            "fmtfix" ["with-profile" "+smoke" "cljfmt" "fix"]}
+  :aliases {"check"  ["with-profile" "+pedantic" "check"]
+            "kondo"  ["with-profile" "+pedantic" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
+            "fmt"    ["with-profile" "+pedantic" "cljfmt" "check"]
+            "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
   :aot [slipway.handler.sync-handler]
 
