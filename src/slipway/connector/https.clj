@@ -2,14 +2,14 @@
   (:require [clojure.tools.logging :as log]
             [slipway.server :as server])
   (:import (java.security KeyStore)
-           (org.eclipse.jetty.http HttpVersion)
+           (org.eclipse.jetty.http HttpCompliance HttpVersion)
            (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector SslConnectionFactory)
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
 
 (defn default-config ^HttpConfiguration
   [{::keys [port http-forwarded? sni-required? sni-host-check? sts-max-age-s sts-include-subdomains? send-server-version?
-            send-date-header? relative-redirect-allowed?]
+            send-date-header? relative-redirect-allowed? http-compliance]
     :or    {sni-required?              false
             sni-host-check?            false
             sts-max-age-s              -1
@@ -30,6 +30,9 @@
                                    (.setStsMaxAge sts-max-age-s)
                                    (.setStsIncludeSubDomains sts-include-subdomains?))))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
+    (when (.equalsIgnoreCase "RFC2616" http-compliance)
+      (log/debug "enabling reduced HTTP Compliance of RFC2616")
+      (.setHttpCompliance config HttpCompliance/RFC2616))
     config))
 
 (defn context-factory ^SslContextFactory$Server
@@ -116,7 +119,8 @@
                             :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
                             :send-server-version?       "if true, send the Server header in responses"
                             :send-date-header?          "if true, send the Date header in responses"
-                            :relative-redirect-allowed? "if true, allow relative redirects, default false"})
+                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
+                            :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-config configurator]
