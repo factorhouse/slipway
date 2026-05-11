@@ -13,8 +13,7 @@
   (let [config (doto (HttpConfiguration.)
                  (.setSendServerVersion send-server-version?)
                  (.setSendDateHeader send-date-header?)
-                 (.setRelativeRedirectAllowed relative-redirect-allowed?)
-                 (.setHttpCompliance nil))]
+                 (.setRelativeRedirectAllowed relative-redirect-allowed?))]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
     (when (.equalsIgnoreCase "RFC2616" http-compliance)
       (log/debug "enabling reduced HTTP Compliance of RFC2616")
