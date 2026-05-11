@@ -17,7 +17,7 @@
                                 :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
 
   #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
+                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
                             :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
@@ -38,25 +38,33 @@
                             :security-provider          "the security provider name"
                             :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                             :ssl-context                "a concrete pre-configured SslContext"
-                            :sni-required?              "true if SNI is required, else requests will be rejected with 400 response, default false"
-                            :sni-host-check?            "true if the SNI Host name must match when there is an SNI certificate, default false"
+                            :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
+                            :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
                             :sts-max-age-s              "set the Strict-Transport-Security max age in seconds, default -1"
-                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"}
+                            :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
+                            :send-server-version?       "if true, send the Server header in responses"
+                            :send-date-header?          "if true, send the Date header in responses"
+                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
+                            :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
 
-  #:slipway.connector.http{:host            "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                           :port            "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
-                           :idle-timeout-ms "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
-                           :http-forwarded? "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-                           :proxy-protocol? "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
-                           :http-config     "a concrete HttpConfiguration object to replace the default config entirely"
-                           :configurator    "a fn taking the final connector as argument, allowing further configuration"}
+  #:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                           :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                           :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                           :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+                           :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+                           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                           :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                           :send-server-version?       "if true, send the Server header in responses"
+                           :send-date-header?          "if true, send the Date header in responses"
+                           :relative-redirect-allowed? "if true, allow relative redirects, default false"
+                           :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
 
   #:slipway.security{:realm               "the Jetty authentication realm"
                      :hash-user-file      "the path to a Jetty Hash User File"
                      :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
                      :identity-service    "a concrete Jetty IdentityService"
                      :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                     :constraint-mappings "a list of concrete Jetty ConstraintMapping"}
+                     :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
 
   #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"
@@ -71,7 +79,8 @@
 
   #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"}
 
-  #:slipway.websockets{:path-spec                "the websocket path-spec, default '/chsk'"
+  #:slipway.websockets{:enabled?                 "are websockets enabled? default true"
+                       :path-spec                "the websocket path-spec, default '/chsk'"
                        :idle-timeout-ms          "max websocket idle time, default 500000"
                        :input-buffer-bytes       "max websocket input buffer size"
                        :output-buffer-bytes      "max websocket output buffer size"

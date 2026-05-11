@@ -31,6 +31,8 @@
                               :truststore-password "password"
                               :truststore-type     "PKCS12"})
 
+(def https-rfc-2616-connector #::https{:http-compliance "RFC2616"})
+
 (def hsts #::https{:sts-max-age-s           31536000
                    :sts-include-subdomains? true})
 
@@ -45,6 +47,9 @@
    :websockets           #::websockets{:path-spec "/chsk"}
 
    :https                #::server{:connectors    [https-connector]
+                                   :error-handler app/server-error-handler}
+
+   :https-rfc2616        #::server{:connectors    [(merge https-connector https-rfc-2616-connector)]
                                    :error-handler app/server-error-handler}
 
    :hsts                 #::server{:connectors    [(merge https-connector hsts)]
