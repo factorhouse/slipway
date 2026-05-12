@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.3] - 2026-05-13
+
+Support configuring all HttpCompliance modes.
+
+## [2.0.2] - 2026-05-11
+
+Support configuring HttpCompliance/RFC2616
+
+## [2.0.1] - 2026-04-27
+
+**Breaking**: Update to Jetty 12.1, archive all previous versions.
+
+* Update to Jetty 12.1, update CI to JDK 17.
+* Update Sente to 1.21.0.
+* Archive all older versions, no more support for Jetty 9, 10, 11.
+* Some breaking changes to configuration parameters.
+* Breaking changes to compression configuration (former Gzip implementation deprecated).
+
 ## [1.1.21] - 2025-08-26
 
 Update to latest Jetty 9 - 9.4.58.v20250814, 10 - 10.0.26, 11 - 11.0.26 versions.

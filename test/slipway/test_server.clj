@@ -32,6 +32,7 @@
                               :truststore-type     "PKCS12"})
 
 (def https-rfc-2616-connector #::https{:http-compliance "RFC2616"})
+(def https-rfc-7230-connector #::https{:http-compliance "RFC7230"})
 
 (def hsts #::https{:sts-max-age-s           31536000
                    :sts-include-subdomains? true})
@@ -50,6 +51,9 @@
                                    :error-handler app/server-error-handler}
 
    :https-rfc2616        #::server{:connectors    [(merge https-connector https-rfc-2616-connector)]
+                                   :error-handler app/server-error-handler}
+
+   :https-rfc7230        #::server{:connectors    [(merge https-connector https-rfc-7230-connector)]
                                    :error-handler app/server-error-handler}
 
    :hsts                 #::server{:connectors    [(merge https-connector hsts)]

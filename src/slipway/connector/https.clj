@@ -1,8 +1,9 @@
 (ns slipway.connector.https
   (:require [clojure.tools.logging :as log]
+            [slipway.connector.http :as http]
             [slipway.server :as server])
   (:import (java.security KeyStore)
-           (org.eclipse.jetty.http HttpCompliance HttpVersion)
+           (org.eclipse.jetty.http HttpVersion)
            (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory SecureRequestCustomizer Server ServerConnector SslConnectionFactory)
            (org.eclipse.jetty.util.ssl SslContextFactory$Server)))
@@ -19,20 +20,19 @@
             relative-redirect-allowed? false}
     :as    opts}]
   (log/debugf "creating default http configuration %s" opts)
-  (let [config (doto (HttpConfiguration.)
-                 (.setSecurePort port)
-                 (.setSendServerVersion send-server-version?)
-                 (.setSendDateHeader send-date-header?)
-                 (.setRelativeRedirectAllowed relative-redirect-allowed?)
-                 (.addCustomizer (doto (SecureRequestCustomizer.)
-                                   (.setSniRequired sni-required?)
-                                   (.setSniHostCheck sni-host-check?)
-                                   (.setStsMaxAge sts-max-age-s)
-                                   (.setStsIncludeSubDomains sts-include-subdomains?))))]
+  (let [config    (doto (HttpConfiguration.)
+                    (.setSecurePort port)
+                    (.setSendServerVersion send-server-version?)
+                    (.setSendDateHeader send-date-header?)
+                    (.setRelativeRedirectAllowed relative-redirect-allowed?)
+                    (.addCustomizer (doto (SecureRequestCustomizer.)
+                                      (.setSniRequired sni-required?)
+                                      (.setSniHostCheck sni-host-check?)
+                                      (.setStsMaxAge sts-max-age-s)
+                                      (.setStsIncludeSubDomains sts-include-subdomains?))))
+        http-mode (http/http-compliance-mode http-compliance)]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
-    (when (.equalsIgnoreCase "RFC2616" http-compliance)
-      (log/debug "enabling reduced HTTP Compliance of RFC2616")
-      (.setHttpCompliance config HttpCompliance/RFC2616))
+    (when http-mode (.setHttpCompliance config http-mode))
     config))
 
 (defn context-factory ^SslContextFactory$Server
@@ -120,7 +120,7 @@
                             :send-server-version?       "if true, send the Server header in responses"
                             :send-date-header?          "if true, send the Date header in responses"
                             :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                            :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"})
+                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-config configurator]
