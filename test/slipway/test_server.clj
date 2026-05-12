@@ -53,7 +53,7 @@
    :https-rfc2616        #::server{:connectors    [(merge https-connector https-rfc-2616-connector)]
                                    :error-handler app/server-error-handler}
 
-   :https-rfc7230       #::server{:connectors    [(merge https-connector https-rfc-7230-connector)]
+   :https-rfc7230        #::server{:connectors    [(merge https-connector https-rfc-7230-connector)]
                                    :error-handler app/server-error-handler}
 
    :hsts                 #::server{:connectors    [(merge https-connector hsts)]
