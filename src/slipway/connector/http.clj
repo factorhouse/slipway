@@ -1,23 +1,29 @@
 (ns slipway.connector.http
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [slipway.server :as server])
   (:import (org.eclipse.jetty.http HttpCompliance)
            (org.eclipse.jetty.server ConnectionFactory ForwardedRequestCustomizer HttpConfiguration
                                      HttpConnectionFactory ProxyConnectionFactory Server ServerConnector)))
+
+(defn http-compliance-mode ^HttpCompliance
+  [http-compliance]
+  (when-let [mode (some-> http-compliance str/upper-case (HttpCompliance/valueOf))]
+    (log/debugf "enabling HTTP compliance mode of %s" mode)
+    mode))
 
 (defn default-config ^HttpConfiguration
   [{::keys [http-forwarded? send-server-version? send-date-header? relative-redirect-allowed? http-compliance]
     :or    {send-server-version?       false
             send-date-header?          false
             relative-redirect-allowed? false}}]
-  (let [config (doto (HttpConfiguration.)
-                 (.setSendServerVersion send-server-version?)
-                 (.setSendDateHeader send-date-header?)
-                 (.setRelativeRedirectAllowed relative-redirect-allowed?))]
+  (let [config    (doto (HttpConfiguration.)
+                    (.setSendServerVersion send-server-version?)
+                    (.setSendDateHeader send-date-header?)
+                    (.setRelativeRedirectAllowed relative-redirect-allowed?))
+        http-mode (http-compliance-mode http-compliance)]
     (when http-forwarded? (.addCustomizer config (ForwardedRequestCustomizer.)))
-    (when (.equalsIgnoreCase "RFC2616" http-compliance)
-      (log/debug "enabling reduced HTTP Compliance of RFC2616")
-      (.setHttpCompliance config HttpCompliance/RFC2616))
+    (when http-mode (.setHttpCompliance config http-mode))
     config))
 
 (comment
@@ -31,7 +37,7 @@
                            :send-server-version?       "if true, send the Server header in responses"
                            :send-date-header?          "if true, send the Date header in responses"
                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                           :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"})
+                           :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
   [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-forwarded? configurator http-config]
