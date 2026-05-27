@@ -68,8 +68,7 @@
   (throw (RuntimeException. "Error Route")))
 
 (defn server-error-body-fn
-  [_request _charset code uri message cause]
-  (error/log-error code uri message cause)
+  [_request _charset code _uri message _cause]
   (html/error-page code "Server Error" message))
 
 (def server-error-handler (error/handler server-error-body-fn))
