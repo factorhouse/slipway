@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.0.3"
+(defproject io.factorhouse/slipway-jetty12 "2.0.4"
 
   :description "A Clojure Companion for Jetty 12.1"
 
@@ -7,7 +7,7 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev      {:dependencies   [[clj-kondo "2026.04.15"]
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.04.15" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
                                          [ch.qos.logback/logback-classic "1.5.32"]
                                          [hiccup "2.0.0"]
@@ -28,7 +28,7 @@
   :dependencies [[org.clojure/clojure "1.12.4"]
                  [org.clojure/tools.logging "1.3.1"]
                  [org.ring-clojure/ring-core-protocols "1.15.4"]
-                 [com.taoensso/sente "1.21.0"]
+                 [com.taoensso/sente "1.17.0"]
                  [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.9"]
                  [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.9"]
                  [org.eclipse.jetty/jetty-server "12.1.9"]

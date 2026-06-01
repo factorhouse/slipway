@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.4] - 2026-06-02
+
+Revert sente to v1.17.0
+
 ## [2.0.3] - 2026-05-13
 
 Support configuring all HttpCompliance modes.
