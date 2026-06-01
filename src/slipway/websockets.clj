@@ -43,22 +43,21 @@
 (comment
   #:slipway.websockets{:enabled?                 "are websockets enabled? default true"
                        :path-spec                "the websocket path-spec, default '/chsk'"
-                       :idle-timeout-ms          "max websocket idle time, default 500000"
+                       :idle-timeout-ms          "max websocket idle time, default 300000"
                        :input-buffer-bytes       "max websocket input buffer size"
                        :output-buffer-bytes      "max websocket output buffer size"
-                       :max-text-message-bytes   "max websocket text message size"
-                       :max-binary-message-bytes "max websocket binary message size"
+                       :max-text-message-bytes   "max websocket text message size that can be received"
+                       :max-binary-message-bytes "max websocket binary message size that can be received"
                        :max-frame-bytes          "max websocket frame size"
-                       :max-outgoing-frames      "max websocket frames waiting to be sent per session, default 50"
-                       :auto-fragment            "websocket auto fragment (boolean)"})
+                       :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
+                       :auto-fragment            "websocket auto fragment (boolean), default true"})
 
 (defn handler ^WebSocketUpgradeHandler
   [^Server server ^ContextHandler handler ring-handler opts]
   (let [{::keys [enabled? path-spec idle-timeout-ms input-buffer-bytes output-buffer-bytes max-text-message-bytes
                  max-binary-message-bytes max-frame-bytes max-outgoing-frames auto-fragment]
          :or    {path-spec           "/chsk"
-                 idle-timeout-ms     500000
-                 max-outgoing-frames 50}} opts]
+                 idle-timeout-ms     300000}} opts]
     (when (not (false? enabled?))
       (log/debugf "configuring websockets at %s with %s" path-spec opts)
       (WebSocketUpgradeHandler/from
