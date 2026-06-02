@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.0.4"
+(defproject io.factorhouse/slipway-jetty12 "2.0.5"
 
   :description "A Clojure Companion for Jetty 12.1"
 
@@ -7,9 +7,9 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev      {:dependencies   [[clj-kondo "2026.04.15" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.05.25" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
-                                         [ch.qos.logback/logback-classic "1.5.32"]
+                                         [ch.qos.logback/logback-classic "1.5.34"]
                                          [hiccup "2.0.0"]
                                          [ring/ring-core "1.15.4"]
                                          [ring/ring-anti-forgery "1.4.0"]
@@ -25,17 +25,17 @@
 
   :aot [slipway.handler.sync-handler]
 
-  :dependencies [[org.clojure/clojure "1.12.4"]
+  :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]
                  [org.ring-clojure/ring-core-protocols "1.15.4"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.9"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.9"]
-                 [org.eclipse.jetty/jetty-server "12.1.9"]
-                 [org.eclipse.jetty/jetty-session "12.1.9"]
-                 [org.eclipse.jetty/jetty-security "12.1.9"]
-                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.9"]
-                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.9"]]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.10"]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.10"]
+                 [org.eclipse.jetty/jetty-server "12.1.10"]
+                 [org.eclipse.jetty/jetty-session "12.1.10"]
+                 [org.eclipse.jetty/jetty-security "12.1.10"]
+                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.10"]
+                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.10"]]
 
   :source-paths ["src"]
   :test-paths ["test"]
