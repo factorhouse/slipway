@@ -21,10 +21,7 @@
         (reset! session nil)
         (when cb (.succeed cb)))
       (^void onWebSocketError [_ ^Throwable error]
-       ;; sente currently log/errors, we mute down to log/debug because the common ChannelClosedException when a user
-       ;; hards shuts their browser session can be a bit chatty in the logs. If sente does something further on-error
-       ;; we should consider reapplying here
-        (log/debug "websocket error" error))
+        (log/error "websocket error" error))
       (^void onWebSocketText [_ ^String message]
         (on-message @session message))
       (^void onWebSocketBinary [_ ^ByteBuffer payload ^Callback cb]

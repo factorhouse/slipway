@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.5] - 2026-06-02
+
+* Log Jetty websocket errors at ERROR level (up from DEBUG)
+* Update to Jetty 12.1.10 and bump minor dependencies 
+
 ## [2.0.4] - 2026-06-02
 
 Revert sente to v1.17.0
