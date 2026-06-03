@@ -21,7 +21,10 @@
         (reset! session nil)
         (when cb (.succeed cb)))
       (^void onWebSocketError [_ ^Throwable error]
-        (log/error "websocket error" error))
+       ;; We choose to log the error type/message without the stacktrace here, these can be quite insignificant and
+       ;; can cause a lot of chat in the logs, particularly ChannelClosedExceptions which can happen as a normal 
+       ;; part of user interaction (hard shutting the browser tab).
+        (log/error "websocket error" (some-> error (.toString))))
       (^void onWebSocketText [_ ^String message]
         (on-message @session message))
       (^void onWebSocketBinary [_ ^ByteBuffer payload ^Callback cb]
@@ -53,8 +56,8 @@
   [^Server server ^ContextHandler handler ring-handler opts]
   (let [{::keys [enabled? path-spec idle-timeout-ms input-buffer-bytes output-buffer-bytes max-text-message-bytes
                  max-binary-message-bytes max-frame-bytes max-outgoing-frames auto-fragment]
-         :or    {path-spec           "/chsk"
-                 idle-timeout-ms     300000}} opts]
+         :or    {path-spec       "/chsk"
+                 idle-timeout-ms 300000}} opts]
     (when (not (false? enabled?))
       (log/debugf "configuring websockets at %s with %s" path-spec opts)
       (WebSocketUpgradeHandler/from
