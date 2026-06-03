@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.6] - 2026-06-03
+
+* Reduce websocket error logs to simply type/message rather than full stacktrace
+
 ## [2.0.5] - 2026-06-02
 
 * Log Jetty websocket errors at ERROR level (up from DEBUG)
