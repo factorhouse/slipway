@@ -34,6 +34,7 @@
                  [org.eclipse.jetty/jetty-server "12.1.10"]
                  [org.eclipse.jetty/jetty-session "12.1.10"]
                  [org.eclipse.jetty/jetty-security "12.1.10"]
+                 [org.eclipse.jetty/jetty-openid "12.1.10"]
                  [org.eclipse.jetty.compression/jetty-compression-server "12.1.10"]
                  [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.10"]]
 
