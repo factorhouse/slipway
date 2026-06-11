@@ -13,10 +13,8 @@
   * [Requirements](#requirements)
   * [Primary Goals](#primary-goals)
   * [Secondary Goals](#secondary-goals)
-  * [Future Goals](#future-goals)
   * [Out of Scope](#out-of-scope)
   * [Non-Goals](#non-goals)
-  * [Which Version to Use?](#which-version-to-use)  
 * [Using Slipway](#using-slipway)
   * [Quick Start](#quick-start)
   * [Example Servers](#example-servers)
@@ -29,15 +27,15 @@
   * [:slipway.security](#slipwaysecurity)
   * [:slipway.connector.http](#slipwayconnectorhttp)
   * [:slipway.connector.https](#slipwayconnectorhttps)
-  * [:slipway.handler.gzip](#slipwayhandlergzip)
+  * [:slipway.handler.compression](#slipwayhandlercompression)
 * [Sente Websockets](#sente-websockets)
 * [JAAS Authentication](#jaas-authentication)
   * [-Djava.security.auth.login.config](#-djavasecurityauthloginconfig)
   * [Hash Authentication](#hash-authentication)
   * [LDAP Authentication](#ldap-authentication)
 * [License](#license)
-  * [Source Notes](#source-notes)
 * [Contributing](#contributing)
+
 ----
 
 ![Slipway Login](docs/img/slipway-auth.png)
@@ -46,11 +44,13 @@
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://factorhouse.io/kpow).
 
-Slipway is a [Clojure](https://clojure.org/) companion to embedded Jetty with Websocket support.
+Slipway is a [Clojure](https://clojure.org/) companion to embedded Jetty 12.1 with WebSocket support.
 
-Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty capabilities while providing sensible defaults for basic behaviour. If in doubt, read the [Jetty docs](https://www.eclipse.org/jetty/documentation/).
+Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty capabilities while providing sensible defaults for basic behaviour. If in doubt, read the [Jetty docs](https://jetty.org/docs/).
 
 Use the [Community Edition](https://kpow.io/get-started/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
+
+> **Archived versions**: Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
 
 ## Why Jetty?
 
@@ -58,15 +58,13 @@ Jetty is a mature, stable, commercially supported project with an [active, exper
 
 Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
 
-Jetty is a great choice of web-server for a general purpose web-application.
+Jetty is a great choice of web server for a general purpose web application.
 
 ## Why Slipway?
 
 ### Requirements
 
-Kpow is a web-application with a SPA UI served by websockets.
-
-We have a hard requirement to support customers on Java 8 and Java 11+.
+Kpow is a web application with a SPA UI served by WebSockets.
 
 Kpow has seemingly every possible Jetty configuration option in use by at least one end-user.
 
@@ -74,7 +72,7 @@ We incorporate automated NVD scanning and feedback from external security teams.
 
 ### Primary Goals
 
-Slipway provides first-class, extensible support for: 
+Slipway provides first-class, extensible support for:
 
 * Core Jetty capabilities in Jetty-style
 * HTTP 1.1
@@ -83,11 +81,12 @@ Slipway provides first-class, extensible support for:
 * JAAS Authentication (LDAP, HashUser, etc)
 * Form / basic authentication
 * WebSockets
-* Java 8 / 11+
-* Jetty 9 / 10 / 11
+* Java 17+
+* Jetty 12.1
 * Session management
-* Proxy protocol / http forwarded
-* Common / sensible defaults (e.g. gzip compression)
+* Proxy protocol / HTTP forwarded
+* HTTP compliance modes (RFC9110, RFC2616, RFC7230, etc)
+* Compression (Gzip and extensible)
 * Configurable error handling
 * Automated CVE scanning with NVD
 * Comprehensive integration tests
@@ -96,36 +95,35 @@ Slipway provides first-class, extensible support for:
 
 * Broad support for general Jetty use-cases / configuration
 
-### Future Goals
-
-* Backport our SAML, OpenID and OAuth authentication implementations
-* Open-source a full-stack example application using slipway in [Shortcut](https://github.com/factorhouse/shortcut).
-
 ### Out of Scope
 
-* Http2/3
-* Asynchronous Handlers
+* HTTP/2 and HTTP/3
+* Asynchronous handlers
 * Ajax (including auto-fallback)
 
 ### Non-Goals
 
 * A simplified DSL for Jetty
 
-### Which Version to Use?
-
-* Jetty 9: If you require running with Java 8
-* Jetty 10: Recommended for general use, requires Java 11+
-* Jetty 11: If you want to run with Jakarta rather than Javax, requires Java 11+
-
 ## Using Slipway
+
+Add `io.factorhouse/slipway-jetty12` to your project dependencies:
+
+```clojure
+;; deps.edn
+{io.factorhouse/slipway-jetty12 {:mvn/version "2.0.6"}}
+
+;; project.clj
+[io.factorhouse/slipway-jetty12 "2.0.6"]
+```
+
+Requires Java 17+.
 
 ### Quick Start
 
-Choose a project by Jetty version, then open a REPL.
+Open a REPL and start Slipway with a ring handler and a map of configuration options:
 
-Start slipway with a ring-handler and a map of configuration options:
-
-```clojure 
+```clojure
 (require '[slipway :as slipway])
 (require '[slipway.server :as server])
 (require '[slipway.connector.http :as http])
@@ -139,23 +137,39 @@ Start slipway with a ring-handler and a map of configuration options:
 
 Your hello world application is now running on [http://localhost:3000](http://localhost:3000).
 
-### Example Servers
-
-Various configurations of Slipway can be found in the [example.clj](common/test/slipway/example.clj) namespace.
-
-The stateful start!/stop! functions within that namespace are not considered canonical for Slipway, they are a convenience for our integration tests. 
+To stop the server:
 
 ```clojure
-(require '[slipway.example :as example])
-
-(example/start! [:http :hash-auth])
+(slipway/stop server)
 ```
 
-Your sample application with [property file based auth](https://docs.kpow.io/authentication/file/) is now available on [http://localhost:3000](http://localhost:3000).
+### Example Servers
 
-Login with jetty/jetty, admin/admin, plain/plain, other/other, or user/password as defined in [hash-realm.properties](common/dev-resources/jaas/hash-realm.properties).
+The [`test/slipway/test_server.clj`](test/slipway/test_server.clj) namespace contains a range of example server configurations for use in development and testing.
 
-After login the default home-page presents some useful links for user info and error pages.
+The stateful `start!`/`stop!` functions are a convenience for integration tests and local development, not canonical Slipway usage.
+
+```clojure
+(require '[slipway.test-server :as test-server])
+
+;; Start a plain HTTP server
+(test-server/start! [:http])
+
+;; Start with hash-based form authentication
+(test-server/start! [:http] :hash-auth)
+
+;; Start with basic authentication
+(test-server/start! [:http] :basic-auth)
+
+;; Start with HTTP + HTTPS
+(test-server/start! [:http+https])
+```
+
+Your sample application is available on [http://localhost:3000](http://localhost:3000).
+
+For hash auth, login with `jetty/jetty`, `admin/admin`, `plain/plain`, `other/other`, or `user/password` as defined in [hash-realm.properties](dev-resources/jaas/hash-realm.properties).
+
+After login, the default home page presents useful links for user info and error pages.
 
 -----
 
@@ -167,14 +181,14 @@ Jetty is sophisticated as it addresses a complex domain with flexibility and con
 
 Slipway holds close to Jetty idioms for configuration rather than presenting a simplified DSL.
 
-Slipway takes a single map of namespaced configuration. Namespaces correspond to Jetty domain models, and can be considered as separate maps and then merged.
+Slipway takes a single map of namespaced configuration. Namespaces correspond to Jetty domain models and can be considered as separate maps then merged.
 
 ### :slipway
 
-The top-level namespace provides configuration to determine if slipway joins the Jetty threadpool.
+The top-level namespace determines whether Slipway joins the Jetty thread pool.
 
 ```clojure
-#:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"}
+#:slipway{:join? "join the Jetty threadpool, blocks the calling thread until Jetty exits, default false"}
 ```
 
 ### :slipway.server
@@ -184,22 +198,21 @@ Configuration of core server options.
 ```clojure
 #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
                  :connectors    "the connectors supported by this server"
-                 :thread-pool   "the thread-pool used by this server (leave null for reasonable defaults)"
-                 :error-handler "the error-handler used by this server for Jetty level errors"}
+                 :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
+                 :scheduler     "the scheduler used by this server (nil for default behaviour)"
+                 :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
+                 :error-handler "the error-handler used by this server for Jetty-level errors"}
 ```
 
 #### :slipway.server/handler
 
-Slipway provides the following default server-handler implementations:
+Slipway provides a default server-handler implementation via a `defmethod` dispatch in [`src/slipway/handler.clj`](src/slipway/handler.clj).
 
-1. [slipway-jetty9/src/slipway/handler.clj](slipway-jetty9/src/slipway/handler.clj#L61): for Jetty 9 
-2. [common-jetty1x/src/slipway/handler.clj](common-jetty1x/src/slipway/handler.clj#L45): for Jetty 10/11
-
-Use a custom server-handler by implementing a new server/handler defmethod and configuring the dispatch key.
+Use a custom server-handler by implementing a new `server/handler` defmethod and providing its dispatch key as `::server/handler`.
 
 #### :slipway.server/connectors
 
-Slipway accepts a list of server-connectors, allowing you to run multi-connector setups, e.g.
+Slipway accepts a list of server connectors, allowing multi-connector setups, e.g.:
 
 ```clojure
 (ns slipway.example
@@ -220,22 +233,25 @@ Slipway accepts a list of server-connectors, allowing you to run multi-connector
 (def server #::server{:connectors [http-connector https-connector]})
 ```
 
-#### :slipway.server/thread-pool
-
-Leave nil for the sensible default threadpool or provide a concrete `org.eclipse.jetty.util.thread.ThreadPool`.
-
 #### :slipway.server/error-handler
 
-Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring / application level errors which will be handled separately within your application).
+Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring/application-level errors handled within your application).
 
-Slipway provides a utility namespace for general-purpose ErrorHandler creation and error logging:
+Slipway provides a utility for creating custom error handlers in [`src/slipway/error.clj`](src/slipway/error.clj):
 
-1. [common-javax/src/slipway/error.clj](common-javax/src/slipway/error.clj#L14): Jetty 9 and 10.
-2. [common-jakarta/src/slipway/error.clj](common-jakarta/src/slipway/error.clj#L14): Jetty 11.
+```clojure
+(require '[slipway.error :as error])
+
+(defn body-fn
+  [_request _charset code _uri message _cause]
+  (str "<html><body><h1>" code " " message "</h1></body></html>"))
+
+(def my-error-handler (error/handler body-fn))
+```
 
 ### :slipway.handler
 
-Configuration of the default server-handler (same for all versions of Jetty).
+Configuration of the default server handler.
 
 ```clojure
 #:slipway.handler{:context-path    "the root context path, default '/'"
@@ -245,136 +261,165 @@ Configuration of the default server-handler (same for all versions of Jetty).
 
 ### :slipway.websockets
 
-Configuration of websockets options.
-
-Jetty 10/11 provides more configurability of websockets, as you can see in the different options below:
+Configuration of WebSocket options.
 
 ```clojure
-;; Jetty 10 / Jetty 11 Websockets
-#:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
-                     :input-buffer-size       "max websocket input buffer size (in bytes)"
-                     :output-buffer-size      "max websocket output buffer size (in bytes)"
-                     :max-text-message-size   "max websocket text message size (in bytes, default 65536)"
-                     :max-binary-message-size "max websocket binary message size (in bytes)"
-                     :max-frame-size          "max websocket frame size (in bytes)"
-                     :auto-fragment           "websocket auto fragment (boolean)"}
-
-;; Jetty 9 Websockets
-#:slipway.websockets{:idle-timeout            "max websocket idle time (in ms), default 500000"
-                     :input-buffer-size       "max websocket input buffer size"
-                     :max-text-message-size   "max websocket text message size"
-                     :max-binary-message-size "max websocket binary message size"}
+#:slipway.websockets{:enabled?                 "are websockets enabled? default true"
+                     :path-spec                "the websocket path-spec, default '/chsk'"
+                     :idle-timeout-ms          "max websocket idle time in ms, default 300000"
+                     :input-buffer-bytes       "max websocket input buffer size in bytes"
+                     :output-buffer-bytes      "max websocket output buffer size in bytes"
+                     :max-text-message-bytes   "max websocket text message size that can be received in bytes"
+                     :max-binary-message-bytes "max websocket binary message size that can be received in bytes"
+                     :max-frame-bytes          "max websocket frame size in bytes"
+                     :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
+                     :auto-fragment            "websocket auto fragment (boolean), default true"}
 ```
 
-See the Jetty docs to understand how to tune websockets for your own purposes.
+See the Jetty docs to understand how to tune WebSockets for your own purposes.
 
 ### :slipway.session
 
-Configuration of http session options.
+Configuration of HTTP session options.
 
 ```clojure
-#:slipway.session{:secure-request-only?  "set the secure flag on session cookies (default true)"
-                  :http-only?            "set the http-only flag on session cookies (default true)"
-                  :same-site             "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
-                  :max-inactive-interval "max session idle time (in s, default -1)"
-                  :tracking-modes        "a set (colloection) of #{:cookie, :ssl, or :url}"
-                  :cookie-name           "the name of the session cookie"
-                  :session-id-manager    "the meta manager used for cross context session management"
-                  :refresh-cookie-age    "max time before a session cookie is re-set (in s)"
-                  :path-parameter-name   "name of path parameter used for URL session tracking"}
+#:slipway.session{:secure-request-only?    "set the secure flag on session cookies (default true)"
+                  :http-only?              "set the http-only flag on session cookies (default true)"
+                  :same-site               "set session cookie same-site policy to :none, :lax, or :strict (default :strict)"
+                  :max-inactive-interval-s "max session idle time in seconds (default -1, no expiry)"
+                  :cookie-name             "the name of the session cookie (default 'JSESSIONID')"
+                  :session-id-manager      "the meta manager used for cross-context session management"
+                  :refresh-cookie-age-s    "max time before a session cookie is re-set in seconds"
+                  :using-cookies           "true if cookies are used to track sessions (default true)"
+                  :using-uri-parameters    "true if URI parameters are used to track sessions (default false)"
+                  :path-parameter-name     "name of path parameter used for URL session tracking"}
 ```
 
 ### :slipway.security
 
-Configuration of Jetty auth options.
-
-See examples below for configuration guides to JAAS and HASH authentication.
+Configuration of Jetty auth options. See [JAAS Authentication](#jaas-authentication) below for configuration guides.
 
 ```clojure
-#:slipway.security{:realm            "the Jetty authentication realm"
-                   :hash-user-file   "the path to a Jetty Hash User File"
-                   :login-service    "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                   :identity-service "a concrete Jetty IdentityService"
-                   :authenticator    "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-```                     
+#:slipway.security{:realm               "the Jetty authentication realm"
+                   :hash-user-file      "the path to a Jetty Hash User File"
+                   :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
+                   :identity-service    "a concrete Jetty IdentityService"
+                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                   :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint] pairs"}
+```
+
+Example constraint mapping:
+
+```clojure
+(import '[org.eclipse.jetty.security Constraint])
+
+(def constraints
+  [["/up"    Constraint/ALLOWED]
+   ["/css/*" Constraint/ALLOWED]
+   ["/img/*" Constraint/ALLOWED]
+   ["/*"     Constraint/ANY_USER]])
+```
 
 ### :slipway.connector.http
 
 Configuration of an HTTP server connector.
 
 ```clojure
-#:slipway.connector.http{:host                 "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces."
-                         :port                 "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
-                         :idle-timeout         "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
-                         :http-forwarded?      "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-                         :proxy-protocol?      "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
-                         :http-config          "a concrete HttpConfiguration object to replace the default config entirely"
-                         :configurator         "a fn taking the final connector as argument, allowing further configuration"
-                         :send-server-version? "if true, send the Server header in responses"
-                         :send-date-header?    "if true, send the Date header in responses"}
-````
+#:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or hostname. Default null (all interfaces)"
+                         :port                       "port this connector listens on. If 0 a random port is assigned, default 80"
+                         :idle-timeout-ms            "max idle time for a connection in ms, default 200000"
+                         :http-forwarded?            "if true, add the ForwardedRequestCustomizer. See Jetty Forward HTTP docs"
+                         :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+                         :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+                         :configurator               "a fn taking the final connector as argument, allowing further configuration"
+                         :send-server-version?       "if true, send the Server header in responses (default false)"
+                         :send-date-header?          "if true, send the Date header in responses (default false)"
+                         :relative-redirect-allowed? "if true, allow relative redirects (default false)"
+                         :http-compliance            "set the HttpCompliance mode, e.g. 'RFC2616' or 'RFC7230' (default RFC9110)"}
+```
 
 ### :slipway.connector.https
 
 Configuration of an HTTPS server connector.
 
 ```clojure
-#:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
-                          :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 443"
-                          :idle-timeout               "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
-                          :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
-                          :proxy-protocol?            "if true, add the ProxyConnectionFactor. See Jetty Proxy Protocol docs"
+#:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or hostname. Default null (all interfaces)"
+                          :port                       "port this connector listens on. If 0 a random port is assigned, default 443"
+                          :idle-timeout-ms            "max idle time for a connection in ms, default 200000"
+                          :http-forwarded?            "if true, add the ForwardedRequestCustomizer. See Jetty Forward HTTP docs"
+                          :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
                           :configurator               "a fn taking the final connector as argument, allowing further configuration"
                           :keystore                   "keystore to use, either path (String) or concrete KeyStore"
-                          :keystore-type              "type of keystore, e.g. JKS"
+                          :keystore-type              "type of keystore, e.g. JKS or PKCS12"
                           :keystore-password          "password of the keystore"
                           :key-manager-password       "password for the specific key within the keystore"
                           :truststore                 "truststore to use, either path (String) or concrete KeyStore"
                           :truststore-password        "password of the truststore"
-                          :truststore-type            "type of the truststore, eg. JKS"
+                          :truststore-type            "type of the truststore, e.g. JKS or PKCS12"
                           :include-protocols          "a list of protocol name patterns to include in SSLEngine"
                           :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
-                          :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+                          :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise adds them"
                           :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
-                          :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+                          :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise adds them"
                           :security-provider          "the security provider name"
                           :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                           :ssl-context                "a concrete pre-configured SslContext"
-                          :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
-                          :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
-                          :sts-max-age                "set the Strict-Transport-Security max age in seconds, default -1"
-                          :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
-                          :send-server-version?       "if true, send the Server header in responses"
-                          :send-date-header?          "if true, send the Date header in responses"}
+                          :sni-required?              "if true SNI is required, else requests are rejected with 400, default false"
+                          :sni-host-check?            "if true the SNI host name must match when there is an SNI certificate, default false"
+                          :sts-max-age-s              "set the Strict-Transport-Security max age in seconds (default -1, disabled)"
+                          :sts-include-subdomains?    "true if includeSubDomains is sent with any Strict-Transport-Security header"
+                          :send-server-version?       "if true, send the Server header in responses (default false)"
+                          :send-date-header?          "if true, send the Date header in responses (default false)"
+                          :relative-redirect-allowed? "if true, allow relative redirects (default false)"
+                          :http-compliance            "set the HttpCompliance mode, e.g. 'RFC2616' or 'RFC7230' (default RFC9110)"}
 ```
 
-### :slipway.handler.gzip
+### :slipway.handler.compression
 
-Configuration of the Gzip Handler.
+Configuration of the compression handler. Replaces the former `:slipway.handler.gzip` namespace from Slipway 1.x.
 
 ```clojure
-#:slipway.handler.gzip{:enabled?            "is gzip enabled? default true"
-                       :included-mime-types "mime types to include (without charset or other parameters), leave nil for default types"
-                       :excluded-mime-types "mime types to exclude (replacing any previous exclusion set)"
-                       :min-gzip-size       "min response size to trigger dynamic compression (in bytes, default 1024)"}
+#:slipway.handler.compression{:enabled?           "is the compression handler enabled? default true"
+                               :path-spec          "the compression path-spec, default '/*'"
+                               :format             "compression format dispatch key, defaults to :gzip (GzipCompression)"
+                               :compress-min-bytes "min response size to trigger compression in bytes (default 1024)"
+                               :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
 ```
 
-### Sente Websockets
+The `:format` key dispatches via `defmulti` — extend it to add custom compression formats:
 
-Slipway supports [Sente](https://github.com/ptaoussanis/sente) out-of-the box.
+```clojure
+(require '[slipway.handler.compression :as compression])
+(import '[org.eclipse.jetty.compression.gzip GzipCompression])
 
-The entry-point can be found in the [slipway/sente.clj](/common/src/slipway/sente.clj#L66) namespace.
+(defmethod compression/format :my-format [_opts]
+  (GzipCompression.)) ; substitute your own compression implementation
+```
 
-```clojure 
-(defn start-server
-  [opts]
-  (let [server (sente/make-channel-socket-server! (slipway.sente/get-sch-adapter) opts)
-        {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
-    {:ws-handshake   ajax-get-or-ws-handshake-fn
-     :ch-chsk        ch-recv
-     :chsk-send!     (partial send-msg connected-uids send-fn)
-     :connected-uids connected-uids}))
+## Sente Websockets
+
+Slipway supports [Sente](https://github.com/ptaoussanis/sente) out of the box via the `slipway.sente` namespace.
+
+```clojure
+(require '[slipway.sente :as sente])
+
+(def sente-server
+  (sente/start {:allowed-origins #{"http://localhost:3000"}}))
+
+;; sente-server contains:
+;; :ch-recv         - the incoming message channel
+;; :chsk-send!      - fn to send messages, (chsk-send! uid msg) or (chsk-send! :broadcast msg)
+;; :ws-handshake-fn - the ring handler for the /chsk route
+;; :connected-uids  - atom of connected user IDs
+
+(sente/stop sente-server)
+```
+
+Wire `ws-handshake-fn` into your router at the `/chsk` path:
+
+```clojure
+["/chsk" {:get {:handler (:ws-handshake-fn sente-server)}}]
 ```
 
 Refer to Sente's [getting started guide](https://github.com/ptaoussanis/sente#getting-started) for more information.
@@ -388,13 +433,13 @@ JAAS can be used for two purposes:
 * for authentication of users, to reliably and securely determine who is currently executing Java code
 * for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
 
-For more information visit the [Jetty documentation](https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-jaas).
+For more information visit the [Jetty documentation](https://jetty.org/docs/jetty/12/operations-guide/jaas/index.html).
 
-Various configurations of Slipway with JAAS auth can be found in the example.clj namespace.
+Various configurations of Slipway with JAAS auth can be found in the [`test_server.clj`](test/slipway/test_server.clj) namespace.
 
 #### -Djava.security.auth.login.config
 
-Start your application (JAR or REPL session) with the additional JVM option
+Start your application (JAR or REPL session) with the additional JVM option:
 
 `-Djava.security.auth.login.config=/some/path/to/jaas.config`
 
@@ -402,11 +447,11 @@ For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jet
 
 #### Hash Authentication
 
-The simplest JAAS authentication module. A static list of hashed users in a file. 
+The simplest JAAS authentication module. A static list of hashed users in a file.
 
-Example `jaas.config`: ('my-realm' must be the same as the configured :slipway.security/realm)
+Example `jaas.config`: (`my-realm` must match the configured `:slipway.security/realm`)
 
-``` 
+```
 my-realm {
            org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
            debug="true"
@@ -417,32 +462,24 @@ my-realm {
 Example `hash-realm.properties`:
 
 ```
-# This file defines users passwords and roles for a HashUserRealm
-#
 # The format is
 #  <username>: <password>[,<rolename> ...]
 #
-# Passwords may be clear text, obfuscated or checksummed.  The class
-# org.eclipse.jetty.util.security.Password should be used to generate obfuscated
-# passwords or password checksums
+# Passwords may be clear text, obfuscated or checksummed.
+# Use org.eclipse.jetty.util.security.Password to generate obfuscated passwords.
 #
-# If DIGEST Authentication is used, the password must be in a recoverable
-# format, either plain text or OBF:.
-#
-jetty: MD5:164c88b302622e17050af52c89945d44,kafka-users,content-administrators
-admin: CRYPT:adpexzg3FUZAk,server-administrators,content-administrators,kafka-admins
-other: OBF:1xmk1w261u9r1w1c1xmq,kafka-admins,kafka-users
-plain: plain,content-administrators
-user: password,kafka-users
-# This entry is for digest auth.  The credential is a MD5 hash of username:realmname:password
-digest: MD5:6e120743ad67abfbc385bc2bb754e297,kafka-users
+jetty: MD5:164c88b302622e17050af52c89945d44,user
+admin: CRYPT:adpexzg3FUZAk,server-administrator,content-administrator,admin,user
+other: OBF:1xmk1w261u9r1w1c1xmq,user
+plain: plain,user
+user: password,user
 ```
 
 #### LDAP Authentication
 
-Example `jaas.config`: ('my-realm' must be the same as the configured :slipway.security/realm)
+Example `jaas.config`: (`my-realm` must match the configured `:slipway.security/realm`)
 
-``` 
+```
 my-realm {
   org.eclipse.jetty.jaas.spi.LdapLoginModule required
   useLdaps="false"
@@ -467,7 +504,7 @@ my-realm {
 
 ## Contributing
 
-We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions. 
+We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions.
 
 Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities.
 
