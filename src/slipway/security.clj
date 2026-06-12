@@ -44,15 +44,16 @@
                      :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 
 (defn handler ^SecurityHandler
-  [^LoginService login-service {::keys [realm authenticator constraint-mappings identity-service]}]
+  [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]
   (log/debugf "creating security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))
-  (let [security-handler (doto (SecurityHandler$PathMapped.)
-                           (.setAuthenticator ^Authenticator authenticator)
-                           (.setLoginService login-service)
-                           (.setRealmName realm))]
-    (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
-      (.put security-handler path-spec constraint))
-    (when identity-service
-      (log/debugf "identity service %s" (type identity-service))
-      (.setIdentityService security-handler identity-service))
-    security-handler))
+  (when-let [^LoginService login-service (login-service opts)]
+    (let [security-handler (doto (SecurityHandler$PathMapped.)
+                             (.setAuthenticator ^Authenticator authenticator)
+                             (.setLoginService login-service)
+                             (.setRealmName realm))]
+      (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
+        (.put security-handler path-spec constraint))
+      (when identity-service
+        (log/debugf "identity service %s" (type identity-service))
+        (.setIdentityService security-handler identity-service))
+      security-handler)))
