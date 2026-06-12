@@ -23,8 +23,7 @@
         app-handler     (if-let [ws-handler (websockets/handler server context-handler ring-handler opts)]
                           (doto ws-handler (.setHandler (SyncHandler. ring-handler (::websockets/path-spec opts))))
                           (SyncHandler. ring-handler nil))
-        login-service   (security/login-service opts)
-        auth-handler    (if login-service
+        auth-handler    (if-let [login-service (security/login-service opts)]
                           (let [security-handler (security/handler login-service opts)
                                 session-handler  (session/handler opts)]
                             (.addBean server login-service)
