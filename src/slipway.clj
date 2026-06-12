@@ -3,11 +3,11 @@
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.handler]
-            [slipway.security :as security]
+            [slipway.security]
             [slipway.server :as server]
             [slipway.user]
             [slipway.websockets])
-  (:import (org.eclipse.jetty.server Handler Server)))
+  (:import (org.eclipse.jetty.server Server)))
 
 (comment
   #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
@@ -106,10 +106,7 @@
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
   (log/debugf "starting jetty server %s" opts)
-  (let [server        (server/create-server opts)
-        login-service (security/login-service opts)
-        handler       (server/handler server ring-handler login-service opts)]
-    (.setHandler server ^Handler handler)
+  (let [server (server/create-server ring-handler opts)]
     (.start server)
     (when join?
       (log/debug "joining jetty thread")

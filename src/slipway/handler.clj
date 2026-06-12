@@ -15,7 +15,7 @@
                     :null-path-info? "true if /path is not redirected to /path/, default true"})
 
 (defmethod server/handler :default
-  [server ring-handler login-service {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
+  [server ring-handler {::keys [context-path null-path-info?] :or {context-path "/"} :as opts}]
   (log/debugf "creating default server handler, context path %s, null-path-info? %s" context-path null-path-info?)
   (let [context-handler (doto (ContextHandler.)
                           (.setContextPath context-path)
@@ -23,6 +23,7 @@
         app-handler     (if-let [ws-handler (websockets/handler server context-handler ring-handler opts)]
                           (doto ws-handler (.setHandler (SyncHandler. ring-handler (::websockets/path-spec opts))))
                           (SyncHandler. ring-handler nil))
+        login-service   (security/login-service opts)
         auth-handler    (if login-service
                           (let [security-handler (security/handler login-service opts)
                                 session-handler  (session/handler opts)]
