@@ -3,11 +3,11 @@
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.handler]
-            [slipway.security :as security]
+            [slipway.security]
             [slipway.server :as server]
             [slipway.user]
             [slipway.websockets])
-  (:import (org.eclipse.jetty.server Handler Server)))
+  (:import (org.eclipse.jetty.server Server)))
 
 (comment
   #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
@@ -16,7 +16,8 @@
                                 :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
                                 :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
 
-  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.https{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                            :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
                             :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
@@ -45,9 +46,10 @@
                             :send-server-version?       "if true, send the Server header in responses"
                             :send-date-header?          "if true, send the Date header in responses"
                             :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                            :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
+                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
-  #:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.http{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                           :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
                            :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                            :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
@@ -57,14 +59,21 @@
                            :send-server-version?       "if true, send the Server header in responses"
                            :send-date-header?          "if true, send the Date header in responses"
                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                           :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
+                           :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
-  #:slipway.security{:realm               "the Jetty authentication realm"
-                     :hash-user-file      "the path to a Jetty Hash User File"
-                     :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                     :identity-service    "a concrete Jetty IdentityService"
-                     :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                     :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+  #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
+
+  #:slipway.security.hash{:realm               "optional Jetty authentication realm"
+                          :user-file           "the path to a Jetty hash-user file"
+                          :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service    "an (optional) concrete Jetty IdentityService"}
+
+  #:slipway.security.jaas{:realm               "the Jetty authentication realm"
+                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service    "an (optional) concrete Jetty IdentityService"}
 
   #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"
@@ -91,7 +100,6 @@
                        :auto-fragment            "websocket auto fragment (boolean), default true"}
 
   #:slipway.handler{:context-path    "the root context path, default '/'"
-                    :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"}
 
   #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
@@ -106,10 +114,7 @@
 (defn start ^Server
   [ring-handler {::keys [join?] :as opts}]
   (log/debugf "starting jetty server %s" opts)
-  (let [server        (server/create-server opts)
-        login-service (security/login-service opts)
-        handler       (server/handler server ring-handler login-service opts)]
-    (.setHandler server ^Handler handler)
+  (let [server (server/create-server ring-handler opts)]
     (.start server)
     (when join?
       (log/debug "joining jetty thread")

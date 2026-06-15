@@ -8,7 +8,8 @@
   (case same-site
     :none HttpCookie$SameSite/NONE
     :lax HttpCookie$SameSite/LAX
-    :strict HttpCookie$SameSite/STRICT))
+    :strict HttpCookie$SameSite/STRICT
+    HttpCookie$SameSite/STRICT))
 
 (comment
   #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"

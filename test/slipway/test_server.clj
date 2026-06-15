@@ -7,6 +7,8 @@
             [slipway.example.app :as app]
             [slipway.handler.compression :as compression]
             [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.security.hash :as jaas]
             [slipway.sente]
             [slipway.server :as server]
             [slipway.session :as session]
@@ -93,28 +95,34 @@
   [_]
   {})
 
-(defmethod authentication :jaas-auth
+(defmethod authentication :jaas-form
   [_]
-  #::security{:realm               "slipway"
-              :login-service       "jaas"
-              :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-              :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "jaas"}
+   #::jaas{:realm               "slipway"
+           :login-service       "jaas"
+           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+           :constraint-mappings app/constraints}))
 
-(defmethod authentication :hash-auth
+(defmethod authentication :hash-form
   [_]
-  #::security{:realm               "slipway"
-              :login-service       "hash"
-              :hash-user-file      "dev-resources/jaas/hash-realm.properties"
-              :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-              :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "hash"}
+   #::hash{:realm               "slipway"
+           :login-service       "hash"
+           :user-file           "dev-resources/jaas/hash-realm.properties"
+           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+           :constraint-mappings app/constraints}))
 
-(defmethod authentication :basic-auth
+(defmethod authentication :hash-basic
   [_]
-  #::security{:realm               "slipway"
-              :login-service       "hash"
-              :hash-user-file      "dev-resources/jaas/hash-realm.properties"
-              :authenticator       (BasicAuthenticator.)
-              :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "hash"}
+   #::hash{:realm               "slipway"
+           :login-service       "hash"
+           :user-file           "dev-resources/jaas/hash-realm.properties"
+           :authenticator       (BasicAuthenticator.)
+           :constraint-mappings app/constraints}))
 
 (defn stop!
   []
@@ -124,7 +132,7 @@
 "To run a JAAS authenticated server, start a REPL with the following JVM JAAS parameter:
    - Hash User Auth  ->  -Djava.security.auth.login.config=/dev-resources/jaas/hash-jaas.conf
    - LDAP Auth       ->  -Djava.security.auth.login.config=/dev-resources/jaas/ldap-jaas.conf
- Then: (start! [:http] :jaas-auth)
+ Then: (start! [:http] :jaas-form)
 
  Note: Authentication loginHandlers are stateful, so they must be created fresh for each server"
 (defn start!

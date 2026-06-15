@@ -50,10 +50,8 @@
     (when key-manager-password
       (.setKeyManagerPassword context-factory key-manager-password))
     (cond
-      (string? truststore)
-      (.setTrustStorePath context-factory truststore)
-      (instance? KeyStore truststore)
-      (.setTrustStore context-factory ^KeyStore truststore))
+      (string? truststore) (.setTrustStorePath context-factory truststore)
+      (instance? KeyStore truststore) (.setTrustStore context-factory ^KeyStore truststore))
     (when truststore-password
       (.setTrustStorePassword context-factory truststore-password))
     (when truststore-type
@@ -91,9 +89,10 @@
   (ServerConnector. server (context-factory opts) ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" (into-array ConnectionFactory [http-factory])))
 
 (comment
-  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.https{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                            :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
-                            :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                            :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                             :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                             :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -123,14 +122,14 @@
                             :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-config configurator]
-                   :or    {idle-timeout-ms 200000
-                           port            443}
+  [^Server server {::keys [host port name idle-timeout-ms proxy-protocol? http-config configurator]
+                   :or    {port 443}
                    :as    opts}]
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
         connector    (if proxy-protocol? (proxied-connector server http-factory opts) (standard-connector server http-factory opts))]
     (.setHost connector host)
     (.setPort connector port)
-    (.setIdleTimeout connector idle-timeout-ms)
+    (some->> name (.setName connector))
+    (some->> idle-timeout-ms (.setIdleTimeout connector))
     (when configurator (configurator connector))
     connector))

@@ -72,4 +72,4 @@
          (some->> max-frame-bytes (.setMaxFrameSize container))
          (some->> max-outgoing-frames (.setMaxOutgoingFrames container))
          (some->> auto-fragment (.setAutoFragment container))
-         (.addMapping container "/chsk" (reify-ws-creator ring-handler)))))))
+         (.addMapping container path-spec (reify-ws-creator ring-handler)))))))
