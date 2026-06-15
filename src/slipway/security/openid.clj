@@ -4,8 +4,7 @@
                                        LoginService SecurityHandler SecurityHandler$PathMapped)))
 
 (defn login-service "openid"
-  [{::keys []}]
-  )
+  [{::keys []}])
 
 (comment
   #:slipway.security{:realm               "the Jetty authentication realm"
