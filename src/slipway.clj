@@ -10,11 +10,11 @@
   (:import (org.eclipse.jetty.server Server)))
 
 (comment
-  #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
+  #:slipway.handler.compression{:enabled?           "is a compression handler enabled? default true"
                                 :path-spec          "the compression path-spec, default '/*'"
                                 :format             "compression format, defaults to :gzip"
                                 :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
-                                :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
+                                :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
 
   #:slipway.connector.https{:name                       "the name of this connector (useful for VirtualHosts configuration)"
                             :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"

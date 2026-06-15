@@ -5,11 +5,11 @@
            (org.eclipse.jetty.compression.server CompressionConfig CompressionHandler)))
 
 (comment
-  #:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
+  #:slipway.handler.compression{:enabled?           "is a compression handler enabled? default true"
                                 :path-spec          "the compression path-spec, default '/*'"
                                 :format             "compression format, defaults to :gzip"
                                 :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
-                                :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"})
+                                :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"})
 
 (defmulti format ::format)
 

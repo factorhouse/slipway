@@ -402,11 +402,11 @@ Configuration of an HTTPS server connector.
 Configuration of the compression handler. Replaces the former `:slipway.handler.gzip` namespace from Slipway 1.x.
 
 ```clojure
-#:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
+#:slipway.handler.compression{:enabled?           "is a compression handler enabled? default true"
                               :path-spec          "the compression path-spec, default '/*'"
                               :format             "compression format, defaults to :gzip"
                               :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
-                              :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
+                              :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
 ```
 
 The `:format` key dispatches via `defmulti` — extend it to add custom compression formats:
