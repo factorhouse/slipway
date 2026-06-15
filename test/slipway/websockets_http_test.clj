@@ -136,7 +136,7 @@
   (deftest full-connection-basic-auth
 
     (try
-      (server/start! [:http] :basic-auth)
+      (server/start! [:http] :hash-basic)
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
             client-id  (str (random-uuid))
@@ -415,7 +415,7 @@
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (server/start! [:http :websockets] :basic-auth)
+    (server/start! [:http :websockets] :hash-basic)
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
           client-id  (str (random-uuid))

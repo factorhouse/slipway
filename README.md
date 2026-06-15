@@ -159,7 +159,7 @@ The stateful `start!`/`stop!` functions are a convenience for integration tests 
 (test-server/start! [:http] :hash-form)
 
 ;; Start with basic authentication
-(test-server/start! [:http] :basic-auth)
+(test-server/start! [:http] :hash-basic)
 
 ;; Start with HTTP + HTTPS
 (test-server/start! [:http+https])

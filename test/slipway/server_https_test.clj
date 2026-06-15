@@ -284,7 +284,7 @@
 (deftest basic-authentication
 
   (try
-    (server/start! [:https] :basic-auth)
+    (server/start! [:https] :hash-basic)
 
     (testing "constraints"
 

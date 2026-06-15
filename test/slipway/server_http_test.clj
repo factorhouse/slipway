@@ -279,7 +279,7 @@
 (deftest basic-authentication
 
   (try
-    (server/start! [:http] :basic-auth)
+    (server/start! [:http] :hash-basic)
 
     (testing "constraints"
 

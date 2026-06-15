@@ -349,7 +349,7 @@
 (deftest basic-authentication-http
 
   (try
-    (server/start! [:http+https+forwarded] :basic-auth)
+    (server/start! [:http+https+forwarded] :hash-basic)
 
     (testing "constraints"
 
@@ -411,7 +411,7 @@
 (deftest basic-authentication-https
 
   (try
-    (server/start! [:http+https+forwarded] :basic-auth)
+    (server/start! [:http+https+forwarded] :hash-basic)
 
     (testing "constraints"
 
