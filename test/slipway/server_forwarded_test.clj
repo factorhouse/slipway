@@ -100,7 +100,7 @@
 (deftest form-authentication
 
   (try
-    (server/start! [:http+https+forwarded] :hash-auth)
+    (server/start! [:http+https+forwarded] :hash-form)
 
     (testing "constraints http"
 

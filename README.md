@@ -156,7 +156,7 @@ The stateful `start!`/`stop!` functions are a convenience for integration tests 
 (test-server/start! [:http])
 
 ;; Start with hash-based form authentication
-(test-server/start! [:http] :hash-auth)
+(test-server/start! [:http] :hash-form)
 
 ;; Start with basic authentication
 (test-server/start! [:http] :basic-auth)
@@ -255,7 +255,6 @@ Configuration of the default server handler.
 
 ```clojure
 #:slipway.handler{:context-path    "the root context path, default '/'"
-                  :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
                   :null-path-info? "true if /path is not redirected to /path/, default true"}
 ```
 
@@ -325,17 +324,18 @@ Example constraint mapping:
 Configuration of an HTTP server connector.
 
 ```clojure
-#:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or hostname. Default null (all interfaces)"
-                         :port                       "port this connector listens on. If 0 a random port is assigned, default 80"
-                         :idle-timeout-ms            "max idle time for a connection in ms, default 200000"
-                         :http-forwarded?            "if true, add the ForwardedRequestCustomizer. See Jetty Forward HTTP docs"
+#:slipway.connector.http{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                         :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                         :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+                         :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
+                         :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                          :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                          :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
                          :configurator               "a fn taking the final connector as argument, allowing further configuration"
-                         :send-server-version?       "if true, send the Server header in responses (default false)"
-                         :send-date-header?          "if true, send the Date header in responses (default false)"
-                         :relative-redirect-allowed? "if true, allow relative redirects (default false)"
-                         :http-compliance            "set the HttpCompliance mode, e.g. 'RFC2616' or 'RFC7230' (default RFC9110)"}
+                         :send-server-version?       "if true, send the Server header in responses"
+                         :send-date-header?          "if true, send the Date header in responses"
+                         :relative-redirect-allowed? "if true, allow relative redirects, default false"
+                         :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 ```
 
 ### :slipway.connector.https
@@ -343,36 +343,37 @@ Configuration of an HTTP server connector.
 Configuration of an HTTPS server connector.
 
 ```clojure
-#:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or hostname. Default null (all interfaces)"
-                          :port                       "port this connector listens on. If 0 a random port is assigned, default 443"
-                          :idle-timeout-ms            "max idle time for a connection in ms, default 200000"
-                          :http-forwarded?            "if true, add the ForwardedRequestCustomizer. See Jetty Forward HTTP docs"
+#:slipway.connector.https{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                          :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+                          :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
+                          :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
+                          :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                           :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                           :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
                           :configurator               "a fn taking the final connector as argument, allowing further configuration"
                           :keystore                   "keystore to use, either path (String) or concrete KeyStore"
-                          :keystore-type              "type of keystore, e.g. JKS or PKCS12"
+                          :keystore-type              "type of keystore, e.g. JKS"
                           :keystore-password          "password of the keystore"
                           :key-manager-password       "password for the specific key within the keystore"
                           :truststore                 "truststore to use, either path (String) or concrete KeyStore"
                           :truststore-password        "password of the truststore"
-                          :truststore-type            "type of the truststore, e.g. JKS or PKCS12"
+                          :truststore-type            "type of the truststore, eg. JKS"
                           :include-protocols          "a list of protocol name patterns to include in SSLEngine"
                           :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
-                          :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise adds them"
+                          :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
                           :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
-                          :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise adds them"
+                          :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
                           :security-provider          "the security provider name"
                           :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
                           :ssl-context                "a concrete pre-configured SslContext"
-                          :sni-required?              "if true SNI is required, else requests are rejected with 400, default false"
-                          :sni-host-check?            "if true the SNI host name must match when there is an SNI certificate, default false"
-                          :sts-max-age-s              "set the Strict-Transport-Security max age in seconds (default -1, disabled)"
-                          :sts-include-subdomains?    "true if includeSubDomains is sent with any Strict-Transport-Security header"
-                          :send-server-version?       "if true, send the Server header in responses (default false)"
-                          :send-date-header?          "if true, send the Date header in responses (default false)"
-                          :relative-redirect-allowed? "if true, allow relative redirects (default false)"
-                          :http-compliance            "set the HttpCompliance mode, e.g. 'RFC2616' or 'RFC7230' (default RFC9110)"}
+                          :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
+                          :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
+                          :sts-max-age-s              "set the Strict-Transport-Security max age in seconds, default -1"
+                          :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
+                          :send-server-version?       "if true, send the Server header in responses"
+                          :send-date-header?          "if true, send the Date header in responses"
+                          :relative-redirect-allowed? "if true, allow relative redirects, default false"
+                          :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 ```
 
 ### :slipway.handler.compression
@@ -380,21 +381,21 @@ Configuration of an HTTPS server connector.
 Configuration of the compression handler. Replaces the former `:slipway.handler.gzip` namespace from Slipway 1.x.
 
 ```clojure
-#:slipway.handler.compression{:enabled?           "is the compression handler enabled? default true"
-                               :path-spec          "the compression path-spec, default '/*'"
-                               :format             "compression format dispatch key, defaults to :gzip (GzipCompression)"
-                               :compress-min-bytes "min response size to trigger compression in bytes (default 1024)"
-                               :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
+#:slipway.handler.compression{:enabled?           "is compression handler enabled? default true"
+                              :path-spec          "the compression path-spec, default '/*'"
+                              :format             "compression format, defaults to :gzip"
+                              :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
+                              :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
 ```
 
 The `:format` key dispatches via `defmulti` — extend it to add custom compression formats:
 
 ```clojure
 (require '[slipway.handler.compression :as compression])
-(import '[org.eclipse.jetty.compression.gzip GzipCompression])
+(import '[your.org.YourCompression])
 
 (defmethod compression/format :my-format [_opts]
-  (GzipCompression.)) ; substitute your own compression implementation
+  (YourCompression.)) ; substitute your own compression implementation
 ```
 
 ## Sente Websockets

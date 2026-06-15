@@ -129,7 +129,7 @@
 (deftest form-authentication
 
   (try
-    (server/start! [:http] :hash-auth)
+    (server/start! [:http] :hash-form)
 
     (testing "constraints"
 

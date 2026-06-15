@@ -16,7 +16,8 @@
                                 :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
                                 :compression-config "a concrete Jetty CompressConfig instance (nil for default configuration)"}
 
-  #:slipway.connector.https{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.https{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                            :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                             :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
                             :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                             :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
@@ -45,9 +46,10 @@
                             :send-server-version?       "if true, send the Server header in responses"
                             :send-date-header?          "if true, send the Date header in responses"
                             :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                            :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
+                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
-  #:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.http{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                           :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
                            :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
                            :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
@@ -57,7 +59,7 @@
                            :send-server-version?       "if true, send the Server header in responses"
                            :send-date-header?          "if true, send the Date header in responses"
                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
-                           :http-compliance            "set 'RFC2616' to support reduced HttpCompliance, default is Jetty HttpCompliance/default"}
+                           :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
   #:slipway.security{:realm               "the Jetty authentication realm"
                      :hash-user-file      "the path to a Jetty Hash User File"
@@ -91,7 +93,6 @@
                        :auto-fragment            "websocket auto fragment (boolean), default true"}
 
   #:slipway.handler{:context-path    "the root context path, default '/'"
-                    :ws-path         "the path serving the websocket upgrade handler, default '/chsk'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"}
 
   #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"

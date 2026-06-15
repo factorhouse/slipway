@@ -15,7 +15,7 @@
                                          [ring/ring-anti-forgery "1.4.0"]
                                          [metosin/reitit-ring "0.10.1"]]
                         :resource-paths ["dev-resources"]
-                        :plugins        [[dev.weavejester/lein-cljfmt "0.16.3"]]}
+                        :plugins        [[dev.weavejester/lein-cljfmt "0.16.4"]]}
              :pedantic {:pedantic? :abort}}
 
   :aliases {"check"  ["with-profile" "+pedantic" "check"]

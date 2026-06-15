@@ -27,9 +27,10 @@
     config))
 
 (comment
-  #:slipway.connector.http{:host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+  #:slipway.connector.http{:name                       "the name of this connector (useful for VirtualHosts configuration)"
+                           :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
                            :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
-                           :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 200000 ms"
+                           :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
                            :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
                            :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
                            :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
@@ -40,9 +41,8 @@
                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-forwarded? configurator http-config]
-                   :or    {idle-timeout-ms 200000
-                           port            80}
+  [^Server server {::keys [name host port idle-timeout-ms proxy-protocol? http-forwarded? configurator http-config]
+                   :or    {port 80}
                    :as    opts}]
   (log/debugf (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
@@ -51,6 +51,7 @@
         connector    (ServerConnector. ^Server server ^"[Lorg.eclipse.jetty.server.ConnectionFactory;" factories)]
     (.setHost connector host)
     (.setPort connector port)
-    (.setIdleTimeout connector idle-timeout-ms)
+    (some->> name (.setName connector))
+    (some->> idle-timeout-ms (.setIdleTimeout connector))
     (when configurator (configurator connector))
     connector))

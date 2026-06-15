@@ -95,7 +95,7 @@
   (deftest full-connection-form-auth
 
     (try
-      (server/start! [:http] :hash-auth)
+      (server/start! [:http] :hash-form)
 
       (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
             client-id  (str (random-uuid))
@@ -297,7 +297,7 @@
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (server/start! [:http :websockets] :hash-auth)
+    (server/start! [:http :websockets] :hash-form)
 
     (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
           client-id  (str (random-uuid))
