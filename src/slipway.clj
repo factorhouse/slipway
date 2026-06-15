@@ -61,12 +61,19 @@
                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
-  #:slipway.security{:realm               "the Jetty authentication realm"
-                     :hash-user-file      "the path to a Jetty Hash User File"
-                     :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                     :identity-service    "a concrete Jetty IdentityService"
-                     :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                     :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+  #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
+
+  #:slipway.security.hash{:realm               "optional Jetty authentication realm"
+                          :user-file           "the path to a Jetty hash-user file"
+                          :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service    "an (optional) concrete Jetty IdentityService"}
+
+  #:slipway.security.jaas{:realm               "the Jetty authentication realm"
+                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service    "an (optional) concrete Jetty IdentityService"}
 
   #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"

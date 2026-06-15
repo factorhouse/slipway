@@ -6,7 +6,7 @@
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
             [slipway.handler.compression :as compression]
-            [slipway.security]
+            [slipway.security :as security]
             [slipway.security.hash :as hash]
             [slipway.security.hash :as jaas]
             [slipway.sente]
@@ -97,26 +97,32 @@
 
 (defmethod authentication :jaas-form
   [_]
-  #::jaas{:realm               "slipway"
-          :login-service       "jaas"
-          :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-          :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "jaas"}
+   #::jaas{:realm               "slipway"
+           :login-service       "jaas"
+           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+           :constraint-mappings app/constraints}))
 
 (defmethod authentication :hash-form
   [_]
-  #::hash{:realm               "slipway"
-          :login-service       "hash"
-          :hash-user-file      "dev-resources/jaas/hash-realm.properties"
-          :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-          :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "hash"}
+   #::hash{:realm               "slipway"
+           :login-service       "hash"
+           :user-file           "dev-resources/jaas/hash-realm.properties"
+           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+           :constraint-mappings app/constraints}))
 
 (defmethod authentication :hash-basic
   [_]
-  #::hash{:realm               "slipway"
-          :login-service       "hash"
-          :hash-user-file      "dev-resources/jaas/hash-realm.properties"
-          :authenticator       (BasicAuthenticator.)
-          :constraint-mappings app/constraints})
+  (merge
+   #::security{:handler "hash"}
+   #::hash{:realm               "slipway"
+           :login-service       "hash"
+           :user-file           "dev-resources/jaas/hash-realm.properties"
+           :authenticator       (BasicAuthenticator.)
+           :constraint-mappings app/constraints}))
 
 (defn stop!
   []

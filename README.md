@@ -299,12 +299,33 @@ Configuration of HTTP session options.
 Configuration of Jetty auth options. See [JAAS Authentication](#jaas-authentication) below for configuration guides.
 
 ```clojure
-#:slipway.security{:realm               "the Jetty authentication realm"
-                   :hash-user-file      "the path to a Jetty Hash User File"
-                   :login-service       "a Jetty LoginService identifier, 'jaas' and 'hash' supported by default"
-                   :identity-service    "a concrete Jetty IdentityService"
-                   :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                   :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint] pairs"}
+#:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
+```
+
+Three auth implementations are provided by default.
+
+#### :slipway.security.hash
+
+Configure simple authentication with Jetty's built in HashLoginService
+
+```clojure
+#:slipway.security.hash{:realm               "optional Jetty authentication realm"
+                        :user-file           "the path to a Jetty hash-user file"
+                        :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                        :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                        :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                        :identity-service    "a concrete Jetty IdentityService"}
+```
+
+#### :slipway.security.jaas
+
+Configure JAAS authentication with Jetty's built in [JAAS compatible login-modules](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html)
+
+```clojure
+#:slipway.security.jaas{:realm               "the Jetty authentication realm"
+                        :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                        :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                        :identity-service    "an (optional) concrete Jetty IdentityService"}
 ```
 
 Example constraint mapping:

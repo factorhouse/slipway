@@ -41,7 +41,7 @@
                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [name host port idle-timeout-ms proxy-protocol? http-forwarded? configurator http-config]
+  [^Server server {::keys [host port name idle-timeout-ms proxy-protocol? http-forwarded? configurator http-config]
                    :or    {port 80}
                    :as    opts}]
   (log/debugf (str "starting " (when proxy-protocol? "proxied ") "HTTP connector on %s:%s" (when http-forwarded? " with http-forwarded support")) (or host "all-interfaces") port)

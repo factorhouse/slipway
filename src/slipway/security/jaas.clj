@@ -18,7 +18,7 @@
   #:slipway.security.jaas{:realm               "the Jetty authentication realm"
                           :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
                           :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
-                          :identity-service    "a concrete Jetty IdentityService"})
+                          :identity-service    "an (optional) concrete Jetty IdentityService"})
 
 (defmethod security/handler "jaas"
   [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]

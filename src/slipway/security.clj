@@ -3,7 +3,7 @@
   (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
            (org.eclipse.jetty.server Request)))
 
-(defmulti handler ::login-service)
+(defmulti handler ::handler)
 
 (defmethod handler :default [_] nil)
 
@@ -14,4 +14,4 @@
       (p/datafy authentication-state))))
 
 (comment
-  #:slipway.security{:login-service "a Jetty LoginService identifier, 'jaas', 'hash', and 'openid' supported by default"})
+  #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"})

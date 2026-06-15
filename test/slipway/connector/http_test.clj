@@ -4,7 +4,7 @@
   (:import (org.eclipse.jetty.http HttpCompliance)
            (org.eclipse.jetty.server HttpConfiguration)))
 
-(deftest http-ompliance-mode
+(deftest http-compliance-mode
 
   (testing "default mode as documented"
 

@@ -122,7 +122,7 @@
                             :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"})
 
 (defmethod server/connector ::connector
-  [^Server server {::keys [host port idle-timeout-ms proxy-protocol? http-config configurator]
+  [^Server server {::keys [host port name idle-timeout-ms proxy-protocol? http-config configurator]
                    :or    {port 443}
                    :as    opts}]
   (let [http-factory (HttpConnectionFactory. (or http-config (default-config opts)))
