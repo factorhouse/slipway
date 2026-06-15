@@ -8,7 +8,7 @@
             [slipway.handler.compression :as compression]
             [slipway.security :as security]
             [slipway.security.hash :as hash]
-            [slipway.security.hash :as jaas]
+            [slipway.security.jaas :as jaas]
             [slipway.sente]
             [slipway.server :as server]
             [slipway.session :as session]
