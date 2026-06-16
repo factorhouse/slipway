@@ -5,7 +5,7 @@
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
-            [slipway.handler.compression :as compression]
+            [slipway.compression :as compression]
             [slipway.security :as security]
             [slipway.security.hash :as hash]
             [slipway.security.jaas :as jaas]

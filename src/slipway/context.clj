@@ -1,6 +1,6 @@
 (ns slipway.context
   (:require [clojure.tools.logging :as log]
-            [slipway.handler.compression :as compression]
+            [slipway.compression :as compression]
             [slipway.security :as security]
             [slipway.server :as server]
             [slipway.session :as session]

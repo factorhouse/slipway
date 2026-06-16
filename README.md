@@ -10,29 +10,29 @@
 * [Introduction](#introduction)
 * [Why Jetty?](#why-jetty)
 * [Why Slipway?](#why-slipway)
-  * [Requirements](#requirements)
-  * [Primary Goals](#primary-goals)
-  * [Secondary Goals](#secondary-goals)
-  * [Out of Scope](#out-of-scope)
-  * [Non-Goals](#non-goals)
+    * [Requirements](#requirements)
+    * [Primary Goals](#primary-goals)
+    * [Secondary Goals](#secondary-goals)
+    * [Out of Scope](#out-of-scope)
+    * [Non-Goals](#non-goals)
 * [Using Slipway](#using-slipway)
-  * [Quick Start](#quick-start)
-  * [Example Servers](#example-servers)
+    * [Quick Start](#quick-start)
+    * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
-  * [:slipway](#slipway)
-  * [:slipway.server](#slipwayserver)
-  * [:slipway.handler](#slipwayhandler)
-  * [:slipway.websockets](#slipwaywebsockets)
-  * [:slipway.session](#slipwaysession)
-  * [:slipway.security](#slipwaysecurity)
-  * [:slipway.connector.http](#slipwayconnectorhttp)
-  * [:slipway.connector.https](#slipwayconnectorhttps)
-  * [:slipway.handler.compression](#slipwayhandlercompression)
+    * [:slipway](#slipway)
+    * [:slipway.server](#slipwayserver)
+    * [:slipway.context](#slipwaycontext)
+    * [:slipway.websockets](#slipwaywebsockets)
+    * [:slipway.session](#slipwaysession)
+    * [:slipway.security](#slipwaysecurity)
+    * [:slipway.connector.http](#slipwayconnectorhttp)
+    * [:slipway.connector.https](#slipwayconnectorhttps)
+    * [:slipway.compression](#slipwaycompression)
 * [Sente Websockets](#sente-websockets)
 * [JAAS Authentication](#jaas-authentication)
-  * [-Djava.security.auth.login.config](#-djavasecurityauthloginconfig)
-  * [Hash Authentication](#hash-authentication)
-  * [LDAP Authentication](#ldap-authentication)
+    * [-Djava.security.auth.login.config](#-djavasecurityauthloginconfig)
+    * [Hash Authentication](#hash-authentication)
+    * [LDAP Authentication](#ldap-authentication)
 * [License](#license)
 * [Contributing](#contributing)
 
@@ -42,19 +42,25 @@
 
 # Introduction
 
-[Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our product, [Kpow for Apache Kafka®](https://factorhouse.io/kpow).
+[Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our
+product, [Kpow for Apache Kafka®](https://factorhouse.io/kpow).
 
 Slipway is a [Clojure](https://clojure.org/) companion to embedded Jetty 12.1 with WebSocket support.
 
-Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty capabilities while providing sensible defaults for basic behaviour. If in doubt, read the [Jetty docs](https://jetty.org/docs/).
+Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty
+capabilities while providing sensible defaults for basic behaviour. If in doubt, read
+the [Jetty docs](https://jetty.org/docs/).
 
-Use the [Community Edition](https://kpow.io/get-started/) of Kpow with our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
+Use the [Community Edition](https://kpow.io/get-started/) of Kpow with
+our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
 
-> **Archived versions**: Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
+> **Archived versions**: Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory
+> but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
 
 ## Why Jetty?
 
-Jetty is a mature, stable, commercially supported project with an [active, experienced](https://github.com/eclipse/jetty.project/graphs/contributors) team of core contributors.
+Jetty is a mature, stable, commercially supported project with
+an [active, experienced](https://github.com/eclipse/jetty.project/graphs/contributors) team of core contributors.
 
 Ubiquitous in the enterprise Java world, Jetty has many eyes raising issues and driving improvement.
 
@@ -117,7 +123,9 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 [io.factorhouse/slipway-jetty12 "2.0.6"]
 ```
 
-Requires Java 17+.
+## JVM Requirement
+
+Slipway (and Jetty 12.1) Requires Java 17+.
 
 ### Quick Start
 
@@ -145,9 +153,11 @@ To stop the server:
 
 ### Example Servers
 
-The [`test/slipway/test_server.clj`](test/slipway/test_server.clj) namespace contains a range of example server configurations for use in development and testing.
+The [`test/slipway/test_server.clj`](test/slipway/test_server.clj) namespace contains a range of example server
+configurations for use in development and testing.
 
-The stateful `start!`/`stop!` functions are a convenience for integration tests and local development, not canonical Slipway usage.
+The stateful `start!`/`stop!` functions are a convenience for integration tests and local development, not canonical
+Slipway usage.
 
 ```clojure
 (require '[slipway.test-server :as test-server])
@@ -167,7 +177,8 @@ The stateful `start!`/`stop!` functions are a convenience for integration tests 
 
 Your sample application is available on [http://localhost:3000](http://localhost:3000).
 
-For hash auth, login with `jetty/jetty`, `admin/admin`, `plain/plain`, `other/other`, or `user/password` as defined in [hash-realm.properties](dev-resources/jaas/hash-realm.properties).
+For hash auth, login with `jetty/jetty`, `admin/admin`, `plain/plain`, `other/other`, or `user/password` as defined
+in [hash-realm.properties](dev-resources/jaas/hash-realm.properties).
 
 After login, the default home page presents useful links for user info and error pages.
 
@@ -181,7 +192,8 @@ Jetty is sophisticated as it addresses a complex domain with flexibility and con
 
 Slipway holds close to Jetty idioms for configuration rather than presenting a simplified DSL.
 
-Slipway takes a single map of namespaced configuration. Namespaces correspond to Jetty domain models and can be considered as separate maps then merged.
+Slipway takes a single map of namespaced configuration. Namespaces correspond to Jetty domain models and can be
+considered as separate maps then merged.
 
 ### :slipway
 
@@ -196,7 +208,7 @@ The top-level namespace determines whether Slipway joins the Jetty thread pool.
 Configuration of core server options.
 
 ```clojure
-#:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
+#:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.context)"
                  :connectors    "the connectors supported by this server"
                  :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                  :scheduler     "the scheduler used by this server (nil for default behaviour)"
@@ -206,9 +218,11 @@ Configuration of core server options.
 
 #### :slipway.server/handler
 
-Slipway provides a default server-handler implementation via a `defmethod` dispatch in [`src/slipway/handler.clj`](src/slipway/handler.clj).
+Slipway provides a default server-handler implementation via a `defmethod` dispatch in [
+`src/slipway/handler.clj`](src/slipway/handler.clj).
 
-Use a custom server-handler by implementing a new `server/handler` defmethod and providing its dispatch key as `::server/handler`.
+Use a custom server-handler by implementing a new `server/handler` defmethod and providing its dispatch key as
+`::server/handler`.
 
 #### :slipway.server/connectors
 
@@ -235,7 +249,8 @@ Slipway accepts a list of server connectors, allowing multi-connector setups, e.
 
 #### :slipway.server/error-handler
 
-Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with ring/application-level errors handled within your application).
+Provide a concrete `org.eclipse.jetty.server.handler.ErrorHandler` to manage Jetty-level errors (not to be confused with
+ring/application-level errors handled within your application).
 
 Slipway provides a utility for creating custom error handlers in [`src/slipway/error.clj`](src/slipway/error.clj):
 
@@ -249,13 +264,16 @@ Slipway provides a utility for creating custom error handlers in [`src/slipway/e
 (def my-error-handler (error/handler body-fn))
 ```
 
-### :slipway.handler
+### :slipway.context
 
-Configuration of the default server handler.
+Configuration of the default server context-handler.
 
 ```clojure
-#:slipway.handler{:context-path    "the root context path, default '/'"
-                  :null-path-info? "true if /path is not redirected to /path/, default true"}
+#:slipway.context{:ring-handler    "the ring-handler descendant of this context-handler"
+                  :context-path    "the root context path, default '/'"
+                  :null-path-info? "true if /path is not redirected to /path/, default true"
+                  :virtual-hosts   "a list of ^String virtual hosts for the context"
+                  :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"}
 ```
 
 ### :slipway.websockets
@@ -319,7 +337,8 @@ Configure simple authentication with Jetty's built in HashLoginService
 
 #### :slipway.security.jaas
 
-Configure JAAS authentication with Jetty's built in [JAAS compatible login-modules](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html)
+Configure JAAS authentication with Jetty's built
+in [JAAS compatible login-modules](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html)
 
 ```clojure
 #:slipway.security.jaas{:realm               "the Jetty authentication realm"
@@ -397,22 +416,22 @@ Configuration of an HTTPS server connector.
                           :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 ```
 
-### :slipway.handler.compression
+### :slipway.compression
 
-Configuration of the compression handler. Replaces the former `:slipway.handler.gzip` namespace from Slipway 1.x.
+Configuration of the compression handler.
 
 ```clojure
-#:slipway.handler.compression{:enabled?           "is a compression handler enabled? default true"
-                              :path-spec          "the compression path-spec, default '/*'"
-                              :format             "compression format, defaults to :gzip"
-                              :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
-                              :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
+#:slipway.compression{:enabled?           "is a compression handler enabled? default true"
+                      :path-spec          "the compression path-spec, default '/*'"
+                      :format             "compression format, defaults to :gzip"
+                      :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
+                      :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
 ```
 
 The `:format` key dispatches via `defmulti` — extend it to add custom compression formats:
 
 ```clojure
-(require '[slipway.handler.compression :as compression])
+(require '[slipway.compression :as compression])
 (import '[your.org.YourCompression])
 
 (defmethod compression/format :my-format [_opts]
@@ -453,11 +472,13 @@ JAAS implements a Java version of the standard Pluggable Authentication Module (
 JAAS can be used for two purposes:
 
 * for authentication of users, to reliably and securely determine who is currently executing Java code
-* for authorization of users to ensure they have the access control rights (permissions) required to do the actions performed.
+* for authorization of users to ensure they have the access control rights (permissions) required to do the actions
+  performed.
 
 For more information visit the [Jetty documentation](https://jetty.org/docs/jetty/12/operations-guide/jaas/index.html).
 
-Various configurations of Slipway with JAAS auth can be found in the [`test_server.clj`](test/slipway/test_server.clj) namespace.
+Various configurations of Slipway with JAAS auth can be found in the [`test_server.clj`](test/slipway/test_server.clj)
+namespace.
 
 #### -Djava.security.auth.login.config
 
@@ -465,7 +486,8 @@ Start your application (JAR or REPL session) with the additional JVM option:
 
 `-Djava.security.auth.login.config=/some/path/to/jaas.config`
 
-For example configurations refer to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService).
+For example configurations refer
+to [this tutorial](https://wiki.eclipse.org/Jetty/Tutorial/JAAS#Configuring_a_JAASLoginService).
 
 #### Hash Authentication
 
@@ -526,9 +548,11 @@ my-realm {
 
 ## Contributing
 
-We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional contributions.
+We are very welcoming of any bug tickets and/or minor fixes, but we do not currently welcome larger functional
+contributions.
 
-Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's capabilities.
+Slipway is at the heart of our commercial software and as such we take a conservative approach to modelling Jetty's
+capabilities.
 
 ## License
 

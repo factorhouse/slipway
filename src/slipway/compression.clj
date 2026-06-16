@@ -1,11 +1,11 @@
-(ns slipway.handler.compression
+(ns slipway.compression
   (:refer-clojure :exclude [format])
   (:require [clojure.tools.logging :as log])
   (:import (org.eclipse.jetty.compression.gzip GzipCompression)
            (org.eclipse.jetty.compression.server CompressionConfig CompressionHandler)))
 
 (comment
-  #:slipway.handler.compression{:enabled?           "is a compression handler enabled? default true"
+  #:slipway.compression{:enabled?           "is a compression handler enabled? default true"
                                 :path-spec          "the compression path-spec, default '/*'"
                                 :format             "compression format, defaults to :gzip"
                                 :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
