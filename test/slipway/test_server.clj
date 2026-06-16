@@ -137,6 +137,7 @@
    (start! keys nil))
   ([keys auth]
    (stop!)
-   (reset! state (slipway/start (app/handler)
-                                (merge (reduce (fn [ret k] (merge ret (get options k))) {} keys)
-                                       (authentication auth))))))
+   (reset! state (slipway/start
+                  (merge {:slipway.context/ring-handler (app/handler)}
+                         (reduce (fn [ret k] (merge ret (get options k))) {} keys)
+                         (authentication auth))))))

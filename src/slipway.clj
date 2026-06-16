@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [slipway.connector.http]
             [slipway.connector.https]
-            [slipway.handler]
+            [slipway.context]
             [slipway.security]
             [slipway.server :as server]
             [slipway.user]
@@ -63,7 +63,7 @@
 
   #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
 
-  #:slipway.security.hash{:realm               "optional Jetty authentication realm"
+  #:slipway.security.hash{:realm               "an (optional) Jetty authentication realm"
                           :user-file           "the path to a Jetty hash-user file"
                           :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
                           :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
@@ -99,10 +99,13 @@
                        :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
                        :auto-fragment            "websocket auto fragment (boolean), default true"}
 
-  #:slipway.handler{:context-path    "the root context path, default '/'"
-                    :null-path-info? "true if /path is not redirected to /path/, default true"}
+  #:slipway.context{:ring-handler    "the ring-handler descendant of this context-handler"
+                    :context-path    "the root context path, default '/'"
+                    :null-path-info? "true if /path is not redirected to /path/, default true"
+                    :virtual-hosts   "a list of ^String virtual hosts for the context"
+                    :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"}
 
-  #:slipway.server{:handler       "the base Jetty handler implementation (:default defmethod impl found in slipway.handler)"
+  #:slipway.server{:handler       "the handler impl dispatch-val (:default defmethod found in slipway.context)"
                    :connectors    "the connectors supported by this server"
                    :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                    :scheduler     "the scheduler used by this server (nil for default behaviour)"
@@ -112,9 +115,9 @@
   #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 
 (defn start ^Server
-  [ring-handler {::keys [join?] :as opts}]
+  [{::keys [join?] :as opts}]
   (log/debugf "starting jetty server %s" opts)
-  (let [server (server/create-server ring-handler opts)]
+  (let [server (server/create-server opts)]
     (.start server)
     (when join?
       (log/debug "joining jetty thread")
