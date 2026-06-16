@@ -45,5 +45,5 @@
   [^Server server {::keys [handlers]
                    :as    opts}]
   (if handlers
-    (ContextHandlerCollection. (map handler handlers))
+    (ContextHandlerCollection. (map (partial handler server) handlers))
     (handler server opts)))
