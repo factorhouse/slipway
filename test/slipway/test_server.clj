@@ -97,32 +97,29 @@
 
 (defmethod authentication :jaas-form
   [_]
-  (merge
-   #::security{:handler "jaas"}
-   #::jaas{:realm               "slipway"
-           :login-service       "jaas"
-           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-           :constraint-mappings app/constraints}))
+  {::security/handler         "jaas"
+   ::jaas/realm               "slipway"
+   ::jaas/login-service       "jaas"
+   ::jaas/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+   ::jaas/constraint-mappings app/constraints})
 
 (defmethod authentication :hash-form
   [_]
-  (merge
-   #::security{:handler "hash"}
-   #::hash{:realm               "slipway"
-           :login-service       "hash"
-           :user-file           "dev-resources/jaas/hash-realm.properties"
-           :authenticator       (FormAuthenticator. "/login" "/login-retry" false)
-           :constraint-mappings app/constraints}))
+  {::security/handler         "hash"
+   ::hash/realm               "slipway"
+   ::hash/login-service       "hash"
+   ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+   ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+   ::hash/constraint-mappings app/constraints})
 
 (defmethod authentication :hash-basic
   [_]
-  (merge
-   #::security{:handler "hash"}
-   #::hash{:realm               "slipway"
-           :login-service       "hash"
-           :user-file           "dev-resources/jaas/hash-realm.properties"
-           :authenticator       (BasicAuthenticator.)
-           :constraint-mappings app/constraints}))
+  {::security/handler         "hash"
+   ::hash/realm               "slipway"
+   ::hash/login-service       "hash"
+   ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+   ::hash/authenticator       (BasicAuthenticator.)
+   ::hash/constraint-mappings app/constraints})
 
 (defn stop!
   []
