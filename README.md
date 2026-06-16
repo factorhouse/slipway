@@ -8,6 +8,7 @@
 ## Slipway by [Factor House](https://factorhouse.io)
 
 * [Introduction](#introduction)
+    * [Archived Versions](#archived-versions)
 * [Why Jetty?](#why-jetty)
 * [Why Slipway?](#why-slipway)
     * [Requirements](#requirements)
@@ -16,6 +17,7 @@
     * [Out of Scope](#out-of-scope)
     * [Non-Goals](#non-goals)
 * [Using Slipway](#using-slipway)
+    * [JVM Version Support](#jvm-version-support)
     * [Quick Start](#quick-start)
     * [Example Servers](#example-servers)
 * [Configuring Slipway](#configuring-slipway)
@@ -54,8 +56,10 @@ the [Jetty docs](https://jetty.org/docs/).
 Use the [Community Edition](https://kpow.io/get-started/) of Kpow with
 our [local-repo](https://github.com/factorhouse/kpow-local) to see Slipway in action.
 
-> **Archived versions**: Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory
-> but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
+### Archived Versions
+
+Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory
+but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
 
 ## Why Jetty?
 
@@ -123,7 +127,7 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 [io.factorhouse/slipway-jetty12 "2.0.6"]
 ```
 
-## JVM Requirement
+### JVM Version Support
 
 Slipway (and Jetty 12.1) Requires Java 17+.
 
@@ -353,10 +357,10 @@ Example constraint mapping:
 (import '[org.eclipse.jetty.security Constraint])
 
 (def constraints
-  [["/up"    Constraint/ALLOWED]
+  [["/up" Constraint/ALLOWED]
    ["/css/*" Constraint/ALLOWED]
    ["/img/*" Constraint/ALLOWED]
-   ["/*"     Constraint/ANY_USER]])
+   ["/*" Constraint/ANY_USER]])
 ```
 
 ### :slipway.connector.http
