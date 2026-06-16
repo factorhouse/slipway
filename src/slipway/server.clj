@@ -18,7 +18,6 @@
 
 (defn create-server ^Server
   [ring-handler {::keys [connectors thread-pool scheduler buffer-pool error-handler] :as opts}]
-  {:pre [connectors]}
   (log/debugf "creating server %s" opts)
   (let [server (Server. ^ThreadPool thread-pool ^Scheduler scheduler ^ByteBufferPool buffer-pool)]
     (.setConnectors server (into-array Connector (map #(connector server %) connectors)))
