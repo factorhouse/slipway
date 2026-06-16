@@ -103,6 +103,7 @@
                     :context-path    "the root context path, default '/'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"
                     :virtual-hosts   "a list of ^String virtual hosts for the context"
+                    :error-handler   "the error-handler used by this context-handler for context level errors"
                     :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"}
 
   #:slipway.server{:handler       "the handler impl dispatch-val (:default defmethod found in slipway.context)"

@@ -11,7 +11,7 @@
            (slipway.handler SyncHandler)))
 
 (defn handler
-  [^Server server {::keys [ring-handler context-path null-path-info? virtual-hosts]
+  [^Server server {::keys [ring-handler context-path null-path-info? virtual-hosts error-handler]
                    :or    {context-path "/"}
                    :as    opts}]
   (log/debugf "creating context-handler, context-path %s, null-path-info? %s" context-path null-path-info?)
@@ -19,6 +19,7 @@
                           (.setContextPath ctx context-path)
                           (.setAllowNullPathInContext ctx (not (false? null-path-info?)))
                           (some->> virtual-hosts (.setVirtualHosts ctx))
+                          (some->> error-handler (.setErrorHandler ctx))
                           ctx)
         app-handler     (if-let [ws-handler (websockets/handler server context-handler ring-handler opts)]
                           (doto ws-handler (.setHandler (SyncHandler. ring-handler (::websockets/path-spec opts))))
@@ -39,6 +40,7 @@
                     :context-path    "the root context path, default '/'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"
                     :virtual-hosts   "a list of ^String virtual hosts for the context"
+                    :error-handler   "the error-handler used by this context-handler for context level errors"
                     :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"})
 
 (defmethod server/handler :default
