@@ -8,7 +8,7 @@
   (:import (org.eclipse.jetty.security SecurityHandler)
            (org.eclipse.jetty.server Handler Server)
            (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
-           (slipway.handler SyncHandler)))
+           (slipway SyncHandler)))
 
 (defn handler
   [^Server server {::keys [ring-handler context-path null-path-info? virtual-hosts error-handler]

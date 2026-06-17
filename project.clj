@@ -23,7 +23,7 @@
             "fmt"    ["with-profile" "+pedantic" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
-  :aot [slipway.handler.sync-handler]
+  :aot [slipway.sync-handler]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]

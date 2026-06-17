@@ -1,4 +1,4 @@
-(ns slipway.handler.sync-handler
+(ns slipway.sync-handler
   (:require [clojure.tools.logging :as log]
             [slipway.request :as request]
             [slipway.response :as response])
@@ -6,9 +6,9 @@
            (org.eclipse.jetty.http.pathmap PathSpec)
            (org.eclipse.jetty.server Request Response)
            (org.eclipse.jetty.util Callback)
-           (slipway.handler SyncHandler))
+           (slipway SyncHandler))
   (:gen-class
-   :name slipway.handler.SyncHandler
+   :name slipway.SyncHandler
    :extends org.eclipse.jetty.server.Handler$Abstract
    :state state
    :init init
