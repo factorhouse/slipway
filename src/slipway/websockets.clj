@@ -40,8 +40,13 @@
             (do (response/update-response request response handshake)
                 (.succeeded cb)))))))
 
+(defn path-spec
+  [{::keys [enabled? path-spec]
+    :or    {path-spec "/chsk"}}]
+  (when enabled? path-spec))
+
 (comment
-  #:slipway.websockets{:enabled?                 "are websockets enabled? default true"
+  #:slipway.websockets{:enabled?                 "are websockets enabled? default false"
                        :path-spec                "the websocket path-spec, default '/chsk'"
                        :idle-timeout-ms          "max websocket idle time, default 300000"
                        :input-buffer-bytes       "max websocket input buffer size"
@@ -58,7 +63,7 @@
                  max-binary-message-bytes max-frame-bytes max-outgoing-frames auto-fragment]
          :or    {path-spec       "/chsk"
                  idle-timeout-ms 300000}} opts]
-    (when (not (false? enabled?))
+    (when enabled?
       (log/debugf "configuring websockets at %s with %s" path-spec opts)
       (WebSocketUpgradeHandler/from
        server

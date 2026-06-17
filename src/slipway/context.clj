@@ -10,29 +10,60 @@
            (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
            (slipway SyncHandler)))
 
-(defn handler
-  [^Server server {::keys [ring-handler context-path null-path-info? virtual-hosts error-handler]
-                   :or    {context-path "/"}
-                   :as    opts}]
+(defn app-handler
+  [ring-handler opts]
+  (SyncHandler. ring-handler (websockets/path-spec opts)))
+
+(defn wrap-websockets
+  [handler context-handler server ring-handler opts]
+  (if-let [ws-handler (websockets/handler server context-handler ring-handler opts)]
+    (doto ws-handler (.setHandler handler))
+    handler))
+
+(defn wrap-auth
+  [handler opts]
+  (if-let [^SecurityHandler security-handler (security/handler opts)]
+    (let [session-handler (session/handler opts)]
+      (.setHandler security-handler ^Handler app-handler)
+      (.setHandler session-handler security-handler)
+      session-handler)
+    handler))
+
+(defn wrap-compression
+  [handler opts]
+  (if-let [compression-handler (compression/handler opts)]
+    (doto compression-handler (.setHandler handler))
+    handler))
+
+(defn base-handler
+  [{::keys [context-path null-path-info? virtual-hosts error-handler]
+    :or    {context-path "/"}}]
   (log/debugf "creating context-handler, context-path %s, null-path-info? %s" context-path null-path-info?)
-  (let [context-handler (let [ctx (ContextHandler.)]
-                          (.setContextPath ctx context-path)
-                          (.setAllowNullPathInContext ctx (not (false? null-path-info?)))
-                          (some->> virtual-hosts (.setVirtualHosts ctx))
-                          (some->> error-handler (.setErrorHandler ctx))
-                          ctx)
-        app-handler     (if-let [ws-handler (websockets/handler server context-handler ring-handler opts)]
-                          (doto ws-handler (.setHandler (SyncHandler. ring-handler (::websockets/path-spec opts))))
-                          (SyncHandler. ring-handler nil))
-        auth-handler    (when-let [^SecurityHandler security-handler (security/handler opts)]
-                          (let [session-handler (session/handler opts)]
-                            (.setHandler security-handler ^Handler app-handler)
-                            (.setHandler session-handler security-handler)
-                            session-handler))
-        handler         (if-let [compression-handler (compression/handler opts)]
-                          (doto compression-handler (.setHandler (or auth-handler app-handler)))
-                          (or auth-handler app-handler))]
-    (.setHandler context-handler ^Handler handler)
+  (let [context-handler (ContextHandler.)]
+    (.setContextPath context-handler context-path)
+    (.setAllowNullPathInContext context-handler (not (false? null-path-info?)))
+    (some->> virtual-hosts (.setVirtualHosts context-handler))
+    (some->> error-handler (.setErrorHandler context-handler))
+    context-handler))
+
+(defn handler
+  "Request routing is handled in the following order:
+     -> Request
+     -> ContextHandler
+     -> CompressionHandler (optional)
+     -> SessionHandler (optional)
+     -> SecurityHandler (optional)
+     -> WebsocketHandler (optional)
+     -> SyncHandler
+     -> ring-handler"
+  [^Server server {::keys [ring-handler]
+                   :as    opts}]
+  (let [context-handler     (base-handler opts)
+        application-handler (-> (app-handler ring-handler opts)
+                                (wrap-websockets context-handler server ring-handler opts)
+                                (wrap-auth opts)
+                                (wrap-compression opts))]
+    (.setHandler context-handler ^Handler application-handler)
     context-handler))
 
 (comment
@@ -44,8 +75,7 @@
                     :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"})
 
 (defmethod server/handler :default
-  [^Server server {::keys [handlers]
-                   :as    opts}]
+  [^Server server {::keys [handlers] :as opts}]
   (if handlers
     (ContextHandlerCollection. (map (partial handler server) handlers))
     (handler server opts)))

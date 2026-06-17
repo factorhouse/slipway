@@ -285,7 +285,7 @@ Configuration of the default server context-handler.
 Configuration of WebSocket options.
 
 ```clojure
-#:slipway.websockets{:enabled?                 "are websockets enabled? default true"
+#:slipway.websockets{:enabled?                 "are websockets enabled? default false"
                      :path-spec                "the websocket path-spec, default '/chsk'"
                      :idle-timeout-ms          "max websocket idle time in ms, default 300000"
                      :input-buffer-bytes       "max websocket input buffer size in bytes"

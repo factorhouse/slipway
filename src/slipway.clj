@@ -88,7 +88,7 @@
 
   #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"}
 
-  #:slipway.websockets{:enabled?                 "are websockets enabled? default true"
+  #:slipway.websockets{:enabled?                 "are websockets enabled? default false"
                        :path-spec                "the websocket path-spec, default '/chsk'"
                        :idle-timeout-ms          "max websocket idle time, default 300000"
                        :input-buffer-bytes       "max websocket input buffer size"
