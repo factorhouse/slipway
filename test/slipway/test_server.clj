@@ -2,10 +2,10 @@
   "This ns contains helper functions for stopping/starting test servers.
    Feel free to add any further configuration in the same style."
   (:require [slipway :as slipway]
+            [slipway.compression :as compression]
             [slipway.connector.http :as http]
             [slipway.connector.https :as https]
             [slipway.example.app :as app]
-            [slipway.compression :as compression]
             [slipway.security :as security]
             [slipway.security.hash :as hash]
             [slipway.security.jaas :as jaas]
@@ -47,7 +47,8 @@
   {:http                 #::server{:connectors    [http-connector]
                                    :error-handler app/server-error-handler}
 
-   :websockets           #::websockets{:path-spec "/chsk"}
+   :websockets           #::websockets{:enabled?  true
+                                       :path-spec "/chsk"}
 
    :https                #::server{:connectors    [https-connector]
                                    :error-handler app/server-error-handler}
