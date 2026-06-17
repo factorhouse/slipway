@@ -56,8 +56,7 @@
      -> WebsocketHandler (optional)
      -> SyncHandler
      -> ring-handler"
-  [^Server server {::keys [ring-handler]
-                   :as    opts}]
+  [^Server server {::keys [ring-handler] :as opts}]
   (let [context-handler     (base-handler opts)
         application-handler (-> (app-handler ring-handler opts)
                                 (wrap-websockets context-handler server ring-handler opts)
