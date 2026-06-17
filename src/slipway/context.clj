@@ -24,7 +24,7 @@
   [handler opts]
   (if-let [^SecurityHandler security-handler (security/handler opts)]
     (let [session-handler (session/handler opts)]
-      (.setHandler security-handler ^Handler app-handler)
+      (.setHandler security-handler ^Handler handler)
       (.setHandler session-handler security-handler)
       session-handler)
     handler))
