@@ -62,7 +62,6 @@
                                ::compression/enabled? nil}
                :error-handler app/server-error-handler})
 
-
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
             :reason-phrase         "OK"
