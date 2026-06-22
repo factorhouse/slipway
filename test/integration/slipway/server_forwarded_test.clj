@@ -174,7 +174,6 @@
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
-                               ::hash/login-service       "hash"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
                                ::hash/constraint-mappings app/constraints}
@@ -443,7 +442,6 @@
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
-                               ::hash/login-service       "hash"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (BasicAuthenticator.)
                                ::hash/constraint-mappings app/constraints}
@@ -523,7 +521,6 @@
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
-                               ::hash/login-service       "hash"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (BasicAuthenticator.)
                                ::hash/constraint-mappings app/constraints}

@@ -34,6 +34,7 @@
                           :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
                           :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
                           :identity-service    "an (optional) concrete Jetty IdentityService"})
+
 (defmethod security/handler "hash"
   [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]
   (log/debugf "creating security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))

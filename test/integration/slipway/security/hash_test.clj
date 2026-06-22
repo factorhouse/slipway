@@ -1,6 +1,5 @@
-(ns slipway.server-http-test
+(ns slipway.security.hash-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.compression :as compression]
             [slipway.connector.http :as http]
             [slipway.context :as context]
             [slipway.example.app :as app]
@@ -16,140 +15,7 @@
 
 (def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
-(deftest simple-http
-
-  (try
-    (test-server/start!
-     #::server{:connector     {::http/port 3000}
-               :handler       {::context/ring-handler (app/handler)}
-               :error-handler app/server-error-handler})
-
-    ;; gzip/deflate accept-encodings are the default
-    ;; jetty 12 defaults to chunked encoding for compressed payloads
-    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-            :status                200
-            :reason-phrase         "OK"
-            :orig-content-encoding "gzip"
-            :headers               {"Connection"   "close"
-                                    "Content-Type" "text/html"
-                                    "Vary"         "Accept-Encoding"}
-            :body                  (html/user-page {})}
-           (-> (client/do-get "http://localhost:3000/user" {})
-               (select-keys of-interest))))
-
-    ;; we can turn off accept-encodign of gzip/deflate and see the
-    ;; non-compressed response, for some reason this flag also renders
-    ;; headers in lower-case - this is a clj-http thing and nothing to be concerned about
-    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-            :status           200
-            :reason-phrase    "OK"
-            :headers          {"connection"     "close"
-                               "content-length" "2961"      ;; this is the uncompressed bytes-size of content
-                               "content-type"   "text/html"
-                               "vary"           "Accept-Encoding"}
-            :body             (html/user-page {})}
-           (-> (client/do-get "http://localhost:3000/user" {:decompress-body false})
-               (select-keys of-interest))))
-
-    (finally (test-server/stop!))))
-
-(deftest compression
-
-  (try
-    (test-server/start!
-     #::server{:connector     {::http/port 3000}
-               :handler       {::context/ring-handler (app/handler)
-                               ::compression/enabled? nil}
-               :error-handler app/server-error-handler})
-
-    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-            :status                200
-            :reason-phrase         "OK"
-            :orig-content-encoding "gzip"
-            :headers               {"Connection"   "close"
-                                    "Content-Type" "text/html"
-                                    "Vary"         "Accept-Encoding"}
-            :body                  (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
-               (select-keys of-interest))))
-
-    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-            :status           200
-            :reason-phrase    "OK"
-            :headers          {"connection"     "close"
-                               "content-length" "2479"
-                               "content-type"   "text/html"
-                               "vary"           "Accept-Encoding"}
-            :body             (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
-               (select-keys of-interest))))
-
-    (finally (test-server/stop!)))
-
-  (try
-    (test-server/start!
-     #::server{:connector     {::http/port 3000}
-               :handler       {::context/ring-handler (app/handler)
-                               ::compression/enabled? true}
-               :error-handler app/server-error-handler})
-
-    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-            :status                200
-            :reason-phrase         "OK"
-            :orig-content-encoding "gzip"
-            :headers               {"Connection"   "close"
-                                    "Content-Type" "text/html"
-                                    "Vary"         "Accept-Encoding"}
-            :body                  (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
-               (select-keys of-interest))))
-
-    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-            :status           200
-            :reason-phrase    "OK"
-            :headers          {"connection"     "close"
-                               "content-length" "2479"
-                               "content-type"   "text/html"
-                               "vary"           "Accept-Encoding"}
-            :body             (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
-               (select-keys of-interest))))
-
-    (finally (test-server/stop!)))
-
-  (try
-    (test-server/start!
-     #::server{:connector     {::http/port 3000}
-               :handler       {::context/ring-handler (app/handler)
-                               ::compression/enabled? false}
-               :error-handler app/server-error-handler})
-
-    (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-            :status                200
-            :reason-phrase         "OK"
-            :orig-content-encoding nil
-            :headers               {"Connection"     "close"
-                                    "Content-Length" "2479"
-                                    "Content-Type"   "text/html"}
-            :body                  (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login")
-               (select-keys of-interest))))
-
-    ;; these tests prove the lower-casing of headers is entirely within clj-http and switches
-    ;; on :decompress-body (oddly enough) as they're both effectively the same except for that param
-    (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
-            :status           200
-            :reason-phrase    "OK"
-            :headers          {"connection"     "close"
-                               "content-length" "2479"
-                               "content-type"   "text/html"}
-            :body             (html/login-page false)}
-           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
-               (select-keys of-interest))))
-
-    (finally (test-server/stop!))))
-
-(deftest form-authentication
+(deftest in-memory-hash-form-authentication
 
   (try
     (test-server/start!
@@ -157,7 +23,11 @@
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
-                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/users               [["admin" "admin" ["server-administrator"
+                                                                             "content-administrator"
+                                                                             "admin"
+                                                                             "user"]]
+                                                           ["user" "password" ["user"]]]
                                ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
                                ::hash/constraint-mappings app/constraints}
                :error-handler app/server-error-handler})
@@ -307,7 +177,7 @@
 
     (finally (test-server/stop!))))
 
-(deftest basic-authentication
+(deftest in-memory-hash-basic-authentication
 
   (try
     (test-server/start!
@@ -315,7 +185,11 @@
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
-                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/users               [["admin" "admin" ["server-administrator"
+                                                                             "content-administrator"
+                                                                             "admin"
+                                                                             "user"]]
+                                                           ["user" "password" ["user"]]]
                                ::hash/authenticator       (BasicAuthenticator.)
                                ::hash/constraint-mappings app/constraints}
                :error-handler app/server-error-handler})
