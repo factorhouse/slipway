@@ -7,7 +7,7 @@
             [slipway.websockets :as websockets])
   (:import (org.eclipse.jetty.security SecurityHandler)
            (org.eclipse.jetty.server Handler Server)
-           (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
+           (org.eclipse.jetty.server.handler ContextHandler)
            (slipway SyncHandler)))
 
 (defn app-handler
