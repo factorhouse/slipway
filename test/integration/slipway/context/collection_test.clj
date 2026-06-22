@@ -1,5 +1,5 @@
 (ns slipway.context.collection-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [slipway.connector.http :as http]
             [slipway.context :as context]
             [slipway.example.app :as app]
