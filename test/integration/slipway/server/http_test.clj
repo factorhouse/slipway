@@ -1,7 +1,7 @@
-(ns slipway.server-https-test
+(ns slipway.server.http-test
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.compression :as compression]
-            [slipway.connector.https :as https]
+            [slipway.connector.http :as http]
             [slipway.context :as context]
             [slipway.example.app :as app]
             [slipway.example.html :as html]
@@ -11,23 +11,17 @@
             [slipway.test-client :as client]
             [slipway.test-server :as test-server])
   (:import (java.net ConnectException)
-           (org.apache.http ProtocolException)
+           (javax.net.ssl SSLException)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
-(deftest simple-https
+(deftest simple-http
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
-               :handler       #::context{:ring-handler (app/handler)}
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)}
                :error-handler app/server-error-handler})
 
     ;; gzip/deflate accept-encodings are the default
@@ -40,7 +34,7 @@
                                     "Content-Type" "text/html"
                                     "Vary"         "Accept-Encoding"}
             :body                  (html/user-page {})}
-           (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
+           (-> (client/do-get "http://localhost:3000/user" {})
                (select-keys of-interest))))
 
     ;; we can turn off accept-encodign of gzip/deflate and see the
@@ -54,11 +48,8 @@
                                "content-type"   "text/html"
                                "vary"           "Accept-Encoding"}
             :body             (html/user-page {})}
-           (-> (client/do-get "https://localhost:3443/user" {:insecure?       true
-                                                             :decompress-body false})
+           (-> (client/do-get "http://localhost:3000/user" {:decompress-body false})
                (select-keys of-interest))))
-
-    (is (thrown? Exception (client/do-get "http://localhost:3443/" {})))
 
     (finally (test-server/stop!))))
 
@@ -66,13 +57,7 @@
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
+     #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler (app/handler)
                                ::compression/enabled? nil}
                :error-handler app/server-error-handler})
@@ -85,7 +70,7 @@
                                     "Content-Type" "text/html"
                                     "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+           (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
     (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
@@ -96,21 +81,14 @@
                                "content-type"   "text/html"
                                "vary"           "Accept-Encoding"}
             :body             (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
-                                                                 :insecure?       true})
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
     (finally (test-server/stop!)))
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
+     #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler (app/handler)
                                ::compression/enabled? true}
                :error-handler app/server-error-handler})
@@ -123,7 +101,7 @@
                                     "Content-Type" "text/html"
                                     "Vary"         "Accept-Encoding"}
             :body                  (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+           (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
     (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
@@ -134,21 +112,14 @@
                                "content-type"   "text/html"
                                "vary"           "Accept-Encoding"}
             :body             (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
-                                                                 :insecure?       true})
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
     (finally (test-server/stop!)))
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
+     #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler (app/handler)
                                ::compression/enabled? false}
                :error-handler app/server-error-handler})
@@ -161,9 +132,11 @@
                                     "Content-Length" "2479"
                                     "Content-Type"   "text/html"}
             :body                  (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+           (-> (client/do-get "http" "localhost" 3000 "/login")
                (select-keys of-interest))))
 
+    ;; these tests prove the lower-casing of headers is entirely within clj-http and switches
+    ;; on :decompress-body (oddly enough) as they're both effectively the same except for that param
     (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
             :status           200
             :reason-phrase    "OK"
@@ -171,8 +144,7 @@
                                "content-length" "2479"
                                "content-type"   "text/html"}
             :body             (html/login-page false)}
-           (-> (client/do-get "https" "localhost" 3443 "/login" {:decompress-body false
-                                                                 :insecure?       true})
+           (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
     (finally (test-server/stop!))))
@@ -181,13 +153,7 @@
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
+     #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
@@ -199,8 +165,8 @@
     (testing "constraints"
 
       ;; wrong port / scheme
-      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 "" {:insecure? true}))))
-      (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
+      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
+      (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -211,8 +177,9 @@
                                       "Content-Length" "0"
                                       "Content-Type"   "text/plain"
                                       "Vary"           "Accept-Encoding"}
+
               :body                  ""}
-             (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
+             (-> (client/do-get "http" "localhost" 3000 "/up")
                  (select-keys of-interest))))
 
       ;; requires authentication
@@ -220,21 +187,20 @@
               :status                302
               :reason-phrase         "Found"
               :orig-content-encoding nil
+              :body                  ""
               :headers               {"Connection"     "close"
                                       "Content-Length" "0"
                                       "Expires"        "Thu, 01 Jan 1970 00:00:00 GMT"
-                                      "Location"       "https://localhost:3443/login"
-                                      "Vary"           "Accept-Encoding"}
-              :body                  ""}
-             (-> (client/do-get "https" "localhost" 3443 "" {:insecure? true})
+                                      "Location"       "http://localhost:3000/login"
+                                      "Vary"           "Accept-Encoding"}}
+             (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
-      (is (= 302 (:status (client/do-get "https" "localhost" 3443 "/" {:insecure? true}))))
-      (is (= 302 (:status (client/do-get "https" "localhost" 3443 "/user" {:insecure? true}))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/"))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/user"))))
 
       ;; auth redirect goes to expected login page
-      (is (= "https://localhost:3443/login" (get-in (client/do-get "https" "localhost" 3443 "" {:insecure? true})
-                                                    [:headers "Location"])))
+      (is (= "http://localhost:3000/login" (get-in (client/do-get "http" "localhost" 3000 "") [:headers "Location"])))
 
       ;; login / login-retry don't redirect
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
@@ -245,13 +211,13 @@
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
               :body                  (html/login-page false)}
-             (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
+             (-> (client/do-get "http" "localhost" 3000 "/login")
                  (select-keys of-interest))))
 
-      (is (= 200 (:status (client/do-get "https" "localhost" 3443 "/login-retry" {:insecure? true}))))
+      (is (= 200 (:status (client/do-get "http" "localhost" 3000 "/login-retry"))))
 
       ;; jetty nukes session and redirects to /login regardless
-      (is (= 302 (:status (client/do-get "https" "localhost" 3443 "/logout" {:insecure? true})))))
+      (is (= 302 (:status (client/do-get "http" "localhost" 3000 "/logout")))))
 
     (testing "login"
 
@@ -263,7 +229,7 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}}
-             (-> (client/do-login "https" "localhost" 3443 "" "admin" "admin" {:insecure? true})
+             (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                  :ring
                  (select-keys of-interest)
                  (dissoc :body))))                          ;; can't compare home html due to csrf token
@@ -276,12 +242,12 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}}
-             (-> (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
+             (-> (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
                  :ring
                  (select-keys of-interest)
                  (dissoc :body)))))
 
-    (testing "incorrect-password"
+    (testing "wrong-credentials"
 
       (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
               :status                200
@@ -291,27 +257,27 @@
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
               :body                  (html/login-page true)}
-             (-> (client/do-login "https" "localhost" 3443 "/user" "admin" "wrong" {:insecure? true})
+             (-> (client/do-login "http" "localhost" 3000 "/user" "admin" "wrong")
                  :ring
                  (select-keys of-interest)))))
 
     (testing "post-login-redirect"
 
-      (is (= "https://localhost:3443/"
-             (client/do-get-login-redirect "https" "localhost" 3443 "" "admin" "admin" {:insecure? true})))
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "" "admin" "admin")))
 
-      (is (= "https://localhost:3443/"
-             (client/do-get-login-redirect "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})))
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/" "admin" "admin")))
 
-      (is (= "https://localhost:3443/user"
-             (client/do-get-login-redirect "https" "localhost" 3443 "/user" "admin" "admin" {:insecure? true}))))
+      (is (= "http://localhost:3000/user"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/user" "admin" "admin"))))
 
     (testing "post-login-redirect-null-request-context"
 
       ;; if we start our session on the login page we have no post-login request context we fallback
       ;; to the default context, this tests a default context is in place in the handler chain
-      (is (= "https://localhost:3443/"
-             (client/do-get-login-redirect "https" "localhost" 3443 "/login" "admin" "admin" {:insecure? true}))))
+      (is (= "http://localhost:3000/"
+             (client/do-get-login-redirect "http" "localhost" 3000 "/login" "admin" "admin"))))
 
     (testing "session-continuation"
 
@@ -323,9 +289,9 @@
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
-             (let [session (-> (client/do-login "https" "localhost" 3443 "" "user" "password" {:insecure? true})
-                               (merge {:insecure? true}))]
-               (-> (client/do-get "https" "localhost" 3443 "/user" session)
+             (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
+                               (select-keys [:cookies]))]
+               (-> (client/do-get "http" "localhost" 3000 "/user" session)
                    (select-keys of-interest))))))
 
     (testing "logout"
@@ -333,11 +299,10 @@
       (is (= {:protocol-version {:name "HTTP" :major 1 :minor 1}
               :reason-phrase    "Found"
               :status           302}
-             (let [session (-> (client/do-login "https" "localhost" 3443 "" "admin" "admin" {:insecure? true})
-                               (select-keys [:cookies])
-                               (merge {:insecure? true}))]
-               (client/do-get "https" "localhost" 3443 "/logout" session)
-               (-> (client/do-get "https" "localhost" 3443 "/" session)
+             (let [session (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
+                               (select-keys [:cookies]))]
+               (client/do-get "http" "localhost" 3000 "/logout" session)
+               (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
     (finally (test-server/stop!))))
@@ -346,13 +311,7 @@
 
   (try
     (test-server/start!
-     #::server{:connector     #::https{:port                3443
-                                       :keystore            "dev-resources/my-keystore.jks"
-                                       :keystore-type       "PKCS12"
-                                       :keystore-password   "password"
-                                       :truststore          "dev-resources/my-truststore.jks"
-                                       :truststore-password "password"
-                                       :truststore-type     "PKCS12"}
+     #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler     (app/handler)
                                ::security/handler         "hash"
                                ::hash/realm               "slipway"
@@ -364,20 +323,20 @@
     (testing "constraints"
 
       ;; wrong port / scheme
-      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 "" {:insecure? true}))))
-      (is (thrown? ProtocolException (client/do-get "http" "localhost" 3443 "" {:insecure? true})))
+      (is (thrown? ConnectException (:status (client/do-get "http" "localhost" 2999 ""))))
+      (is (thrown? SSLException (:status (client/do-get "https" "localhost" 3000 ""))))
 
       ;; does not require authentication
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding nil
+              :body                  ""
               :headers               {"Connection"     "close"
                                       "Content-Length" "0"
                                       "Content-Type"   "text/plain"
-                                      "Vary"           "Accept-Encoding"}
-              :body                  ""}
-             (-> (client/do-get "https" "localhost" 3443 "/up" {:insecure? true})
+                                      "Vary"           "Accept-Encoding"}}
+             (-> (client/do-get "http" "localhost" 3000 "/up")
                  (select-keys of-interest))))
 
       ;; requires authentication
@@ -392,11 +351,11 @@
                                       "Vary"             "Accept-Encoding"
                                       "WWW-Authenticate" "Basic realm=\"slipway\""}
               :body                  (html/error-page 401 "Server Error" "Unauthorized")}
-             (-> (client/do-get "https" "localhost" 3443 "" {:insecure? true})
+             (-> (client/do-get "http" "localhost" 3000 "")
                  (select-keys of-interest))))
 
-      (is (= 401 (:status (client/do-get "https" "localhost" 3443 "/" {:insecure? true}))))
-      (is (= 401 (:status (client/do-get "https" "localhost" 3443 "/user" {:insecure? true})))))
+      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/"))))
+      (is (= 401 (:status (client/do-get "http" "localhost" 3000 "/user")))))
 
     (testing "credentials provided"
 
@@ -407,7 +366,7 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}}
-             (-> (client/do-get "https" "admin:admin@localhost" 3443 "" {:insecure? true})
+             (-> (client/do-get "http" "admin:admin@localhost" 3000 "")
                  (select-keys of-interest)
                  (dissoc :body))))
 
@@ -419,10 +378,10 @@
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
               :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
-             (-> (client/do-get "https" "user:password@localhost" 3443 "/user" {:insecure? true})
+             (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (testing "incorrect password"
+    (testing "incorrect-password"
 
       (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
               :status                401
@@ -435,133 +394,7 @@
                                       "Content-Type"     "text/html;charset=iso-8859-1"
                                       "Vary"             "Accept-Encoding"
                                       "WWW-Authenticate" "Basic realm=\"slipway\""}}
-             (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
+             (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
     (finally (test-server/stop!))))
-
-(deftest strict-transport-security
-
-  (testing "no hsts configuration"
-
-    (try
-      (test-server/start!
-       #::server{:connector     #::https{:port                3443
-                                         :keystore            "dev-resources/my-keystore.jks"
-                                         :keystore-type       "PKCS12"
-                                         :keystore-password   "password"
-                                         :truststore          "dev-resources/my-truststore.jks"
-                                         :truststore-password "password"
-                                         :truststore-type     "PKCS12"}
-                 :handler       #::context{:ring-handler (app/handler)}
-                 :error-handler app/server-error-handler})
-
-      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
-                           (select-keys (conj of-interest :headers)))
-            sts-header (get-in result [:headers "Strict-Transport-Security"])
-            result     (dissoc result :headers)]
-
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"
-                :body                  (html/user-page {})}
-               result))
-
-        (is (= nil sts-header)))
-
-      (finally (test-server/stop!))))
-
-  (testing "sts-max-age and subdomains"
-
-    (try
-      (test-server/start!
-       #::server{:connector     #::https{:port                    3443
-                                         :keystore                "dev-resources/my-keystore.jks"
-                                         :keystore-type           "PKCS12"
-                                         :keystore-password       "password"
-                                         :truststore              "dev-resources/my-truststore.jks"
-                                         :truststore-password     "password"
-                                         :truststore-type         "PKCS12"
-                                         :sts-max-age-s           31536000
-                                         :sts-include-subdomains? true}
-                 :handler       #::context{:ring-handler (app/handler)}
-                 :error-handler app/server-error-handler})
-
-      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
-                           (select-keys (conj of-interest :headers)))
-            sts-header (get-in result [:headers "Strict-Transport-Security"])
-            result     (dissoc result :headers)]
-
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"
-                :body                  (html/user-page {})}
-               result))
-
-        (is (= "max-age=31536000; includeSubDomains" sts-header)))
-
-      (finally (test-server/stop!))))
-
-  (testing "sts-max-age without subdomains"
-
-    (try
-      (test-server/start!
-       #::server{:connector     #::https{:port                3443
-                                         :keystore            "dev-resources/my-keystore.jks"
-                                         :keystore-type       "PKCS12"
-                                         :keystore-password   "password"
-                                         :truststore          "dev-resources/my-truststore.jks"
-                                         :truststore-password "password"
-                                         :truststore-type     "PKCS12"
-                                         :sts-max-age-s       31536000}
-                 :handler       #::context{:ring-handler (app/handler)}
-                 :error-handler app/server-error-handler})
-
-      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
-                           (select-keys (conj of-interest :headers)))
-            sts-header (get-in result [:headers "Strict-Transport-Security"])
-            result     (dissoc result :headers)]
-
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"
-                :body                  (html/user-page {})}
-               result))
-
-        (is (= "max-age=31536000" sts-header)))
-
-      (finally (test-server/stop!))))
-
-  (testing "hsts no max age (incorrect configuration, no header included)"
-
-    (try
-      (test-server/start!
-       #::server{:connector     #::https{:port                    3443
-                                         :keystore                "dev-resources/my-keystore.jks"
-                                         :keystore-type           "PKCS12"
-                                         :keystore-password       "password"
-                                         :truststore              "dev-resources/my-truststore.jks"
-                                         :truststore-password     "password"
-                                         :truststore-type         "PKCS12"
-                                         :sts-include-subdomains? true}
-                 :handler       #::context{:ring-handler (app/handler)}
-                 :error-handler app/server-error-handler})
-
-      (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
-                           (select-keys (conj of-interest :headers)))
-            sts-header (get-in result [:headers "Strict-Transport-Security"])
-            result     (dissoc result :headers)]
-
-        (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
-                :status                200
-                :reason-phrase         "OK"
-                :orig-content-encoding "gzip"
-                :body                  (html/user-page {})}
-               result))
-
-        (is (= nil sts-header)))
-
-      (finally (test-server/stop!)))))

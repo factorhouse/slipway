@@ -4,15 +4,14 @@
            (org.eclipse.jetty.server Connector Handler Server)
            (org.eclipse.jetty.util.thread Scheduler ThreadPool)))
 
-(defmulti handler (fn [_server opts] (::handler-impl opts)))
+(defmulti handler (fn [_server opts] (::handler-type opts)))
 
 (defmulti connector (fn [_server opts] (keyword (namespace (first (keys opts))) "connector")))
 
 (comment
-  #:slipway.server{:handler-impl  "the handler impl dispatch-val (:default defmethod found in slipway.context)"
-                   :handler       "the handler for this server"
-                   :connector     "the connector supported by this server"
+  #:slipway.server{:connector     "the connector supported by this server"
                    :connectors    "the connectors supported by this server (when many connectors supported)"
+                   :handler       "the handler for this server, dispatches on :slipway.server/handler-type, :default is slipway.context/handler"
                    :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                    :scheduler     "the scheduler used by this server (nil for default behaviour)"
                    :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"

@@ -1,4 +1,4 @@
-(ns slipway.websockets-https-test
+(ns slipway.server.ws-https-test
   (:require [clj-http.conn-mgr :as conn]
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
@@ -341,6 +341,7 @@
                                                           "Upgrade"    "Websocket"
                                                           "Origin"     "http://attacker.site"}})
                      :status)))
+
       ;; wrong scheme origin header
       (is (= 400 (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies            cookies
@@ -471,6 +472,7 @@
                                                           "Upgrade"    "Websocket"
                                                           "Origin"     "http://attacker.site"}})
                      :status)))
+
       ;; wrong scheme origin header
       (is (= 400 (-> (format "https://localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies            cookies
@@ -644,6 +646,7 @@
                                                           "Upgrade"    "Websocket"
                                                           "Origin"     "http://attacker.site"}})
                      :status)))
+
       ;; wrong scheme origin header
       (is (= 400 (-> (format "https://admin:admin@localhost:3443/chsk?client-id=%s&csrf-token=%s" client-id csrf-token)
                      (client/do-get {:cookies            cookies

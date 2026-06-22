@@ -99,16 +99,16 @@
                        :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
                        :auto-fragment            "websocket auto fragment (boolean), default true"}
 
-  #:slipway.context{:ring-handler    "the ring-handler descendant of this context-handler"
-                    :context-path    "the root context path, default '/'"
+  #:slipway.context{:path            "the context path, default '/'"
+                    :ring-handler    "the ring-handler descendant of this context-handler"
                     :null-path-info? "true if /path is not redirected to /path/, default true"
                     :virtual-hosts   "a list of ^String virtual hosts for the context"
-                    :error-handler   "the error-handler used by this context-handler for context level errors"}
+                    :error-handler   "the error-handler used by this context-handler for context level errors"
+                    :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 
-  #:slipway.server{:handler-impl  "the handler impl dispatch-val (:default defmethod found in slipway.context)"
-                   :handler       "the handler for this server"
-                   :connector     "the connector supported by this server"
+  #:slipway.server{:connector     "the connector supported by this server"
                    :connectors    "the connectors supported by this server (when many connectors supported)"
+                   :handler       "the handler for this server, dispatches on :slipway.server/handler-type, :default is slipway.context/handler"
                    :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                    :scheduler     "the scheduler used by this server (nil for default behaviour)"
                    :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"

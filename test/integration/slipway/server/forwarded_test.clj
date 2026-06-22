@@ -1,4 +1,4 @@
-(ns slipway.server-forwarded-test
+(ns slipway.server.forwarded-test
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.compression :as compression]
             [slipway.connector.http :as http]

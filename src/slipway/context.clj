@@ -7,7 +7,7 @@
             [slipway.websockets :as websockets])
   (:import (org.eclipse.jetty.security SecurityHandler)
            (org.eclipse.jetty.server Handler Server)
-           (org.eclipse.jetty.server.handler ContextHandler)
+           (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
            (slipway SyncHandler)))
 
 (defn app-handler
@@ -36,11 +36,11 @@
     handler))
 
 (defn base-handler
-  [{::keys [context-path null-path-info? virtual-hosts error-handler]
-    :or    {context-path "/"}}]
-  (log/debugf "creating context-handler, context-path %s, null-path-info? %s" context-path null-path-info?)
+  [{::keys [path null-path-info? virtual-hosts error-handler]
+    :or    {path "/"}}]
+  (log/debugf "creating context-handler, path %s, null-path-info? %s" path null-path-info?)
   (let [context-handler (ContextHandler.)]
-    (.setContextPath context-handler context-path)
+    (.setContextPath context-handler path)
     (.setAllowNullPathInContext context-handler (not (false? null-path-info?)))
     (some->> virtual-hosts (.setVirtualHosts context-handler))
     (some->> error-handler (.setErrorHandler context-handler))
@@ -66,12 +66,18 @@
     context-handler))
 
 (comment
-  #:slipway.context{:ring-handler    "the ring-handler descendant of this context-handler"
-                    :context-path    "the root context path, default '/'"
+  #:slipway.context{:path            "the context path, default '/'"
+                    :ring-handler    "the ring-handler descendant of this context-handler"
                     :null-path-info? "true if /path is not redirected to /path/, default true"
                     :virtual-hosts   "a list of ^String virtual hosts for the context"
-                    :error-handler   "the error-handler used by this context-handler for context level errors"})
+                    :error-handler   "the error-handler used by this context-handler for context level errors"
+                    :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"})
 
 (defmethod server/handler :default
   [^Server server opts]
   (handler server opts))
+
+(defmethod server/handler ::handler-collection
+  [^Server server opts]
+  (log/debugf "creating context-handler collection with [%s] handlers" (count opts))
+  (ContextHandlerCollection. (into-array ContextHandler (map (partial handler server) (::handlers opts)))))
