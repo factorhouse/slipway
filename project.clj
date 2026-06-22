@@ -19,7 +19,7 @@
              :pedantic {:pedantic? :abort}}
 
   :aliases {"check"  ["with-profile" "+pedantic" "check"]
-            "kondo"  ["with-profile" "+pedantic" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
+            "kondo"  ["with-profile" "+pedantic" "run" "-m" "clj-kondo.main" "--lint" "src:test/integration:test/unit" "--parallel"]
             "fmt"    ["with-profile" "+pedantic" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
