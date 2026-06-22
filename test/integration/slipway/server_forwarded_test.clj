@@ -1,18 +1,39 @@
 (ns slipway.server-forwarded-test
   (:require [clojure.test :refer [deftest is testing]]
-            [slipway.test-client :as client]
+            [slipway.compression :as compression]
+            [slipway.connector.http :as http]
+            [slipway.connector.https :as https]
+            [slipway.context :as context]
+            [slipway.example.app :as app]
             [slipway.example.html :as html]
-            [slipway.test-server :as server])
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.server :as server]
+            [slipway.test-client :as client]
+            [slipway.test-server :as test-server])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
-           (org.apache.http ProtocolException)))
+           (org.apache.http ProtocolException)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def of-interest [:protocol-version :status :reason-phrase :body :orig-content-encoding])
 
 (deftest simple
 
   (try
-    (server/start! [:http+https+forwarded])
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler (app/handler)}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -30,12 +51,25 @@
            (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest compression
 
   (try
-    (server/start! [:http+https+forwarded :compression-nil])
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? nil}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -53,10 +87,23 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:http+https+forwarded :compression-true])
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? true}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -74,10 +121,23 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:http+https+forwarded :compression-false])
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? false}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -95,12 +155,30 @@
            (-> (client/do-get "https" "localhost" 3443 "/login" {:insecure? true})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (server/start! [:http+https+forwarded] :hash-form)
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints http"
 
@@ -134,7 +212,8 @@
                                                    [:headers "Location"])))
 
       ;; NOTE: this is the test that ForwardedRequestCustomizer is configured and working as expected.
-      ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
+      ;; https://jetty.org/docs/jetty/12.1/operations-guide/protocols/index.html#proxy-forwarded
+      ;; Remove {:http-forwarded? true} on the http connector to see this test fail
       (is (= "https://localhost:3000/login" (get-in (client/do-get
                                                      "http://localhost:3000/"
                                                      {:headers {"Forwarded" "for=2.36.72.144:21216;proto=https"}})
@@ -186,7 +265,8 @@
                                                     [:headers "Location"])))
 
       ;; NOTE: this is the test that ForwardedRequestCustomizer is configured and working as expected.
-      ;; https://www.eclipse.org/jetty/documentation/jetty-10/operations-guide/index.html#og-protocols-proxy-forwarded
+      ;; https://jetty.org/docs/jetty/12.1/operations-guide/protocols/index.html#proxy-forwarded
+      ;; Remove {:http-forwarded? true} on the https connector to see this test fail
       (is (= "http://localhost:3443/login" (get-in (client/do-get
                                                     "https://localhost:3443/"
                                                     {:headers   {"Forwarded" "for=2.36.72.144:21216;proto=http"}
@@ -344,12 +424,30 @@
                (-> (client/do-get "https" "localhost" 3443 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest basic-authentication-http
 
   (try
-    (server/start! [:http+https+forwarded] :hash-basic)
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -406,12 +504,30 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest basic-authentication-https
 
   (try
-    (server/start! [:http+https+forwarded] :hash-basic)
+    (test-server/start!
+     #::server{:connectors    [#::http{:port            3000
+                                       :http-forwarded? true}
+                               #::https{:port                3443
+                                        :keystore            "dev-resources/my-keystore.jks"
+                                        :keystore-type       "PKCS12"
+                                        :keystore-password   "password"
+                                        :truststore          "dev-resources/my-truststore.jks"
+                                        :truststore-password "password"
+                                        :truststore-type     "PKCS12"
+                                        :http-forwarded?     true}]
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -468,4 +584,4 @@
              (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))

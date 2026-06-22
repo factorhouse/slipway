@@ -1,17 +1,34 @@
 (ns slipway.server-https-test
   (:require [clojure.test :refer [deftest is testing]]
+            [slipway.compression :as compression]
+            [slipway.connector.https :as https]
+            [slipway.context :as context]
+            [slipway.example.app :as app]
             [slipway.example.html :as html]
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as server])
+            [slipway.test-server :as test-server])
   (:import (java.net ConnectException)
-           (org.apache.http ProtocolException)))
+           (org.apache.http ProtocolException)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
 (deftest simple-https
 
   (try
-    (server/start! [:https])
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       #::context{:ring-handler (app/handler)}
+               :error-handler app/server-error-handler})
 
     ;; gzip/deflate accept-encodings are the default
     ;; jetty 12 defaults to chunked encoding for compressed payloads
@@ -43,12 +60,22 @@
 
     (is (thrown? Exception (client/do-get "http://localhost:3443/" {})))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest compression
 
   (try
-    (server/start! [:https :compression-nil])
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? nil}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -73,10 +100,20 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:https :compression-true])
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? true}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -101,10 +138,20 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:https :compression-false])
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? false}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -128,12 +175,27 @@
                                                                  :insecure?       true})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (server/start! [:https] :hash-form)
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -279,12 +341,27 @@
                (-> (client/do-get "https" "localhost" 3443 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (server/start! [:https] :hash-basic)
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -363,14 +440,23 @@
              (-> (client/do-get "https" "user:wrong@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest strict-transport-security
 
   (testing "no hsts configuration"
 
     (try
-      (server/start! [:https])
+      (test-server/start!
+       #::server{:connector     #::https{:port                3443
+                                         :keystore            "dev-resources/my-keystore.jks"
+                                         :keystore-type       "PKCS12"
+                                         :keystore-password   "password"
+                                         :truststore          "dev-resources/my-truststore.jks"
+                                         :truststore-password "password"
+                                         :truststore-type     "PKCS12"}
+                 :handler       #::context{:ring-handler (app/handler)}
+                 :error-handler app/server-error-handler})
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -386,12 +472,23 @@
 
         (is (= nil sts-header)))
 
-      (finally (server/stop!))))
+      (finally (test-server/stop!))))
 
   (testing "sts-max-age and subdomains"
 
     (try
-      (server/start! [:hsts])
+      (test-server/start!
+       #::server{:connector     #::https{:port                    3443
+                                         :keystore                "dev-resources/my-keystore.jks"
+                                         :keystore-type           "PKCS12"
+                                         :keystore-password       "password"
+                                         :truststore              "dev-resources/my-truststore.jks"
+                                         :truststore-password     "password"
+                                         :truststore-type         "PKCS12"
+                                         :sts-max-age-s           31536000
+                                         :sts-include-subdomains? true}
+                 :handler       #::context{:ring-handler (app/handler)}
+                 :error-handler app/server-error-handler})
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -407,12 +504,22 @@
 
         (is (= "max-age=31536000; includeSubDomains" sts-header)))
 
-      (finally (server/stop!))))
+      (finally (test-server/stop!))))
 
   (testing "sts-max-age without subdomains"
 
     (try
-      (server/start! [:hsts-no-subdomains])
+      (test-server/start!
+       #::server{:connector     #::https{:port                3443
+                                         :keystore            "dev-resources/my-keystore.jks"
+                                         :keystore-type       "PKCS12"
+                                         :keystore-password   "password"
+                                         :truststore          "dev-resources/my-truststore.jks"
+                                         :truststore-password "password"
+                                         :truststore-type     "PKCS12"
+                                         :sts-max-age-s       31536000}
+                 :handler       #::context{:ring-handler (app/handler)}
+                 :error-handler app/server-error-handler})
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -428,12 +535,22 @@
 
         (is (= "max-age=31536000" sts-header)))
 
-      (finally (server/stop!))))
+      (finally (test-server/stop!))))
 
   (testing "hsts no max age (incorrect configuration, no header included)"
 
     (try
-      (server/start! [:hsts-no-max-age])
+      (test-server/start!
+       #::server{:connector     #::https{:port                    3443
+                                         :keystore                "dev-resources/my-keystore.jks"
+                                         :keystore-type           "PKCS12"
+                                         :keystore-password       "password"
+                                         :truststore              "dev-resources/my-truststore.jks"
+                                         :truststore-password     "password"
+                                         :truststore-type         "PKCS12"
+                                         :sts-include-subdomains? true}
+                 :handler       #::context{:ring-handler (app/handler)}
+                 :error-handler app/server-error-handler})
 
       (let [result     (-> (client/do-get "https://localhost:3443/user" {:insecure? true})
                            (select-keys (conj of-interest :headers)))
@@ -449,4 +566,4 @@
 
         (is (= nil sts-header)))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))

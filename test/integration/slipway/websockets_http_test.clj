@@ -1,10 +1,18 @@
 (ns slipway.websockets-http-test
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
+            [slipway.connector.http :as http]
+            [slipway.context :as context]
+            [slipway.example.app :as app]
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as server])
+            [slipway.test-server :as test-server]
+            [slipway.websockets :as websockets])
   (:import (java.security SecureRandom)
-           (java.util Base64)))
+           (java.util Base64)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 ;; use this output to run a server and validate via curl (see commented sexp below)
 (defn print-ws-upgrade-curl
@@ -40,7 +48,11 @@
   (deftest full-connection-no-auth
 
     (try
-      (server/start! [:http])
+      (test-server/start!
+       #::server{:connector     {::http/port 3000}
+                 :handler       {::context/ring-handler (app/handler)
+                                 ::websockets/enabled?  true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "localhost" 3000)
             client-id  (str (random-uuid))
@@ -86,7 +98,7 @@
                                             "sec-websocket-version" "13"
                                             "sec-websocket-key"     sec-ws-key}})))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (comment
 
@@ -95,7 +107,17 @@
   (deftest full-connection-form-auth
 
     (try
-      (server/start! [:http] :hash-form)
+      (test-server/start!
+       #::server{:connector     {::http/port 3000}
+                 :handler       {::context/ring-handler     (app/handler)
+                                 ::security/handler         "hash"
+                                 ::hash/realm               "slipway"
+                                 ::hash/login-service       "hash"
+                                 ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                                 ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                                 ::hash/constraint-mappings app/constraints
+                                 ::websockets/enabled?      true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
             client-id  (str (random-uuid))
@@ -129,14 +151,24 @@
                                         "sec-websocket-version" "13"
                                         "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (comment
 
   (deftest full-connection-basic-auth
 
     (try
-      (server/start! [:http] :hash-basic)
+      (test-server/start!
+       #::server{:connector     {::http/port 3000}
+                 :handler       {::context/ring-handler     (app/handler)
+                                 ::security/handler         "hash"
+                                 ::hash/realm               "slipway"
+                                 ::hash/login-service       "hash"
+                                 ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                                 ::hash/authenticator       (BasicAuthenticator.)
+                                 ::hash/constraint-mappings app/constraints
+                                 ::websockets/enabled?      true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
             client-id  (str (random-uuid))
@@ -171,12 +203,16 @@
                           "sec-websocket-version" "13"
                           "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (server/start! [:http :websockets])
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)
+                               ::websockets/enabled?  true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "localhost" 3000)
           client-id  (str (random-uuid))
@@ -292,12 +328,22 @@
                                                "sec-websocket-key"     sec-ws-key}})
                      :status))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (server/start! [:http :websockets] :hash-form)
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                               ::hash/constraint-mappings app/constraints
+                               ::websockets/enabled?      true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-login "http" "localhost" 3000 "/" "admin" "admin")
           client-id  (str (random-uuid))
@@ -410,12 +456,22 @@
                                                                                      bytes)))}})
                        :status)))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (server/start! [:http :websockets] :hash-basic)
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints
+                               ::websockets/enabled?      true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "http" "admin:admin@localhost" 3000)
           client-id  (str (random-uuid))
@@ -529,4 +585,4 @@
                                                                                    bytes)))}})
                      :status))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))

@@ -2,10 +2,18 @@
   (:require [clj-http.conn-mgr :as conn]
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
+            [slipway.connector.https :as-alias https]
+            [slipway.context :as-alias context]
+            [slipway.example.app :as app]
+            [slipway.security :as-alias security]
+            [slipway.security.hash :as-alias hash]
+            [slipway.server :as-alias server]
             [slipway.test-client :as client]
-            [slipway.test-server :as server])
+            [slipway.test-server :as test-server]
+            [slipway.websockets :as-alias websockets])
   (:import (java.security SecureRandom)
-           (java.util Base64)))
+           (java.util Base64)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 ;; use this output to run a server and validate via curl (see commented sexp below)
 (defn print-ws-upgrade-curl
@@ -41,7 +49,17 @@
   (deftest full-connection-with-no-auth
 
     (try
-      (server/start! [:https :websockets])
+      (test-server/start!
+       #::server{:connector     #::https{:port                3443
+                                         :keystore            "dev-resources/my-keystore.jks"
+                                         :keystore-type       "PKCS12"
+                                         :keystore-password   "password"
+                                         :truststore          "dev-resources/my-truststore.jks"
+                                         :truststore-password "password"
+                                         :truststore-type     "PKCS12"}
+                 :handler       {::context/ring-handler (app/handler)
+                                 ::websockets/enabled?  true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -92,7 +110,7 @@
                                                        "sec-websocket-version" "13"
                                                        "sec-websocket-key"     sec-ws-key}})))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (comment
 
@@ -101,7 +119,23 @@
   (deftest full-connection-with-form-auth
 
     (try
-      (server/start! [:https :websockets] :hash-form)
+      (test-server/start!
+       #::server{:connector     #::https{:port                3443
+                                         :keystore            "dev-resources/my-keystore.jks"
+                                         :keystore-type       "PKCS12"
+                                         :keystore-password   "password"
+                                         :truststore          "dev-resources/my-truststore.jks"
+                                         :truststore-password "password"
+                                         :truststore-type     "PKCS12"}
+                 :handler       {::context/ring-handler     (app/handler)
+                                 ::security/handler         "hash"
+                                 ::hash/realm               "slipway"
+                                 ::hash/login-service       "hash"
+                                 ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                                 ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                                 ::hash/constraint-mappings app/constraints
+                                 ::websockets/enabled?      true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
             client-id  (str (random-uuid))
@@ -138,7 +172,7 @@
                                                    "sec-websocket-version" "13"
                                                    "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (comment
 
@@ -147,7 +181,23 @@
   (deftest full-connection-with-basic-auth
 
     (try
-      (server/start! [:https :websockets] :hash-basic)
+      (test-server/start!
+       #::server{:connector     #::https{:port                3443
+                                         :keystore            "dev-resources/my-keystore.jks"
+                                         :keystore-type       "PKCS12"
+                                         :keystore-password   "password"
+                                         :truststore          "dev-resources/my-truststore.jks"
+                                         :truststore-password "password"
+                                         :truststore-type     "PKCS12"}
+                 :handler       {::context/ring-handler     (app/handler)
+                                 ::security/handler         "hash"
+                                 ::hash/realm               "slipway"
+                                 ::hash/login-service       "hash"
+                                 ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                                 ::hash/authenticator       (BasicAuthenticator.)
+                                 ::hash/constraint-mappings app/constraints
+                                 ::websockets/enabled?      true}
+                 :error-handler app/server-error-handler})
 
       (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
             client-id  (str (random-uuid))
@@ -186,12 +236,22 @@
                                      "sec-websocket-version" "13"
                                      "sec-websocket-key"     sec-ws-key}}))))
 
-      (finally (server/stop!)))))
+      (finally (test-server/stop!)))))
 
 (deftest ws-connection-upgrade-with-no-auth
 
   (try
-    (server/start! [:https :websockets])
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler (app/handler)
+                               ::websockets/enabled?  true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))
@@ -301,12 +361,28 @@
                                                           "Origin"     "https://localhost:2999"}})
                      :status))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest ws-connection-upgrade-with-form-auth
 
   (try
-    (server/start! [:https :websockets] :hash-form)
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                               ::hash/constraint-mappings app/constraints
+                               ::websockets/enabled?      true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-login "https" "localhost" 3443 "/" "admin" "admin" {:insecure? true})
           client-id  (str (random-uuid))
@@ -432,12 +508,28 @@
                                                                                      bytes)))}})
                      :status))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest ws-connection-upgrade-with-basic-auth
 
   (try
-    (server/start! [:https :websockets] :hash-basic)
+    (test-server/start!
+     #::server{:connector     #::https{:port                3443
+                                       :keystore            "dev-resources/my-keystore.jks"
+                                       :keystore-type       "PKCS12"
+                                       :keystore-password   "password"
+                                       :truststore          "dev-resources/my-truststore.jks"
+                                       :truststore-password "password"
+                                       :truststore-type     "PKCS12"}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints
+                               ::websockets/enabled?      true}
+               :error-handler app/server-error-handler})
 
     (let [{:keys [csrf-token cookies]} (client/do-get-csrf "https" "admin:admin@localhost" 3443 {:insecure? true})
           client-id  (str (random-uuid))
@@ -590,4 +682,4 @@
                                                                                      bytes)))}})
                      :status))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))

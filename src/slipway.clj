@@ -103,15 +103,16 @@
                     :context-path    "the root context path, default '/'"
                     :null-path-info? "true if /path is not redirected to /path/, default true"
                     :virtual-hosts   "a list of ^String virtual hosts for the context"
-                    :error-handler   "the error-handler used by this context-handler for context level errors"
-                    :handlers        "an (optional) sequence of [#:slipway.context] for a ContextHandlerCollection"}
+                    :error-handler   "the error-handler used by this context-handler for context level errors"}
 
-  #:slipway.server{:handler       "the handler impl dispatch-val (:default defmethod found in slipway.context)"
-                   :connectors    "the connectors supported by this server"
+  #:slipway.server{:handler-impl  "the handler impl dispatch-val (:default defmethod found in slipway.context)"
+                   :handler       "the handler for this server"
+                   :connector     "the connector supported by this server"
+                   :connectors    "the connectors supported by this server (when many connectors supported)"
                    :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                    :scheduler     "the scheduler used by this server (nil for default behaviour)"
                    :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
-                   :error-handler "the error-handler used by this server for Jetty level errors"}
+                   :error-handler "the error-handler used by this server for Jetty level errors (nil for default behaviour)"}
 
   #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 

@@ -1,17 +1,28 @@
 (ns slipway.server-http-test
   (:require [clojure.test :refer [deftest is testing]]
+            [slipway.compression :as compression]
+            [slipway.connector.http :as http]
+            [slipway.context :as context]
+            [slipway.example.app :as app]
             [slipway.example.html :as html]
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as server])
+            [slipway.test-server :as test-server])
   (:import (java.net ConnectException)
-           (javax.net.ssl SSLException)))
+           (javax.net.ssl SSLException)
+           (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
 
 (def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
 (deftest simple-http
 
   (try
-    (server/start! [:http])
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)}
+               :error-handler app/server-error-handler})
 
     ;; gzip/deflate accept-encodings are the default
     ;; jetty 12 defaults to chunked encoding for compressed payloads
@@ -40,12 +51,17 @@
            (-> (client/do-get "http://localhost:3000/user" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest compression
 
   (try
-    (server/start! [:http :compression-nil])
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? nil}
+               :error-handler app/server-error-handler})
+
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -69,10 +85,14 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:http :compression-true])
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? true}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -96,10 +116,14 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (server/stop!)))
+    (finally (test-server/stop!)))
 
   (try
-    (server/start! [:http :compression-false])
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler (app/handler)
+                               ::compression/enabled? false}
+               :error-handler app/server-error-handler})
 
     (is (= {:protocol-version      {:name "HTTP" :major 1 :minor 1}
             :status                200
@@ -124,12 +148,21 @@
            (-> (client/do-get "http" "localhost" 3000 "/login" {:decompress-body false})
                (select-keys of-interest))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest form-authentication
 
   (try
-    (server/start! [:http] :hash-form)
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -274,12 +307,21 @@
                (-> (client/do-get "http" "localhost" 3000 "/" session)
                    (select-keys [:protocol-version :status :reason-phrase]))))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
 
 (deftest basic-authentication
 
   (try
-    (server/start! [:http] :hash-basic)
+    (test-server/start!
+     #::server{:connector     {::http/port 3000}
+               :handler       {::context/ring-handler     (app/handler)
+                               ::security/handler         "hash"
+                               ::hash/realm               "slipway"
+                               ::hash/login-service       "hash"
+                               ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
+                               ::hash/authenticator       (BasicAuthenticator.)
+                               ::hash/constraint-mappings app/constraints}
+               :error-handler app/server-error-handler})
 
     (testing "constraints"
 
@@ -358,4 +400,4 @@
              (-> (client/do-get "http" "user:wrong@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
-    (finally (server/stop!))))
+    (finally (test-server/stop!))))
