@@ -15,7 +15,7 @@
 
 (def of-interest [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding])
 
-(deftest in-memory-hash-form-authentication
+(deftest in-memory-hash-form
 
   (try
     (test-server/start!
@@ -177,7 +177,7 @@
 
     (finally (test-server/stop!))))
 
-(deftest in-memory-hash-basic-authentication
+(deftest in-memory-hash-basic
 
   (try
     (test-server/start!
