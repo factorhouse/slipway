@@ -1,7 +1,7 @@
 (ns slipway.security.hash
   (:require [clojure.tools.logging :as log]
             [slipway.security :as security])
-  (:import (org.eclipse.jetty.security Authenticator Constraint HashLoginService LoginService SecurityHandler$PathMapped UserStore)
+  (:import (org.eclipse.jetty.security Authenticator Constraint HashLoginService SecurityHandler$PathMapped UserStore)
            (org.eclipse.jetty.util.resource ResourceFactory)
            (org.eclipse.jetty.util.security Credential)))
 
@@ -37,8 +37,8 @@
 
 (defmethod security/handler "hash"
   [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]
-  (log/debugf "creating security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))
-  (when-let [^LoginService login-service (login-service opts)]
+  (log/debugf "creating hash security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))
+  (if-let [login-service (login-service opts)]
     (let [security-handler (doto (SecurityHandler$PathMapped.)
                              (.setAuthenticator ^Authenticator authenticator)
                              (.setLoginService login-service)
@@ -48,4 +48,5 @@
       (when identity-service
         (log/debugf "identity service %s" (type identity-service))
         (.setIdentityService security-handler identity-service))
-      security-handler)))
+      security-handler)
+    (log/warn "unable to create login-service from provided configuration")))
