@@ -8,8 +8,7 @@
             [slipway.security.hash :as-alias hash]
             [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as test-server]
-            [slipway.websockets :as websockets])
+            [slipway.test-server :as test-server])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
