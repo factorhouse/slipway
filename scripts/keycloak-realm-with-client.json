@@ -38,6 +38,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
+      "secret": "81a0d6ea-1468-4b20-b115-fa68a8df9cf8",
       "redirectUris": ["http://localhost:3000/oauth2/openid/callback"],
       "webOrigins": [],
       "notBefore": 0,
