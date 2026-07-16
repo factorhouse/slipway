@@ -11,8 +11,8 @@
 (extend-protocol p/Datafiable
 
   AuthenticationState$Succeeded
-  (datafy [user]
-    #::{:identity (p/datafy (.getUserIdentity user))}))
+  (datafy [authentication-state]
+    #::{:identity (p/datafy (.getUserIdentity authentication-state))}))
 
 (defn identity
   [req]
