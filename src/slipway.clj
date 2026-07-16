@@ -75,6 +75,22 @@
                           :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
                           :identity-service    "an (optional) concrete Jetty IdentityService"}
 
+  #:slipway.security.openid{:issuer                           "the URL of the OpenID provider"
+                            :client-id                        "OAuth 2.0 Client Identifier valid at the OpenID provider"
+                            :client-secret                    "the client secret known only by the Client and the OpenID"
+                            :authorization-endpoint           "the URL of the OpenID provider's authorization endpoint if configured"
+                            :token-endpoint                   "the URL of the OpenID provider's token endpoint if configured"
+                            :end-session-endpoint             "the URL of the OpenID provider's end session endpoint if configured"
+                            :authentication-method            "authentication method to use with the Token Endpoint"
+                            :http-client                      "the (optional) HttpClient instance to use"
+                            :scopes                           "a sequence of ^String scopes to request"
+                            :logout-when-id-token-is-expired? "whether to logout when the ID token is expired"
+                            :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
+                            :oidc-redirect-error              "optional page where authentication errors are redirected"
+                            :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+                            :identity-service                 "a concrete Jetty IdentityService"
+                            :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+
   #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"
                     :same-site               "set session cookie same-site policy to :none, :lax, or :strict"
