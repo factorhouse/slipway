@@ -1,6 +1,7 @@
 (ns slipway.security.openid
   (:require [clojure.tools.logging :as log]
-            [slipway.security :as security])
+            [slipway.security :as security]
+            [slipway.user.openid])
   (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
            (org.eclipse.jetty.security.openid OpenIdAuthenticator OpenIdConfiguration OpenIdConfiguration$Builder OpenIdLoginService)))
 
