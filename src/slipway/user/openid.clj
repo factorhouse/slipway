@@ -1,0 +1,1 @@
+(ns slipway.user.openid)
