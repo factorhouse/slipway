@@ -1,19 +1,21 @@
 (ns slipway.security.openid
-  (:require [clojure.tools.logging :as log])
-  (:import (org.eclipse.jetty.security Constraint SecurityHandler SecurityHandler$PathMapped)
+  (:require [clojure.tools.logging :as log]
+            [slipway.security :as security])
+  (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
            (org.eclipse.jetty.security.openid OpenIdAuthenticator OpenIdConfiguration OpenIdConfiguration$Builder OpenIdLoginService)))
 
 (defn configuration ^OpenIdConfiguration
   [{::keys [issuer client-id client-secret authorization-endpoint token-endpoint end-session-endpoint
             authentication-method http-client scopes logout-when-id-token-is-expired?]}]
-  (-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
-      (.authorizationEndpoint authorization-endpoint)
-      (.tokenEndpoint token-endpoint)
-      (.endSessionEndpoint end-session-endpoint)
-      (.authenticationMethod authentication-method)
-      (.httpClient http-client)
-      (.scopes (some->> scopes (into-array String)))
-      (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?)))
+  (let [config-builder (cond-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
+                         authorization-endpoint (.authorizationEndpoint authorization-endpoint)
+                         token-endpoint (.tokenEndpoint token-endpoint)
+                         end-session-endpoint (.endSessionEndpoint end-session-endpoint)
+                         authentication-method (.authenticationMethod authentication-method)
+                         http-client (.httpClient http-client)
+                         (some? scopes) (.scopes (some->> scopes (into-array String)))
+                         (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?))]
+    (.build config-builder)))
 
 (defn authenticator ^OpenIdAuthenticator
   [config {::keys [oidc-redirect-success oidc-redirect-error oidc-redirect-logout]
@@ -37,13 +39,13 @@
                             :identity-service                 "a concrete Jetty IdentityService"
                             :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 
-(defn handler ^SecurityHandler
+(defmethod security/handler "openid"
   [{::keys [issuer constraint-mappings identity-service] :as opts}]
   (log/debugf "creating openid security handler with %s constraints" (count constraint-mappings))
-  (let [config           (configuration opts)
-        login-service    (OpenIdLoginService configuration)
+  (let [openid-config    (configuration opts)
+        login-service    (OpenIdLoginService. openid-config)
         security-handler (doto (SecurityHandler$PathMapped.)
-                           (.setAuthenticator (authenticator config opts))
+                           (.setAuthenticator (authenticator openid-config opts))
                            (.setLoginService login-service)
                            (.setRealmName issuer))]
     (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
