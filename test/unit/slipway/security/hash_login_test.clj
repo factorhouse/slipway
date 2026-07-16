@@ -1,4 +1,4 @@
-(ns slipway.security.hash-test
+(ns slipway.security.hash-login-test
   (:require [clojure.test :refer [deftest is]]
             [slipway.security.hash :as hash])
   (:import (clojure.lang ExceptionInfo)
