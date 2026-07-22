@@ -16,7 +16,7 @@
 
 (defn -redeemRefreshToken
   [this]
-  (if-let [refresh-token (:slipway.security.openid/refresh-token @(.state this))]
+  (if-let [_refresh-token (:slipway.security.openid/refresh-token @(.state this))]
     true
     false))
 

@@ -35,17 +35,17 @@
                        :or    {user-roles-token :access-token
                                user-roles-path  ["roles"]
                                user-id-path     ["sub"]}}]
-  (let [{:keys [id-token response]} (p/datafy creds)]
-    (let [roles-value (get-in (if (= :id-token user-roles-token)
-                                id-token
-                                access-token)
-                              user-roles-path)]
-      {:name           (get-in id-token user-id-path)
-       :roles          (if (string? roles-value) #{roles-value} (set roles-value))
-       ::response      response
-       ::id-token      id-token
-       ::access-token  access-token
-       ::refresh-token (get response "refresh_token")})))
+  (let [{:keys [id-token response]} (p/datafy creds)
+        roles-value (get-in (if (= :id-token user-roles-token)
+                              id-token
+                              access-token)
+                            user-roles-path)]
+    {:name           (get-in id-token user-id-path)
+     :roles          (if (string? roles-value) #{roles-value} (set roles-value))
+     ::response      response
+     ::id-token      id-token
+     ::access-token  access-token
+     ::refresh-token (get response "refresh_token")}))
 
 (defn direct-authorization-code-flow-roles-service
   "This roles-service is applicable only to OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint

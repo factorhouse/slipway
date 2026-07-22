@@ -1,6 +1,5 @@
 (ns slipway.request
-  (:require [clojure.tools.logging :as log]
-            [slipway.security :as security])
+  (:require [slipway.security :as security])
   (:import (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
