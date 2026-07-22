@@ -1,0 +1,26 @@
+(ns slipway.security.openid.user.principal
+  (:gen-class
+   :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
+   :extends org.eclipse.jetty.security.openid.OpenIdUserPrincipal
+   :state state
+   :init init
+   :constructors {[org.eclipse.jetty.security.openid.OpenIdCredentials clojure.lang.IPersistentMap]
+                  [org.eclipse.jetty.security.openid.OpenIdCredentials]}
+   :methods [[redeemRefreshToken [] boolean]
+             [getState [] clojure.lang.IPersistentMap]]
+   :prefix "-"))
+
+(defn -init
+  [credentials state]
+  [[credentials] (atom state)])
+
+(defn -redeemRefreshToken
+  [this]
+  (if-let [refresh-token (:slipway.security.openid/refresh-token @(.state this))]
+    true
+    false))
+
+(defn -getState
+  [this]
+  @(.state this))
+

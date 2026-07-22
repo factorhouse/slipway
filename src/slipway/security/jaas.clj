@@ -1,9 +1,27 @@
 (ns slipway.security.jaas
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.core.protocols :as p]
+            [clojure.tools.logging :as log]
             [slipway.security :as security])
   (:import (javax.security.auth.login Configuration)
            (org.eclipse.jetty.security Authenticator Constraint SecurityHandler$PathMapped)
-           (org.eclipse.jetty.security.jaas JAASLoginService)))
+           (org.eclipse.jetty.security.jaas JAASLoginService JAASPrincipal JAASRole JAASUserPrincipal)))
+
+(extend-protocol p/Datafiable
+
+  JAASUserPrincipal
+  (datafy [principal]
+    {:type ::principal
+     :name (.getName principal)})
+
+  JAASPrincipal
+  (datafy [principal]
+    {:type ::principal
+     :name (.getName principal)})
+
+  JAASRole
+  (datafy [role]
+    {:type :role
+     :name (.getName role)}))
 
 (defn login-service ^JAASLoginService
   [{::keys [realm]}]

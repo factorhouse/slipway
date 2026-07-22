@@ -63,12 +63,13 @@
 
   #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
 
-  #:slipway.security.hash{:realm               "an (optional) Jetty authentication realm"
-                          :user-file           "the path to a Jetty hash-user file"
-                          :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
-                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
-                          :identity-service    "an (optional) concrete Jetty IdentityService"}
+  #:slipway.security.hash{:realm                 "an (optional) Jetty authentication realm"
+                          :user-file             "the path to a Jetty hash-user file"
+                          :hot-reload-interval-s "the period in seconds to scan :user-file for changes"
+                          :users                 "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                          :authenticator         "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings   "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service      "an (optional) concrete Jetty IdentityService"}
 
   #:slipway.security.jaas{:realm               "the Jetty authentication realm"
                           :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
@@ -83,7 +84,7 @@
                             :end-session-endpoint             "the URL of the OpenID provider's end session endpoint if configured"
                             :authentication-method            "authentication method to use with the Token Endpoint"
                             :http-client                      "the (optional) HttpClient instance to use"
-                            :scopes                           "a sequence of ^String scopes to request"
+                            :scopes                           "a sequence of ^String scopes to request, Jetty default is [\"openid\"]"
                             :logout-when-id-token-is-expired? "whether to logout when the ID token is expired"
                             :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
                             :oidc-redirect-error              "optional page where authentication errors are redirected"

@@ -6,9 +6,12 @@
            (org.eclipse.jetty.util.security Credential)))
 
 (defn property-file-service
-  [realm user-file]
+  [realm user-file hot-reload-interval-s]
   (when (slurp user-file)
-    (HashLoginService. realm (.newResource (ResourceFactory/root) ^String user-file))))
+    (let [service (HashLoginService. realm (.newResource (ResourceFactory/root) ^String user-file))]
+      (when hot-reload-interval-s
+        (.setReloadInterval service hot-reload-interval-s))
+      service)))
 
 (defn in-memory-service
   [realm users]
@@ -20,20 +23,21 @@
     hash-service))
 
 (defn login-service ^HashLoginService
-  [{::keys [realm user-file users]}]
+  [{::keys [realm user-file hot-reload-interval-s users]}]
   (log/debugf "initializing HashLoginService - realm: %s, realm file: %s, users: %s realm" realm user-file (count users))
   (cond
-    user-file (property-file-service realm user-file)
+    user-file (property-file-service realm user-file hot-reload-interval-s)
     users (in-memory-service realm users)
     :else (throw (ex-info "provide a :realm and either :user-file or :users configuration" {}))))
 
 (comment
-  #:slipway.security.hash{:realm               "optional Jetty authentication realm"
-                          :user-file           "the path to a Jetty hash-user file"
-                          :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
-                          :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                          :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
-                          :identity-service    "an (optional) concrete Jetty IdentityService"})
+  #:slipway.security.hash{:realm                 "optional Jetty authentication realm"
+                          :user-file             "the path to a Jetty hash-user file"
+                          :hot-reload-interval-s "the period in seconds to scan :user-file for changes"
+                          :users                 "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                          :authenticator         "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                          :constraint-mappings   "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                          :identity-service      "an (optional) concrete Jetty IdentityService"})
 
 (defmethod security/handler "hash"
   [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]

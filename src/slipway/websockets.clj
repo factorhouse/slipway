@@ -8,7 +8,7 @@
            (org.eclipse.jetty.server Server)
            (org.eclipse.jetty.server.handler ContextHandler)
            (org.eclipse.jetty.websocket.api Callback Session Session$Listener$AutoDemanding)
-           (org.eclipse.jetty.websocket.server WebSocketCreator WebSocketUpgradeHandler)))
+           (org.eclipse.jetty.websocket.server ServerUpgradeRequest ServerUpgradeResponse WebSocketCreator WebSocketUpgradeHandler)))
 
 (defn proxy-ws-adapter
   [{:keys [on-open on-close _on-error on-message]}]
@@ -31,10 +31,10 @@
         (on-message @session payload)
         (when cb (.succeed cb))))))
 
-(defn reify-ws-creator
-  ^WebSocketCreator [ring-handler]
+(defn reify-ws-creator ^WebSocketCreator
+  [ring-handler]
   (reify WebSocketCreator
-    (createWebSocket [_this request response cb]
+    (^Object createWebSocket [_ ^ServerUpgradeRequest request ^ServerUpgradeResponse response ^org.eclipse.jetty.util.Callback cb]
       (let [handshake (ring-handler (request/request-map request response))]
         (or (some-> handshake ::sente/server-adapter (proxy-ws-adapter))
             (do (response/update-response request response handshake)

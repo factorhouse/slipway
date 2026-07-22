@@ -333,12 +333,13 @@ Three auth implementations are provided by default.
 Configure simple authentication with Jetty's built in HashLoginService
 
 ```clojure
-#:slipway.security.hash{:realm               "optional Jetty authentication realm"
-                        :user-file           "the path to a Jetty hash-user file"
-                        :users               "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
-                        :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
-                        :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
-                        :identity-service    "a concrete Jetty IdentityService"}
+#:slipway.security.hash{:realm                 "optional Jetty authentication realm"
+                        :user-file             "the path to a Jetty hash-user file"
+                        :hot-reload-interval-s "the period in seconds to scan :user-file for changes"
+                        :users                 "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+                        :authenticator         "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+                        :constraint-mappings   "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+                        :identity-service      "a concrete Jetty IdentityService"}
 ```
 
 #### :slipway.security.jaas

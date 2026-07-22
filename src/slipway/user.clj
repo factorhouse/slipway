@@ -2,9 +2,7 @@
   (:refer-clojure :exclude [identity name])
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
-            [slipway.user.identity]
-            [slipway.user.jaas]
-            [slipway.user.principal])
+            [slipway.security.user])
   (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
            (org.eclipse.jetty.server Request Response)))
 

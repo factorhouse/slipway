@@ -28,12 +28,14 @@
 (defn start-with-openid!
   []
   (start! #::server{:connector     {::http/port 3000}
-                    :handler       {::context/ring-handler          (app/handler)
-                                    ::security/handler              "openid"
-                                    ::openid/issuer                 "http://localhost:8080/realms/master"
-                                    ::openid/client-id              "slipway"
-                                    ::openid/client-secret          "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
-                                    ::openid/scopes                 ["email"]
+                    :handler       {::context/ring-handler         (app/handler)
+                                    ::security/handler             "openid"
+                                    ::openid/issuer                "http://localhost:8080/realms/master"
+                                    ::openid/client-id             "slipway"
+                                    ::openid/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                                    ::openid/scopes                ["email"]
+                                    ::openid/user-id-path          ["name"]
+                                    ::openid/user-roles-path       ["realm_access" "roles"]
 
                                     ;; The following three parameters are derived automatically from the issuer
                                     ;; E.g. http://localhost:8080/realms/master/.well-known/openid-configuration
@@ -44,9 +46,9 @@
                                     ;::openid/end-session-endpoint   "http://localhost:8080/realms/master/protocol/openid-connect/logout"
 
                                     ;; Optional redirect testing
-                                    ::openid/oidc-redirect-success  "/oauth2/openid/callback" ;; defaults to /j_security_check but is configurable
-                                    ::openid/oidc-redirect-error    "/login-error" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
-                                    ::openid/oidc-redirect-logout   "/logout-success" ;; redirected to post-logout
+                                    ::openid/oidc-redirect-success "/oauth2/openid/callback" ;; defaults to /j_security_check but is configurable
+                                    ::openid/oidc-redirect-error   "/login-error" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
+                                    ::openid/oidc-redirect-logout  "/logout-success" ;; redirected to post-logout
 
-                                    ::openid/constraint-mappings    app/constraints}
+                                    ::openid/constraint-mappings   app/constraints}
                     :error-handler app/server-error-handler}))

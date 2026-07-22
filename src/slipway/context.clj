@@ -8,7 +8,7 @@
   (:import (org.eclipse.jetty.security SecurityHandler)
            (org.eclipse.jetty.server Handler Server)
            (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
-           (slipway SyncHandler)))
+           (slipway.handler SyncHandler)))
 
 (defn app-handler
   [ring-handler opts]
