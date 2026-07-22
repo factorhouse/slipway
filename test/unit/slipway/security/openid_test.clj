@@ -14,7 +14,7 @@
 (deftest state
 
   (is (= {:name                                  "factor-dev"
-          :roles                                 ["1" "2" "3"]
+          :roles                                 #{"1" "2" "3"}
           :slipway.security.openid/id-token      {"other" {"id" "x-name"}
                                                   "sub"   "factor-dev"}
           :slipway.security.openid/access-token  {"other" {"roles" ["x-role"]}
@@ -29,7 +29,7 @@
 
   ;; different configured path for name and roles (default tokens)
   (is (= {:name                                  "x-name"
-          :roles                                 ["x-role"]
+          :roles                                 #{"x-role"}
           :slipway.security.openid/id-token      {"other" {"id" "x-name"}
                                                   "sub"   "factor-dev"}
           :slipway.security.openid/access-token  {"other" {"roles" ["x-role"]}
@@ -45,7 +45,7 @@
 
   ;; different configured path for name and roles (roles taken from id-token)
   (is (= {:name                                  "x-name"
-          :roles                                 ["x-from-id-token"]
+          :roles                                 #{"x-from-id-token"}
           :slipway.security.openid/id-token      {"other" {"id"    "x-name"
                                                            "roles" ["x-from-id-token"]}
                                                   "sub"   "factor-dev"}
