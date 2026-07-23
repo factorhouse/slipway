@@ -2,11 +2,15 @@
   (:require [clojure.tools.logging :as log]
             [slipway.compression :as compression]
             [slipway.security :as security]
+            [slipway.security.hash]
+            [slipway.security.jaas]
+            [slipway.security.openid]
+            [slipway.security.openid.flow.authorization-code]
+            [slipway.security.openid.flow.client-credentials]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.websockets :as websockets])
-  (:import (org.eclipse.jetty.security SecurityHandler)
-           (org.eclipse.jetty.server Handler Server)
+  (:import (org.eclipse.jetty.server Handler Server)
            (org.eclipse.jetty.server.handler ContextHandler ContextHandlerCollection)
            (slipway.handler SyncHandler)))
 
@@ -22,10 +26,10 @@
 
 (defn wrap-auth
   [handler opts]
-  (if-let [^SecurityHandler security-handler (security/handler opts)]
+  (if-let [security-handler (security/handler opts)]
     (let [session-handler (session/handler opts)]
       (.setHandler security-handler ^Handler handler)
-      (.setHandler session-handler security-handler)
+      (.setHandler session-handler ^Handler security-handler)
       session-handler)
     handler))
 

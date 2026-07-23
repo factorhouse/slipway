@@ -23,6 +23,15 @@
   (stop!)
   (reset! state (slipway/start config)))
 
+;; TODO: turn this into a function, break all below into a different test integration class for keycloak
+;; Curl a client-credentials flow auth token from local keycloak
+;;
+;; curl -v --location --request POST 'http://localhost:8080/realms/master/protocol/openid-connect/token' \                                                                                                                             ✔ │ 16:21:27
+;; --header 'Content-Type: application/x-www-form-urlencoded' \
+;; --data-urlencode 'grant_type=client_credentials' \
+;; --data-urlencode 'client_id=slipway' \
+;; --data-urlencode 'client_secret=81a0d6ea-1468-4b20-b115-fa68a8df9cf8'
+
 ;; It's not really necessary for us to test all of Jetty's OpenID integration.
 ;; However to confirm integration basic you can use this function along with ./scripts/keycloak.sh
 (defn start-with-openid!

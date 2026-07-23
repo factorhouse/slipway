@@ -4,8 +4,8 @@
             [slipway.context :as context]
             [slipway.example.app :as app]
             [slipway.example.html :as html]
-            [slipway.security :as-alias security]
-            [slipway.security.hash :as-alias hash]
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
             [slipway.server :as server]
             [slipway.test-client :as client]
             [slipway.test-server :as test-server])

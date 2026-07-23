@@ -1,9 +1,9 @@
 (ns slipway.security
   (:require [clojure.core.protocols :as p])
-  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
+  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded SecurityHandler)
            (org.eclipse.jetty.server Request)))
 
-(defmulti handler ::handler)
+(defmulti ^SecurityHandler handler ::handler)
 
 (defmethod handler :default [_] nil)
 

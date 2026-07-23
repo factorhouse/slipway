@@ -3,10 +3,8 @@
             [slipway.connector.http]
             [slipway.connector.https]
             [slipway.context]
-            [slipway.security]
             [slipway.server :as server]
-            [slipway.user]
-            [slipway.websockets])
+            [slipway.user])
   (:import (org.eclipse.jetty.server Server)))
 
 (comment

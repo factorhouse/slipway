@@ -4,9 +4,9 @@
            (org.eclipse.jetty.server Connector Handler Server)
            (org.eclipse.jetty.util.thread Scheduler ThreadPool)))
 
-(defmulti handler (fn [_server opts] (::handler-type opts)))
+(defmulti ^Handler handler (fn [_server opts] (::handler-type opts)))
 
-(defmulti connector (fn [_server opts] (keyword (namespace (first (keys opts))) "connector")))
+(defmulti ^Connector connector (fn [_server opts] (keyword (namespace (first (keys opts))) "connector")))
 
 (comment
   #:slipway.server{:connector     "the connector supported by this server"
@@ -27,6 +27,6 @@
                                        (if connector-config
                                          [(connector server connector-config)]
                                          (map #(connector server %) connectors))))
-    (.setHandler server ^Handler (handler server handler-config))
+    (.setHandler server (handler server handler-config))
     (some->> error-handler (.setErrorHandler server))
     server))

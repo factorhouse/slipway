@@ -2,15 +2,15 @@
   (:require [clj-http.conn-mgr :as conn]
             [clojure.test :refer [deftest is testing]]
             [clojure.tools.logging :as log]
-            [slipway.connector.https :as-alias https]
-            [slipway.context :as-alias context]
+            [slipway.connector.https :as https]
+            [slipway.context :as context]
             [slipway.example.app :as app]
-            [slipway.security :as-alias security]
-            [slipway.security.hash :as-alias hash]
-            [slipway.server :as-alias server]
+            [slipway.security :as security]
+            [slipway.security.hash :as hash]
+            [slipway.server :as server]
             [slipway.test-client :as client]
             [slipway.test-server :as test-server]
-            [slipway.websockets :as-alias websockets])
+            [slipway.websockets :as websockets])
   (:import (java.security SecureRandom)
            (java.util Base64)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
