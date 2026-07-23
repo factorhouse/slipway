@@ -2,7 +2,7 @@
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
             [slipway.security :as security])
-  (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped SecurityHandler$PathMethodMapped)
+  (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
            (org.eclipse.jetty.security.openid OpenIdCredentials)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
