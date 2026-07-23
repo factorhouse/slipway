@@ -23,9 +23,11 @@
            (.getState principal))))
 
 (defn access-token
+  "As this login module is exclusively used in the direct Authorization Code Flow and this access token is intended for
+   use in the same JVM as the ID token, we can rely on the proir ID token validation as being sufficient as they are
+   both from the same source at the same point in time"
   [^OpenIdCredentials creds]
   (try
-    ;; TODO: further claims validation on the access token, similar to the ID token validation (see OpenIdCredentials).
     (JwtDecoder/decode (get (.getResponse creds) "access_token"))
     (catch Exception ex
       (log/debug ex "error decoding access_token"))))
@@ -48,9 +50,9 @@
      ::refresh-token (get response "refresh_token")}))
 
 (defn direct-authorization-code-flow-roles-service
-  "This roles-service is applicable only to OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint
-   (that is how Jetty navigates OpenID authentication).
-   Under that flow you can rely on TLS (HTTPS) to authenticate the issuer instead of verifying the JWT signature.
+  "This roles-service is exclusively for OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint,
+   that is how Jetty implements OIDC authentication interactions.
+   In that flow you can rely on TLS (HTTPS) to authenticate the issuer instead of verifying the JWT signature.
    While that normally only applies to the ID token, in our case the Access token is intended for local use inside this
    client service JVM, and so the same logic applies."
   ^LoginService [realm opts]
