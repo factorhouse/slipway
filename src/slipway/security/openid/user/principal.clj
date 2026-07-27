@@ -14,6 +14,14 @@
   [credentials state]
   [[credentials] (atom state)])
 
+(defn -getName
+  [this]
+  (:name @(.state this)))
+
+(defn -toString
+  [this]
+  (:name @(.state this)))
+
 (defn -redeemRefreshToken
   [this]
   (if-let [_refresh-token (:slipway.security.openid/refresh-token @(.state this))]

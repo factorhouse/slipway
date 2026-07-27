@@ -1,7 +1,7 @@
-(ns slipway.security.openid.flow.authorization-code-test
+(ns slipway.security.openid.authorization-code-flow-test
   (:require [clojure.test :refer [deftest is]]
             [slipway.security.openid :as openid]
-            [slipway.security.openid.flow.authorization-code :as authorization-code])
+            [slipway.security.openid.authorization-code-flow :as authorization-code-flow])
   (:import (org.eclipse.jetty.security.openid OpenIdCredentials)))
 
 (deftest state
@@ -14,11 +14,11 @@
                                                   "roles" ["1" "2" "3"]}
           :slipway.security.openid/refresh-token nil
           :slipway.security.openid/response      nil}
-         (authorization-code/state (OpenIdCredentials. {"sub"   "factor-dev"
-                                                        "other" {"id" "x-name"}})
-                                   {"roles" ["1" "2" "3"]
-                                    "other" {"roles" ["x-role"]}}
-                                   {})))
+         (authorization-code-flow/state (OpenIdCredentials. {"sub"   "factor-dev"
+                                                             "other" {"id" "x-name"}})
+                                        {"roles" ["1" "2" "3"]
+                                         "other" {"roles" ["x-role"]}}
+                                        {})))
 
   ;; different configured path for name and roles (default tokens)
   (is (= {:name                                  "x-name"
@@ -29,12 +29,12 @@
                                                   "roles" ["1" "2" "3"]}
           :slipway.security.openid/refresh-token nil
           :slipway.security.openid/response      nil}
-         (authorization-code/state (OpenIdCredentials. {"sub"   "factor-dev"
-                                                        "other" {"id" "x-name"}})
-                                   {"roles" ["1" "2" "3"]
-                                    "other" {"roles" ["x-role"]}}
-                                   {::openid/user-roles-path ["other" "roles"]
-                                    ::openid/user-id-path    ["other" "id"]})))
+         (authorization-code-flow/state (OpenIdCredentials. {"sub"   "factor-dev"
+                                                             "other" {"id" "x-name"}})
+                                        {"roles" ["1" "2" "3"]
+                                         "other" {"roles" ["x-role"]}}
+                                        {::openid/user-roles-path ["other" "roles"]
+                                         ::openid/user-id-path    ["other" "id"]})))
 
   ;; different configured path for name and roles (roles taken from id-token)
   (is (= {:name                                  "x-name"
@@ -46,11 +46,11 @@
                                                   "roles" ["1" "2" "3"]}
           :slipway.security.openid/refresh-token nil
           :slipway.security.openid/response      nil}
-         (authorization-code/state (OpenIdCredentials. {"sub"   "factor-dev"
-                                                        "other" {"id"    "x-name"
-                                                                 "roles" ["x-from-id-token"]}})
-                                   {"roles" ["1" "2" "3"]
-                                    "other" {"roles" ["x-role"]}}
-                                   {::openid/user-roles-path   ["other" "roles"]
-                                    ::openid/user-id-path      ["other" "id"]
-                                    ::openid/user-roles-source :id-token}))))
+         (authorization-code-flow/state (OpenIdCredentials. {"sub"   "factor-dev"
+                                                             "other" {"id"    "x-name"
+                                                                      "roles" ["x-from-id-token"]}})
+                                        {"roles" ["1" "2" "3"]
+                                         "other" {"roles" ["x-role"]}}
+                                        {::openid/user-roles-path   ["other" "roles"]
+                                         ::openid/user-id-path      ["other" "id"]
+                                         ::openid/user-roles-source :id-token}))))

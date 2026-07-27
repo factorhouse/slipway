@@ -1,4 +1,4 @@
-(ns slipway.security.openid.flow.authorization-code
+(ns slipway.security.openid.authorization-code-flow
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
             [slipway.security.openid :as openid])
@@ -20,18 +20,30 @@
     (catch Exception ex
       (log/debug ex "error decoding access_token"))))
 
+(defn username
+  [id-token access-token {::openid/keys [user-id-source user-id-path]
+                          :or           {user-id-source :id-token
+                                         user-id-path   ["sub"]}}]
+  (let [name-token (if (= :access-token user-id-source) access-token id-token)]
+    (get-in name-token user-id-path)))
+
+(defn roles
+  [id-token access-token {::openid/keys [user-roles-source user-roles-path]
+                          :or           {user-roles-source :access-token
+                                         user-roles-path   ["roles"]}}]
+  (let [roles-token (if (= :id-token user-roles-source) id-token access-token)
+        roles-value (get-in roles-token user-roles-path)]
+    (if (string? roles-value) #{roles-value} (set roles-value))))
+
 (defn state
-  [creds access-token {::openid/keys [user-roles-source user-roles-path user-id-path]
-                       :or                           {user-roles-source :access-token
-                                                      user-roles-path   ["roles"]
-                                                      user-id-path      ["sub"]}}]
+  [creds access-token opts]
+  (log/debugf "decoded [%s] claims from access token" (count access-token))
   (let [{:keys [id-token response]} (p/datafy creds)
-        roles-value (get-in (if (= :id-token user-roles-source)
-                              id-token
-                              access-token)
-                            user-roles-path)]
-    {:name                  (get-in id-token user-id-path)
-     :roles                 (if (string? roles-value) #{roles-value} (set roles-value))
+        user-id    (username id-token access-token opts)
+        user-roles (roles id-token access-token opts)]
+    (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
+    {:name                  user-id
+     :roles                 user-roles
      ::openid/response      response
      ::openid/id-token      id-token
      ::openid/access-token  access-token
@@ -87,6 +99,7 @@
 
 (defmethod openid/handler :default
   [{::openid/keys [issuer] :as opts}]
+  (log/debug "initializing authorization code flow")
   (let [openid-config (configuration opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (authenticator openid-config opts))

@@ -5,8 +5,8 @@
             [slipway.security.hash]
             [slipway.security.jaas]
             [slipway.security.openid]
-            [slipway.security.openid.flow.authorization-code]
-            [slipway.security.openid.flow.client-credentials]
+            [slipway.security.openid.authorization-code-flow]
+            [slipway.security.openid.client-credentials-flow]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.websockets :as websockets])

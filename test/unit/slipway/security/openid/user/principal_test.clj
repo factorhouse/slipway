@@ -11,15 +11,17 @@
 
   (let [creds (OpenIdCredentials. {"sub" "factor-dev"
                                    "a"   "b"})
-        state {:roles ["one" "two" "three"]}]
+        state {:name  "name-comes-from-state-not-credentials"
+               :roles ["one" "two" "three"]}]
 
     (is (instance? Principal (OpenIdUserPrincipalWithState. creds state)))
     (is (instance? OpenIdUserPrincipal (OpenIdUserPrincipalWithState. creds state)))
 
-    (is (= "factor-dev"
+    (is (= "name-comes-from-state-not-credentials"
            (.getName (OpenIdUserPrincipalWithState. creds state))))
 
-    (is (= "factor-dev"
+    ;; this mimics the behaviour of OpenIdUserPrincipal where .getName and .toString both return the name
+    (is (= "name-comes-from-state-not-credentials"
            (.toString (OpenIdUserPrincipalWithState. creds state))))
 
     (is (= creds
