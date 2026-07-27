@@ -29,6 +29,7 @@
                  [org.clojure/tools.logging "1.3.1"]
                  [org.ring-clojure/ring-core-protocols "1.15.5"]
                  [com.taoensso/sente "1.17.0"]
+                 [com.nimbusds/nimbus-jose-jwt "10.9.1"]
                  [org.eclipse.jetty/jetty-server "12.1.11"]
                  [org.eclipse.jetty/jetty-session "12.1.11"]
                  [org.eclipse.jetty/jetty-security "12.1.11"]

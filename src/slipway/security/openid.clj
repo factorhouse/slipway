@@ -23,6 +23,7 @@
                             :issuer                           "the URL of the OpenID provider"
                             :client-id                        "OAuth 2.0 Client Identifier valid at the OpenID provider"
                             :client-secret                    "the client secret known only by the Client and the OpenID"
+                            :jwks-endpoint                    "the URL of the OpenID provider's public cryptographic keys for verifying JWT token signatures"
                             :authorization-endpoint           "the URL of the OpenID provider's authorization endpoint if configured"
                             :token-endpoint                   "the URL of the OpenID provider's token endpoint if configured"
                             :end-session-endpoint             "the URL of the OpenID provider's end session endpoint if configured"

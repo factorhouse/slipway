@@ -69,6 +69,7 @@
                     :handler       {::context/ring-handler       (app/handler)
                                     ::security/handler           "openid"
                                     ::openid/authorization-flow  :client-credentials
+                                    ::openid/jwks-endpoint       "http://localhost:8080/realms/master/protocol/openid-connect/certs"
                                     ::openid/issuer              "http://localhost:8080/realms/master"
                                     ::openid/user-id-path        ["preferred_username"]
                                     ::openid/user-roles-path     ["realm_access" "roles"]
