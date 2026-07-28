@@ -2,18 +2,14 @@
   (:require [clojure.tools.logging :as log]
             [slipway.security.openid :as openid]
             [slipway.security.openid.bearer-token :as bearer-token])
-  (:import (com.nimbusds.jose JOSEObjectType JWSAlgorithm)
-           (com.nimbusds.jose.jwk.source JWKSourceBuilder)
-           (com.nimbusds.jose.proc DefaultJOSEObjectTypeVerifier JWSVerificationKeySelector)
-           (com.nimbusds.jwt JWTClaimNames JWTClaimsSet$Builder)
-           (com.nimbusds.jwt.proc DefaultJWTClaimsVerifier DefaultJWTProcessor JWTProcessor)
-           (java.net URI)
+  (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
            (java.util.function Function)
            (javax.security.auth Subject)
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
            (org.eclipse.jetty.security.openid OpenIdCredentials)
            (org.eclipse.jetty.server Request)
+           (slipway.lifecycle ManagedState)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
 (defn access-token
@@ -42,13 +38,13 @@
      ::openid/access-token access-token}))
 
 (defn login-service
-  ^LoginService [realm jwt-processor opts]
+  ^LoginService [realm ^ManagedState jwt-processor-bean opts]
   (let [id-service-state (atom nil)]
     (reify LoginService
       (^String getName [_]
         (str realm "-bearer"))
       (^UserIdentity login [_ ^String _username ^Object credentials ^Request _request ^Function _get-or-create]
-        (when-let [user-access-token (access-token jwt-processor credentials)]
+        (when-let [user-access-token (access-token (.getStartedState jwt-processor-bean) credentials)]
           (log/debugf "decoded [%s] claims from access token" (count user-access-token))
           (let [user-state       (state user-access-token opts)
                 user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
@@ -67,33 +63,12 @@
         (reset! id-service-state identity-service))
       (^void logout [_ ^UserIdentity _user]))))
 
-(defn jwt-processor
-  [{::openid/keys [jwks-endpoint]}]
-  (let [jwt-processor (DefaultJWTProcessor.)]
-    (.setJWSTypeVerifier jwt-processor (DefaultJOSEObjectTypeVerifier. #{(JOSEObjectType. "JWT")}))
-    ;; TODO lifecycle management of this key-source (bind into Jetty Container doStart/doStop)
-    ;;      we can do that by adding it to the SecurityHandler as a bean, below (and implement Lifecycle interface)
-    (let [key-source (-> (JWKSourceBuilder/create (.toURL (URI. jwks-endpoint)))
-                         (.cache 300000 30000)              ;; TODO: configurability
-                         (.retrying true)
-                         (.build))]
-      (.setJWSKeySelector jwt-processor
-                          (JWSVerificationKeySelector. JWSAlgorithm/RS256 key-source))
-      (.setJWTClaimsSetVerifier jwt-processor
-                                (DefaultJWTClaimsVerifier.
-                                 (-> (JWTClaimsSet$Builder.)
-                                     (.issuer "http://localhost:8080/realms/master")
-                                     (.build))
-                                 #{JWTClaimNames/SUBJECT
-                                   JWTClaimNames/ISSUED_AT
-                                   JWTClaimNames/EXPIRATION_TIME
-                                   JWTClaimNames/JWT_ID}))
-      jwt-processor)))
-
 (defmethod openid/handler :client-credentials
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing client credentials flow")
-  (doto (SecurityHandler$PathMapped.)
-    (.setAuthenticator (bearer-token/authenticator))
-    (.setLoginService (login-service issuer (jwt-processor opts) opts))
-    (.setRealmName issuer)))
+  (let [jwt-processor-bean (bearer-token/processor-bean opts)]
+    (doto (SecurityHandler$PathMapped.)
+      (.setAuthenticator (bearer-token/authenticator))
+      (.setLoginService (login-service issuer jwt-processor-bean opts))
+      (.addBean jwt-processor-bean)
+      (.setRealmName issuer))))

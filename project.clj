@@ -23,7 +23,9 @@
             "fmt"    ["with-profile" "+pedantic" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
-  :aot [slipway.handler.sync-handler slipway.security.openid.user.principal]
+  :aot [slipway.lifecycle
+        slipway.handler.sync-handler
+        slipway.security.openid.user.principal]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]
