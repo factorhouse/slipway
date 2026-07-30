@@ -24,7 +24,7 @@
   [^JWKSource key-source]
   ;; Some key-source are not closeable
   (when (instance? Closeable key-source)
-    (log/debugf "stopping key-source" key-source)
+    (log/debug "stopping key-source" key-source)
     (.close ^Closeable key-source)))
 
 (comment
