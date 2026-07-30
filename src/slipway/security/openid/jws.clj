@@ -16,8 +16,9 @@
     :or    {algorithm "RS256"}}]
   (if (recognized-algorithms algorithm)
     (JWSAlgorithm/parse algorithm)
-    (throw (ex-info (format "unknown algorithm %s" algorithm) {::algorithm             algorithm
-                                                               ::recognized-algorithms recognized-algorithms}))))
+    (throw (ex-info (str "unknown algorithm" algorithm)
+                    {::algorithm             algorithm
+                     ::recognized-algorithms recognized-algorithms}))))
 
 (defn stop
   [^JWKSource key-source]
