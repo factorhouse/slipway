@@ -16,7 +16,7 @@
     :or    {algorithm "RS256"}}]
   (if (recognized-algorithms algorithm)
     (JWSAlgorithm/parse algorithm)
-    (throw (ex-info (str "unknown algorithm" algorithm)
+    (throw (ex-info (str "unknown algorithm " algorithm)
                     {::algorithm             algorithm
                      ::recognized-algorithms recognized-algorithms}))))
 
