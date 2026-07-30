@@ -1,7 +1,8 @@
 (ns slipway.security.openid.client-credentials-flow
   (:require [clojure.tools.logging :as log]
             [slipway.security.openid :as openid]
-            [slipway.security.openid.bearer-token :as bearer-token])
+            [slipway.security.openid.bearer-token :as bearer-token]
+            [slipway.security.openid.jwt :as jwt])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
            (java.util.function Function)
@@ -9,7 +10,7 @@
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
            (org.eclipse.jetty.security.openid OpenIdCredentials)
            (org.eclipse.jetty.server Request)
-           (slipway.lifecycle ManagedState)
+           (slipway.security.openid.jwt JWTProcessorBean)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
 (defn access-token
@@ -38,13 +39,13 @@
      ::openid/access-token access-token}))
 
 (defn login-service
-  ^LoginService [realm ^ManagedState jwt-processor-bean opts]
+  ^LoginService [realm ^JWTProcessorBean processor-bean opts]
   (let [id-service-state (atom nil)]
     (reify LoginService
       (^String getName [_]
         (str realm "-bearer"))
       (^UserIdentity login [_ ^String _username ^Object credentials ^Request _request ^Function _get-or-create]
-        (when-let [user-access-token (access-token (.getStartedState jwt-processor-bean) credentials)]
+        (when-let [user-access-token (-> (.getProcessor processor-bean) (access-token credentials))]
           (log/debugf "decoded [%s] claims from access token" (count user-access-token))
           (let [user-state       (state user-access-token opts)
                 user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
@@ -66,7 +67,7 @@
 (defmethod openid/handler :client-credentials
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing client credentials flow")
-  (let [jwt-processor-bean (bearer-token/processor-bean opts)]
+  (let [jwt-processor-bean (jwt/processor-bean opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (bearer-token/authenticator))
       (.setLoginService (login-service issuer jwt-processor-bean opts))

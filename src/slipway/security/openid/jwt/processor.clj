@@ -1,12 +1,12 @@
-(ns slipway.lifecycle
+(ns slipway.security.openid.jwt.processor
   (:gen-class
-   :name slipway.lifecycle.ManagedState
+   :name slipway.security.openid.jwt.JWTProcessorBean
    :extends org.eclipse.jetty.util.component.AbstractLifeCycle
    :state state
    :init init
    :constructors {[clojure.lang.IFn clojure.lang.IFn]
                   []}
-   :methods [[getStartedState [] java.lang.Object]]
+   :methods [[getProcessor [] com.nimbusds.jwt.proc.JWTProcessor]]
    :prefix "-"))
 
 (defn -init
@@ -18,14 +18,14 @@
   (let [state    (.state this)
         start-fn (:start-fn @state)
         started  (start-fn)]
-    (swap! state assoc :started started)))
+    (swap! state merge started)))
 
 (defn -doStop
   [this]
   (let [state   (.state this)
         stop-fn (:stop-fn @state)]
-    (stop-fn (:started @state))))
+    (stop-fn (:key-source @state))))
 
-(defn -getStartedState
+(defn -getProcessor
   [this]
-  (:started @(.state this)))
+  (:processor @(.state this)))
