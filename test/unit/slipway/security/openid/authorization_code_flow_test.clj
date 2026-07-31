@@ -72,4 +72,20 @@
                                                   "id"    "y-name"}}
                                         {::openid.jwt/user-roles-path ["other" "roles"]
                                          ::openid.jwt/user-id-path    ["other" "id"]
-                                         ::openid.jwt/user-id-source  :access-token}))))
+                                         ::openid.jwt/user-id-source  :access-token})))
+
+  ;; roles is scalar in the jwt, is presented as a single-element-set in the output
+  ;; we encounter this occasionally with IdP that reduce single-role claims to a string
+  (is (= {:name                                  "factor-dev"
+          :roles                                 #{"1"}
+          :slipway.security.openid/id-token      {"other" {"id" "x-name"}
+                                                  "sub"   "factor-dev"}
+          :slipway.security.openid/access-token  {"other" {"roles" ["x-role"]}
+                                                  "roles" "1"}
+          :slipway.security.openid/refresh-token nil
+          :slipway.security.openid/response      nil}
+         (authorization-code-flow/state (OpenIdCredentials. {"sub"   "factor-dev"
+                                                             "other" {"id" "x-name"}})
+                                        {"roles" "1"
+                                         "other" {"roles" ["x-role"]}}
+                                        {}))))
