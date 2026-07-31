@@ -24,7 +24,7 @@
   [this]
   (let [state   (.state this)
         stop-fn (:stop-fn @state)]
-    (stop-fn (:key-source @state))))
+    (stop-fn (:jwk-source @state))))
 
 (defn -getProcessor
   [this]

@@ -1,7 +1,8 @@
 (ns slipway.security.openid.jwks
   (:require [clojure.string :as str]
-            [clojure.tools.logging :as log])
-  (:import (com.nimbusds.jose.jwk.source JWKSource JWKSourceBuilder)
+            [clojure.tools.logging :as log]
+            [slipway.security.openid.jwk :as jwk])
+  (:import (com.nimbusds.jose.jwk.source JWKSourceBuilder)
            (java.net URI)))
 
 ;; This configuration is interesting because many of them are required to be input as pairs.
@@ -22,7 +23,7 @@
                                  :outage-tolerant-forever?  "enable outage tolerance without expiration"
                                  :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"})
 
-(defn source ^JWKSource
+(defmethod jwk/source :default
   [{::keys [endpoint cache? cache-ttl cache-refresh-timeout cache-forever? refresh-ahead-cache? refresh-ahead-time
             scheduled? rate-limited? rate-limited-min-interval retrying? outage-tolerant? outage-tolerant-forever?
             outage-tolerant-ttl]}]

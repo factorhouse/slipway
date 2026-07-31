@@ -43,7 +43,7 @@
                 (catch ExceptionInfo ex
                   ((juxt ex-message ex-data) ex)))))))
 
-(deftest key-source
+(deftest jwk-source
 
   (let [dummy-source (ImmutableJWKSet. (JWKSet.))]
 

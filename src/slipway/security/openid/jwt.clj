@@ -1,5 +1,6 @@
 (ns slipway.security.openid.jwt
-  (:require [slipway.security.openid.jwks :as jwks]
+  (:require [slipway.security.openid.jwk :as jwk]
+            [slipway.security.openid.jwk.source :as jwk.source]
             [slipway.security.openid.jws :as jws]
             [slipway.security.openid.jwt.verification :as verification])
   (:import (com.nimbusds.jwt.proc DefaultJWTProcessor)
@@ -9,13 +10,13 @@
   [opts]
   (fn []
     (let [jwt-processor (DefaultJWTProcessor.)
-          key-source    (jwks/source opts)]
+          jwk-source    (jwk/source opts)]
       (.setJWSTypeVerifier jwt-processor (verification/type-verifier opts))
-      (.setJWSKeySelector jwt-processor (jws/key-selector key-source opts))
+      (.setJWSKeySelector jwt-processor (jws/key-selector jwk-source opts))
       (.setJWTClaimsSetVerifier jwt-processor (verification/claims-verifier opts))
       {:processor  jwt-processor
-       :key-source key-source})))
+       :jwk-source jwk-source})))
 
 (defn processor-bean
   [opts]
-  (JWTProcessorBean. (start-fn opts) jws/stop))
+  (JWTProcessorBean. (start-fn opts) jwk.source/stop))

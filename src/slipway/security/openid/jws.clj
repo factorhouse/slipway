@@ -3,7 +3,6 @@
   (:import (com.nimbusds.jose JWSAlgorithm)
            (com.nimbusds.jose.jwk.source JWKSource)
            (com.nimbusds.jose.proc JWSVerificationKeySelector)
-           (java.io Closeable)
            (java.util Set)))
 
 ;; defined in com.nimbusds.jose.JWSAlgorithm
@@ -20,23 +19,16 @@
                     {::algorithm             algorithm
                      ::recognized-algorithms recognized-algorithms}))))
 
-(defn stop
-  [^JWKSource key-source]
-  ;; Some key-source are not closeable
-  (when (instance? Closeable key-source)
-    (log/debug "stopping key-source" key-source)
-    (.close ^Closeable key-source)))
-
 (comment
   #:slipway.security.openid.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256."
                                 :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms."})
 
 (defn key-selector ^JWSVerificationKeySelector
-  [^JWKSource key-source {::keys [algorithms] :as opts}]
+  [^JWKSource jwk-source {::keys [algorithms] :as opts}]
   (if algorithms
     (let [^Set algorithm-set (set (map #(algorithm {::algorithm %1}) algorithms))]
       (log/debugf "creating key-selector with algorithms %s" (mapv #(.getName %1) algorithm-set))
-      (JWSVerificationKeySelector. algorithm-set key-source))
+      (JWSVerificationKeySelector. algorithm-set jwk-source))
     (let [^JWSAlgorithm algorithm (algorithm opts)]
       (log/debugf "creating key-selector with algorithm %s" algorithm)
-      (JWSVerificationKeySelector. algorithm key-source))))
+      (JWSVerificationKeySelector. algorithm jwk-source))))

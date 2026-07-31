@@ -2,7 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [slipway.security.openid :as openid]
             [slipway.security.openid.bearer-token :as bearer-token]
-            [slipway.security.openid.jwt :as jwt])
+            [slipway.security.openid.jwt :as jwt]
+            [slipway.security.openid.jwks])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
            (java.util.function Function)
