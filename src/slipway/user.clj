@@ -28,7 +28,7 @@
   [{:keys [^Request slipway.request/request ^Response slipway.request/response ::identity]}]
   (when request
     (try
-      (log/debug "logout" identity)
+      (log/debug "logout" (select-keys identity [:type :name]))
       (AuthenticationState/logout request response)
       (some-> (.getSession request false) (.invalidate))
       (catch Exception ex
