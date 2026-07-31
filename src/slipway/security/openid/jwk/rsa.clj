@@ -9,7 +9,7 @@
 (defn jwk ^JWK
   [{::keys [size id issue-time]
     :or    {size 2048}}]
-  (-> (RSAKeyGenerator. 2048)
+  (-> (RSAKeyGenerator. size)
       (.keyUse KeyUse/SIGNATURE)
       (.keyID (or id (str (random-uuid))))
       (.issueTime (or issue-time (Date.)))
