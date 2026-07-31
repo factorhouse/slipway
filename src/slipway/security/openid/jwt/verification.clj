@@ -14,22 +14,29 @@
 ;;  - set "access.token.header.type.rfc9068": "true" in ["client" "attributes"] to have Keycloak conform to the RFC
 
 (defn type-verifier ^JOSEObjectTypeVerifier
-  [{::keys [exact-typs]
-    :or    {exact-typs ["at+jwt" "application/at+jwt"]}}]
-  (let [^Set object-types-set (set (map #(JOSEObjectType. %1) exact-typs))]
+  [{::keys [exact-typ]
+    :or    {exact-typ ["at+jwt" "application/at+jwt"]}}]
+  (let [^Set object-types-set (set (map #(JOSEObjectType. %1) exact-typ))]
     (log/debugf "creating type-verifier with types %s" (mapv #(.getType %1) object-types-set))
     (DefaultJOSEObjectTypeVerifier. object-types-set)))
 
 (defn claims-verifier
-  [_opts]
+  [{::keys [exact-iss exact-aud]}]
+  (when-not (and exact-aud exact-iss)
+    (throw (ex-info "exact-iss and exact-aud are required fields" {:exact-iss exact-iss ::exact-aud exact-aud})))
+  (log/debugf "creating claims-verifier for issuer %s and aud %s" exact-iss exact-aud)
   (DefaultJWTClaimsVerifier.
    (-> (JWTClaimsSet$Builder.)
-       (.issuer "http://localhost:8080/realms/master")
+       (.issuer exact-iss)
+       (.audience ^String exact-aud)
        (.build))
-   #{JWTClaimNames/SUBJECT
+   #{JWTClaimNames/JWT_ID
+     JWTClaimNames/SUBJECT
      JWTClaimNames/ISSUED_AT
-     JWTClaimNames/EXPIRATION_TIME
-     JWTClaimNames/JWT_ID}))
+     JWTClaimNames/EXPIRATION_TIME}))
 
 (comment
-  #:slipway.security.openid.jwt.verification{::exact-typs "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"})
+  #:slipway.security.openid.jwt.verification{::exact-typ "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+                                             ::exact-iss "required: the URL of the OpenID provider"
+                                             ::exact-aud "required: the audience of this service to match the 'aud' field in the jwt"
+                                             ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"})
