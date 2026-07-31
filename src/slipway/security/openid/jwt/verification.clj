@@ -22,13 +22,13 @@
 
 (defn claims-verifier
   [{::keys [exact-iss exact-aud]}]
-  (when-not (and exact-aud exact-iss)
-    (throw (ex-info "exact-iss and exact-aud are required fields" {:exact-iss exact-iss ::exact-aud exact-aud})))
+  (when-not exact-iss (throw (ex-info "missing required configuration: exact-iss" {})))
+  (when-not exact-aud (throw (ex-info "missing required configuration: exact-aud" {})))
   (log/debugf "creating claims-verifier for issuer %s and aud %s" exact-iss exact-aud)
   (DefaultJWTClaimsVerifier.
+   exact-aud
    (-> (JWTClaimsSet$Builder.)
        (.issuer exact-iss)
-       (.audience ^String exact-aud)
        (.build))
    #{JWTClaimNames/JWT_ID
      JWTClaimNames/SUBJECT

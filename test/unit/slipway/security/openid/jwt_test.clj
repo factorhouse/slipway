@@ -12,7 +12,7 @@
            (com.nimbusds.jwt JWTClaimsSet$Builder SignedJWT)
            (com.nimbusds.jwt.proc BadJWTException ExpiredJWTException)
            (java.time Instant)
-           (java.util Date)))
+           (java.util Date List)))
 
 (defn signed-jwt ^SignedJWT
   [^RSAKey rsa-key {:keys [typ jti iss aud sub iat exp]}]
@@ -23,7 +23,10 @@
         builder (JWTClaimsSet$Builder.)]
     (when iss (.issuer builder iss))
     (when jti (.jwtID builder jti))
-    (when aud (.audience builder ^String aud))
+    (when aud
+      (if (instance? String aud)
+        (.audience builder ^String aud)
+        (.audience builder ^List aud)))
     (when sub (.subject builder sub))
     (when iat (.issueTime builder (Date/from (Instant/ofEpochSecond iat))))
     (when exp (.expirationTime builder (Date/from (Instant/ofEpochSecond exp))))
@@ -135,7 +138,7 @@
 
     (testing "missing aud"
 
-      (is (= [BadJWTException "JWT missing required claims: [aud]"]
+      (is (= [BadJWTException "JWT missing required aud claim"]
              (try (-> (.process processor
                                 (signed-jwt rsa-key
                                             {:typ "at+jwt"
@@ -151,13 +154,30 @@
 
     (testing "wrong aud"
 
-      (is (= [BadJWTException "JWT aud claim value rejected"]
+      (is (= [BadJWTException "JWT aud claim rejected"]
              (try (-> (.process processor
                                 (signed-jwt rsa-key
                                             {:typ "at+jwt"
                                              :iss "http://localhost:8080/realms/master"
                                              :jti "trrtcc:f28c3021-a469-59d4-7c94-52e94357086d"
                                              :aud "https://other-service.io/api"
+                                             :sub "slipway-user-x"
+                                             :iat now
+                                             :exp (+ now 120)})
+                                (jwk.rsa/security-context rsa-key))
+                      (.toJSONObject))
+                  (catch Exception ex
+                    [(type ex) (.getMessage ex)])))))
+
+    (testing "jwt has multi aud"
+
+      (is (= [BadJWTException "JWT aud claim rejected"]
+             (try (-> (.process processor
+                                (signed-jwt rsa-key
+                                            {:typ "at+jwt"
+                                             :iss "http://localhost:8080/realms/master"
+                                             :jti "trrtcc:f28c3021-a469-59d4-7c94-52e94357086d"
+                                             :aud ["account" "https://other-service.io/api"]
                                              :sub "slipway-user-x"
                                              :iat now
                                              :exp (+ now 120)})

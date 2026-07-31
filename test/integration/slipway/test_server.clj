@@ -6,6 +6,7 @@
             [slipway.security :as security]
             [slipway.security.openid :as openid]
             [slipway.security.openid.jwks :as openid.jwks]
+            [slipway.security.openid.jwt.verification :as openid.jwt.verification]
             [slipway.sente]
             [slipway.server :as server]))
 
@@ -67,12 +68,13 @@
 (defn start-with-openid-client-creds!
   []
   (start! #::server{:connector     {::http/port 3000}
-                    :handler       {::context/ring-handler       (app/handler)
-                                    ::security/handler           "openid"
-                                    ::openid/authorization-flow  :client-credentials
-                                    ::openid.jwks/endpoint       "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                                    ::openid/issuer              "http://localhost:8080/realms/master"
-                                    ::openid/user-id-path        ["preferred_username"]
-                                    ::openid/user-roles-path     ["realm_access" "roles"]
-                                    ::openid/constraint-mappings app/constraints}
+                    :handler       {::context/ring-handler              (app/handler)
+                                    ::security/handler                  "openid"
+                                    ::openid/authorization-flow         :client-credentials
+                                    ::openid.jwks/endpoint              "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                                    ::openid.jwt.verification/exact-iss "http://localhost:8080/realms/master"
+                                    ::openid.jwt.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                    ::openid/user-id-path               ["preferred_username"]
+                                    ::openid/user-roles-path            ["realm_access" "roles"]
+                                    ::openid/constraint-mappings        app/constraints}
                     :error-handler app/server-error-handler}))
