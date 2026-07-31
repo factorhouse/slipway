@@ -20,6 +20,9 @@
   [key]
   (JWKSecurityContext. [key]))
 
+(comment
+  #:slipway.security.openid.jwk.rsa{:key "the RSA key to use as an immutable JWK source"})
+
 (defmethod jwk/source :rsa ^JWKSource
   [{::keys [key]}]
   (log/debug "creating jwk-rsa source")

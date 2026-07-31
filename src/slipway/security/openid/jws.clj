@@ -20,8 +20,8 @@
                      ::recognized-algorithms recognized-algorithms}))))
 
 (comment
-  #:slipway.security.openid.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256."
-                                :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms."})
+  #:slipway.security.openid.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
+                                :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"})
 
 (defn key-selector ^JWSVerificationKeySelector
   [^JWKSource jwk-source {::keys [algorithms] :as opts}]
