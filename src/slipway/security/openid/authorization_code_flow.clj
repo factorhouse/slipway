@@ -1,7 +1,8 @@
 (ns slipway.security.openid.authorization-code-flow
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
-            [slipway.security.openid :as openid])
+            [slipway.security.openid :as openid]
+            [slipway.security.openid.jwt :as openid.jwt])
   (:import (java.security Principal)
            (java.util.function Function)
            (javax.security.auth Subject)
@@ -21,16 +22,16 @@
       (log/debug ex "error decoding access_token"))))
 
 (defn username
-  [id-token access-token {::openid/keys [user-id-source user-id-path]
-                          :or           {user-id-source :id-token
-                                         user-id-path   ["sub"]}}]
+  [id-token access-token {::openid.jwt/keys [user-id-source user-id-path]
+                          :or               {user-id-source :id-token
+                                             user-id-path   ["sub"]}}]
   (let [name-token (if (= :access-token user-id-source) access-token id-token)]
     (get-in name-token user-id-path)))
 
 (defn roles
-  [id-token access-token {::openid/keys [user-roles-source user-roles-path]
-                          :or           {user-roles-source :access-token
-                                         user-roles-path   ["roles"]}}]
+  [id-token access-token {::openid.jwt/keys [user-roles-source user-roles-path]
+                          :or               {user-roles-source :access-token
+                                             user-roles-path   ["roles"]}}]
   (let [roles-token (if (= :id-token user-roles-source) id-token access-token)
         roles-value (get-in roles-token user-roles-path)]
     (if (string? roles-value) #{roles-value} (set roles-value))))

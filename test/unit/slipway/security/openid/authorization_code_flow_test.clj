@@ -1,7 +1,7 @@
 (ns slipway.security.openid.authorization-code-flow-test
   (:require [clojure.test :refer [deftest is]]
-            [slipway.security.openid :as openid]
-            [slipway.security.openid.authorization-code-flow :as authorization-code-flow])
+            [slipway.security.openid.authorization-code-flow :as authorization-code-flow]
+            [slipway.security.openid.jwt :as openid.jwt])
   (:import (org.eclipse.jetty.security.openid OpenIdCredentials)))
 
 (deftest state
@@ -33,8 +33,8 @@
                                                              "other" {"id" "x-name"}})
                                         {"roles" ["1" "2" "3"]
                                          "other" {"roles" ["x-role"]}}
-                                        {::openid/user-roles-path ["other" "roles"]
-                                         ::openid/user-id-path    ["other" "id"]})))
+                                        {::openid.jwt/user-roles-path ["other" "roles"]
+                                         ::openid.jwt/user-id-path    ["other" "id"]})))
 
   ;; different configured path for name and roles (roles taken from id-token)
   (is (= {:name                                  "x-name"
@@ -51,6 +51,6 @@
                                                                       "roles" ["x-from-id-token"]}})
                                         {"roles" ["1" "2" "3"]
                                          "other" {"roles" ["x-role"]}}
-                                        {::openid/user-roles-path   ["other" "roles"]
-                                         ::openid/user-id-path      ["other" "id"]
-                                         ::openid/user-roles-source :id-token}))))
+                                        {::openid.jwt/user-roles-path   ["other" "roles"]
+                                         ::openid.jwt/user-id-path      ["other" "id"]
+                                         ::openid.jwt/user-roles-source :id-token}))))

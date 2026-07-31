@@ -2,8 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [slipway.security.openid :as openid]
             [slipway.security.openid.bearer-token :as bearer-token]
-            [slipway.security.openid.jwt :as jwt]
-            [slipway.security.openid.jwks])
+            [slipway.security.openid.jwks]
+            [slipway.security.openid.jwt :as openid.jwt])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
            (java.util.function Function)
@@ -23,15 +23,15 @@
       (log/debug ex "error decoding access_token"))))
 
 (defn roles
-  [access-token {::openid/keys [user-roles-path]
-                 :or           {user-roles-path ["roles"]}}]
+  [access-token {::openid.jwt/keys [user-roles-path]
+                 :or               {user-roles-path ["roles"]}}]
   (let [roles-value (get-in access-token user-roles-path)]
     (if (string? roles-value) #{roles-value} (set roles-value))))
 
 (defn state
-  [access-token {::openid/keys [user-id-path]
-                 :or           {user-id-path ["sub"]}
-                 :as           opts}]
+  [access-token {::openid.jwt/keys [user-id-path]
+                 :or               {user-id-path ["sub"]}
+                 :as               opts}]
   (let [user-id    (get-in access-token user-id-path)
         user-roles (roles access-token opts)]
     (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
@@ -68,7 +68,7 @@
 (defmethod openid/handler :client-credentials
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing client credentials flow")
-  (let [jwt-processor-bean (jwt/processor-bean opts)]
+  (let [jwt-processor-bean (openid.jwt/processor-bean opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (bearer-token/authenticator))
       (.setLoginService (login-service issuer jwt-processor-bean opts))
