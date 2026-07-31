@@ -32,5 +32,4 @@
      JWTClaimNames/JWT_ID}))
 
 (comment
-  #:slipway.security.openid.jwt.verification
-          {::exact-typs "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"})
+  #:slipway.security.openid.jwt.verification{::exact-typs "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"})
