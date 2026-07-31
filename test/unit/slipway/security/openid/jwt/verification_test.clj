@@ -14,7 +14,7 @@
 
   ;; common override to support "JWT"
   (is (= #{"JWT"}
-         (->> ^DefaultJOSEObjectTypeVerifier (verification/type-verifier {::verification/typ-field ["JWT"]})
+         (->> ^DefaultJOSEObjectTypeVerifier (verification/type-verifier {::verification/exact-typs ["JWT"]})
               (.getAllowedTypes)
               (map #(.getType %1))
               set))))
