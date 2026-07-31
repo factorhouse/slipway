@@ -4,6 +4,8 @@
   (:import (com.nimbusds.jose.jwk.source JWKSource JWKSourceBuilder)
            (java.net URI)))
 
+;; This configuration is interesting because many of them are required to be input as pairs.
+;; The user should familiarise themselves with the underlying builder implementation.
 (comment
   #:slipway.security.openid.jwks{:endpoint                  "the jwks endpoint url"
                                  :cache?                    "enable caching of the jwks set"
