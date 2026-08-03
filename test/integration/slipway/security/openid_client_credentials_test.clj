@@ -49,7 +49,7 @@
       (test-server/start!
        #::server{:connector     {::http/port 3000}
                  :handler       {::context/ring-handler              (app/handler)
-                                 ::security/handler                  "openid"
+                                 ::security/handler                  :openid
                                  ::session/enabled?                  false
                                  ::openid/authorization-flow         :client-credentials
                                  ::openid.jwk/source                 :rsa

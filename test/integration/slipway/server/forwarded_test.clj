@@ -172,7 +172,7 @@
                                         :truststore-type     "PKCS12"
                                         :http-forwarded?     true}]
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
@@ -440,7 +440,7 @@
                                         :truststore-type     "PKCS12"
                                         :http-forwarded?     true}]
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (BasicAuthenticator.)
@@ -519,7 +519,7 @@
                                         :truststore-type     "PKCS12"
                                         :http-forwarded?     true}]
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (BasicAuthenticator.)

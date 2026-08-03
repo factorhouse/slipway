@@ -83,14 +83,14 @@
        #::server{:connector     {::http/port 3000}
                  :handler       {::server/handler-type ::context/handler-collection
                                  ::context/handlers    [{::context/ring-handler     (app/handler)
-                                                         ::security/handler         "hash"
+                                                         ::security/handler         :hash
                                                          ::hash/realm               "slipway"
                                                          ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                                          ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
                                                          ::hash/constraint-mappings app/constraints}
                                                         {::context/path             "/metrics"
                                                          ::context/ring-handler     (app/handler)
-                                                         ::security/handler         "hash"
+                                                         ::security/handler         :hash
                                                          ::hash/realm               "slipway"
                                                          ::hash/users               [["prometheus" "password" ["metrics"]]]
                                                          ::hash/authenticator       (BasicAuthenticator.)

@@ -38,7 +38,7 @@
                           :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
                           :identity-service    "an (optional) concrete Jetty IdentityService"})
 
-(defmethod security/handler "jaas"
+(defmethod security/handler :jaas
   [{::keys [realm authenticator constraint-mappings identity-service] :as opts}]
   (log/debugf "creating jaas security handler with authenticator %s and %s constraints" (type authenticator) (count constraint-mappings))
   (if-let [login-service (login-service opts)]

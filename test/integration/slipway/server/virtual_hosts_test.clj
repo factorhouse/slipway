@@ -37,7 +37,7 @@
                  :handler       {::server/handler-type ::context/handler-collection
                                  ::context/handlers    [{::context/ring-handler     (app/handler)
                                                          ::context/virtual-hosts    ["@connector-3000"]
-                                                         ::security/handler         "hash"
+                                                         ::security/handler         :hash
                                                          ::hash/realm               "slipway"
                                                          ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                                          ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
@@ -45,14 +45,14 @@
                                                         {::context/path             "/metrics"
                                                          ::context/virtual-hosts    ["@connector-3000"]
                                                          ::context/ring-handler     (app/handler)
-                                                         ::security/handler         "hash"
+                                                         ::security/handler         :hash
                                                          ::hash/realm               "slipway"
                                                          ::hash/users               [["prometheus" "password" ["metrics"]]]
                                                          ::hash/authenticator       (BasicAuthenticator.)
                                                          ::hash/constraint-mappings app/constraints}
                                                         {::context/virtual-hosts    ["@connector-3001"]
                                                          ::context/ring-handler     (app/handler)
-                                                         ::security/handler         "hash"
+                                                         ::security/handler         :hash
                                                          ::hash/realm               "slipway"
                                                          ::hash/users               [["x-user" "x-password" ["x-role"]]]
                                                          ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)

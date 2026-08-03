@@ -32,7 +32,7 @@
   []
   (start! #::server{:connector     {::http/port 3000}
                     :handler       {::context/ring-handler         (app/handler)
-                                    ::security/handler             "openid"
+                                    ::security/handler             :openid
                                     ::openid/issuer                "http://localhost:8080/realms/master"
                                     ::openid/client-id             "slipway"
                                     ::openid/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
@@ -63,7 +63,7 @@
   []
   (start! #::server{:connector     {::http/port 3000}
                     :handler       {::context/ring-handler              (app/handler)
-                                    ::security/handler                  "openid"
+                                    ::security/handler                  :openid
                                     ::session/enabled?                  false
                                     ::openid/authorization-flow         :client-credentials
                                     ::openid.jwks/endpoint              "http://localhost:8080/realms/master/protocol/openid-connect/certs"

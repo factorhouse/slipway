@@ -128,7 +128,7 @@
                                          :truststore-password "password"
                                          :truststore-type     "PKCS12"}
                  :handler       {::context/ring-handler     (app/handler)
-                                 ::security/handler         "hash"
+                                 ::security/handler         :hash
                                  ::hash/realm               "slipway"
                                  ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                  ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
@@ -189,7 +189,7 @@
                                          :truststore-password "password"
                                          :truststore-type     "PKCS12"}
                  :handler       {::context/ring-handler     (app/handler)
-                                 ::security/handler         "hash"
+                                 ::security/handler         :hash
                                  ::hash/realm               "slipway"
                                  ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                  ::hash/authenticator       (BasicAuthenticator.)
@@ -374,7 +374,7 @@
                                        :truststore-password "password"
                                        :truststore-type     "PKCS12"}
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (FormAuthenticator. "/login" "/login-retry" false)
@@ -521,7 +521,7 @@
                                        :truststore-password "password"
                                        :truststore-type     "PKCS12"}
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/user-file           "dev-resources/jaas/hash-realm.properties"
                                ::hash/authenticator       (BasicAuthenticator.)

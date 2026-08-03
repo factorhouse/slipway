@@ -39,7 +39,7 @@
 
 (defmulti ^SecurityHandler$PathMapped flow-handler ::authorization-flow)
 
-(defmethod security/handler "openid"
+(defmethod security/handler :openid
   [{::keys [constraint-mappings identity-service] :as opts}]
   (log/debugf "creating openid security handler with %s constraints" (count constraint-mappings))
   (let [security-handler (flow-handler opts)]

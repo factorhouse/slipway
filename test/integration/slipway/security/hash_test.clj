@@ -21,7 +21,7 @@
     (test-server/start!
      #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/users               [["admin" "admin" ["server-administrator"
                                                                              "content-administrator"
@@ -183,7 +183,7 @@
     (test-server/start!
      #::server{:connector     {::http/port 3000}
                :handler       {::context/ring-handler     (app/handler)
-                               ::security/handler         "hash"
+                               ::security/handler         :hash
                                ::hash/realm               "slipway"
                                ::hash/users               [["admin" "admin" ["server-administrator"
                                                                              "content-administrator"
