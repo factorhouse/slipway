@@ -3,44 +3,60 @@
             [slipway.security.openid.client-credentials-flow :as client-credentials-flow]
             [slipway.security.openid.jwt :as openid.jwt]))
 
+(defn munge-expiry
+  [m]
+  (update-in m [:expires-at] #(.getEpochSecond %1)))
+
 (deftest state
 
   (is (= {:name                                 "factor-dev"
           :roles                                #{"1" "2" "3"}
+          :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
+                                                 "exp"   1311281970
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
-         (client-credentials-flow/state {"sub"   "factor-dev"
-                                         "roles" ["1" "2" "3"]
-                                         "other" {"name"  "x-name"
-                                                  "roles" ["x-role"]}}
-                                        {})))
+         (munge-expiry
+          (client-credentials-flow/state {"sub"   "factor-dev"
+                                          "exp"   1311281970
+                                          "roles" ["1" "2" "3"]
+                                          "other" {"name"  "x-name"
+                                                   "roles" ["x-role"]}}
+                                         {}))))
 
   ;; different configured path for name and roles
   (is (= {:name                                 "x-name"
           :roles                                #{"x-role"}
+          :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
+                                                 "exp"   1311281970
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
-         (client-credentials-flow/state {"sub"   "factor-dev"
-                                         "roles" ["1" "2" "3"]
-                                         "other" {"name"  "x-name"
-                                                  "roles" ["x-role"]}}
-                                        {::openid.jwt/user-roles-path ["other" "roles"]
-                                         ::openid.jwt/user-id-path    ["other" "name"]})))
+         (munge-expiry
+          (client-credentials-flow/state {"sub"   "factor-dev"
+                                          "exp"   1311281970
+                                          "roles" ["1" "2" "3"]
+                                          "other" {"name"  "x-name"
+                                                   "roles" ["x-role"]}}
+                                         {::openid.jwt/user-roles-path ["other" "roles"]
+                                          ::openid.jwt/user-id-path    ["other" "name"]}))))
 
   ;; roles is scalar in the jwt, is presented as a single-element-set in the output
   ;; we encounter this occasionally with IdP that reduce single-role claims to a string
   (is (= {:name                                 "factor-dev"
           :roles                                #{"1"}
+          :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
+                                                 "exp"   1311281970
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" "1"}}
-         (client-credentials-flow/state {"sub"   "factor-dev"
-                                         "roles" "1"
-                                         "other" {"name"  "x-name"
-                                                  "roles" ["x-role"]}}
-                                        {}))))
+         (munge-expiry
+          (client-credentials-flow/state {"sub"   "factor-dev"
+                                          "exp"   1311281970
+                                          "roles" "1"
+                                          "other" {"name"  "x-name"
+                                                   "roles" ["x-role"]}}
+                                         {})))))

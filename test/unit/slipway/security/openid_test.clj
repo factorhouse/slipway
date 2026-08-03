@@ -1,7 +1,7 @@
 (ns slipway.security.openid-test
   (:require [clojure.core.protocols :as p]
             [clojure.test :refer [deftest is]]
-            [slipway.security.openid])
+            [slipway.security.openid :as openid])
   (:import (org.eclipse.jetty.security.openid OpenIdCredentials)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
@@ -14,7 +14,7 @@
 
 (deftest principal
 
-  (is (= {:type  :slipway.security.openid/principal
+  (is (= {:type  ::openid/principal
           :roles ["one" "two" "three"]}
          (p/datafy (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
                                                   {:roles ["one" "two" "three"]})))))

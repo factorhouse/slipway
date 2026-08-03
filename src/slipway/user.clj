@@ -3,7 +3,8 @@
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
             [slipway.security.user])
-  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
+  (:import (java.time Instant)
+           (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
            (org.eclipse.jetty.server Request Response)))
 
 (extend-protocol p/Datafiable
@@ -23,6 +24,13 @@
 (defn roles
   [req]
   (-> req identity :roles))
+
+(defn expired?
+  ([req]
+   (expired? req (Instant/now)))
+  ([req ^Instant at]
+   (when-let [^Instant expires-at (-> req identity :expires-at)]
+     (.isBefore expires-at at))))
 
 (defn logout
   [{:keys [^Request slipway.request/request ^Response slipway.request/response ::identity]}]

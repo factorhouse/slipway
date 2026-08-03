@@ -6,6 +6,7 @@
             [slipway.security.openid.jwt :as openid.jwt])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
+           (java.time Instant)
            (java.util.function Function)
            (javax.security.auth Subject)
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
@@ -37,6 +38,8 @@
     (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
     {:name                 user-id
      :roles                user-roles
+     :expires-at           (when-let [access-token-exp (get access-token "exp")]
+                             (Instant/ofEpochSecond ^Long access-token-exp))
      ::openid/access-token access-token}))
 
 (defn login-service
