@@ -1,4 +1,4 @@
-(ns slipway.context.collection-test
+(ns slipway.context-test
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.connector.http :as http]
             [slipway.context :as context]
@@ -169,7 +169,7 @@
                  (-> (client/do-login "http" "localhost" 3000 "" "admin" "admin")
                      :ring
                      (select-keys of-interest)
-                     (dissoc :body))))                          ;; can't compare home html due to csrf token
+                     (dissoc :body))))                      ;; can't compare home html due to csrf token
 
           ;; root with '/' (tests jetty nullPathInfo)
           (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}

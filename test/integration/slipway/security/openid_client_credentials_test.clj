@@ -119,7 +119,7 @@
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "acceptable token"
+      (testing "wrong iss"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
@@ -150,7 +150,7 @@
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "missing aud"
+      (testing "wrong aud"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
@@ -166,7 +166,7 @@
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "acceptable token"
+      (testing "acceptable token with multiple aud"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
@@ -182,23 +182,23 @@
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "acceptable token"
+      (testing "failed token with multiple aud, none match"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
                                      :iss "http://localhost:8080/realms/master"
                                      :jti "trrtcc:f28c3021-a469-59d4-7c94-52e94357086d"
-                                     :aud "https://slipway.io/api"
+                                     :aud ["account" "https://other-service.io/api"]
                                      :sub "slipway-user-x"
-                                     :iat (- now 120)
-                                     :exp (- now 100)})
+                                     :iat now
+                                     :exp (+ now 120)})
                         (.serialize))]
           (is (= 401 (:status (client/request {:url              "http://localhost:3000/user"
                                                :method           "GET"
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "acceptable token"
+      (testing "missing jti"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
@@ -242,7 +242,7 @@
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false}))))))
 
-      (testing "acceptable token"
+      (testing "missing exp"
 
         (let [token (-> (signed-jwt rsa-key
                                     {:typ "at+jwt"
@@ -251,6 +251,22 @@
                                      :aud "https://slipway.io/api"
                                      :sub "slipway-user-x"
                                      :iat now})
+                        (.serialize))]
+          (is (= 401 (:status (client/request {:url              "http://localhost:3000/user"
+                                               :method           "GET"
+                                               :headers          {:authorization (str "Bearer " token)}
+                                               :throw-exceptions false}))))))
+
+      (testing "expired jwt"
+
+        (let [token (-> (signed-jwt rsa-key
+                                    {:typ "at+jwt"
+                                     :iss "http://localhost:8080/realms/master"
+                                     :jti "trrtcc:f28c3021-a469-59d4-7c94-52e94357086d"
+                                     :aud "https://slipway.io/api"
+                                     :sub "slipway-user-x"
+                                     :iat (- now 120)
+                                     :exp (- now 100)})
                         (.serialize))]
           (is (= 401 (:status (client/request {:url              "http://localhost:3000/user"
                                                :method           "GET"
