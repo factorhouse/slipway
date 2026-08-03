@@ -7,7 +7,7 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev      {:dependencies   [[clj-kondo "2026.05.25" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.07.24" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
                                          [ch.qos.logback/logback-classic "1.5.38"]
                                          [hiccup "2.0.0"]
