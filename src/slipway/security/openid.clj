@@ -15,8 +15,7 @@
 
   OpenIdUserPrincipalWithState
   (datafy [principal]
-    (merge {:type ::principal}
-           (.getState principal))))
+    (assoc (.getState principal) ::principal principal)))
 
 (comment
   #:slipway.security.openid{:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"

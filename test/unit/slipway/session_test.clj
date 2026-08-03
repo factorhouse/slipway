@@ -3,6 +3,11 @@
             [slipway.session :as session])
   (:import (org.eclipse.jetty.http HttpCookie$SameSite)))
 
+(deftest not-enabled?
+
+  (is (= nil
+         (session/handler {::session/enabled? false}))))
+
 (deftest cookie-same-site
 
   (is (= HttpCookie$SameSite/STRICT (session/cookie-same-site nil)))

@@ -1,8 +1,10 @@
 (ns slipway.security.openid.authorization-code-flow
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
+            [slipway.principal :as principal]
             [slipway.security.openid :as openid]
-            [slipway.security.openid.jwt :as openid.jwt])
+            [slipway.security.openid.jwt :as openid.jwt]
+            [slipway.user :as user])
   (:import (java.security Principal)
            (java.time Instant)
            (java.util.function Function)
@@ -44,9 +46,10 @@
         user-id    (username id-token access-token opts)
         user-roles (roles id-token access-token opts)]
     (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
-    {:name                  user-id
-     :roles                 user-roles
-     :expires-at            (when-let [access-token-exp (get access-token "exp")]
+    {::principal/type       ::openid/principal
+     ::principal/name       user-id
+     ::user/roles           user-roles
+     ::user/expires-at      (when-let [access-token-exp (get access-token "exp")]
                               ;; Jetty JWT library provides exp as a java.lang.Long at this point
                               (Instant/ofEpochSecond ^Long access-token-exp))
      ::openid/response      response

@@ -6,11 +6,13 @@
             [slipway.context :as context]
             [slipway.example.app :as app]
             [slipway.example.html :as html]
+            [slipway.principal :as principal]
             [slipway.security :as security]
             [slipway.security.hash :as hash]
             [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as test-server])
+            [slipway.test-server :as test-server]
+            [slipway.user :as user])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
            (org.apache.http ProtocolException)
@@ -373,7 +375,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/user" session)
@@ -383,7 +386,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (let [session (-> (client/do-login "https" "localhost" 3443 "" "user" "password" {:insecure? true})
                                (merge {:insecure? true}))]
                (-> (client/do-get "https" "localhost" 3443 "/user" session)
@@ -475,7 +479,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
@@ -554,7 +559,8 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (-> (client/do-get "https" "user:password@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 

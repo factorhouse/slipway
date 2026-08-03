@@ -8,12 +8,12 @@
   ;; expired? requires :expires-at to be set on the user identity, otherwise is not expired
   (is (not (user/expired? {})))
 
-  (is (user/expired? {::user/identity {:expires-at (Instant/ofEpochSecond 1311281970)}}))
+  (is (user/expired? {::user/identity {::user/expires-at (Instant/ofEpochSecond 1311281970)}}))
 
   ;; expiry happens when expires-at is earlier than 'now'
   (is (not (user/expired? {::user/identity {:expires-at (Instant/ofEpochSecond 1311281970)}}
                           (Instant/ofEpochSecond 1311281970))))
 
   ;; expiry happens when expires-at is earlier than 'now'
-  (is (user/expired? {::user/identity {:expires-at (Instant/ofEpochSecond (- 1311281970 1))}}
+  (is (user/expired? {::user/identity {::user/expires-at (Instant/ofEpochSecond (- 1311281970 1))}}
                      (Instant/ofEpochSecond 1311281970))))

@@ -1,6 +1,8 @@
 (ns slipway.security.openid.user.principal-test
   (:require [clojure.test :refer [deftest is]]
-            [slipway.security.openid :as-alias openid])
+            [slipway.principal :as principal]
+            [slipway.security.openid :as openid]
+            [slipway.user :as user])
   (:import (java.security Principal)
            (org.eclipse.jetty.security.openid OpenIdCredentials OpenIdUserPrincipal)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
@@ -12,8 +14,8 @@
 
   (let [creds (OpenIdCredentials. {"sub" "factor-dev"
                                    "a"   "b"})
-        state {:name  "name-comes-from-state-not-credentials"
-               :roles ["one" "two" "three"]}]
+        state {::principal/name "name-comes-from-state-not-credentials"
+               ::user/roles     ["one" "two" "three"]}]
 
     (is (instance? Principal (OpenIdUserPrincipalWithState. creds state)))
     (is (instance? OpenIdUserPrincipal (OpenIdUserPrincipalWithState. creds state)))

@@ -1,4 +1,5 @@
 (ns slipway.security.openid.user.principal
+  (:require [slipway.principal :as principal])
   (:gen-class
    :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
    :extends org.eclipse.jetty.security.openid.OpenIdUserPrincipal
@@ -16,11 +17,11 @@
 
 (defn -getName
   [this]
-  (:name @(.state this)))
+  (::principal/name @(.state this)))
 
 (defn -toString
   [this]
-  (:name @(.state this)))
+  (::principal/name @(.state this)))
 
 (defn -redeemRefreshToken
   [this]

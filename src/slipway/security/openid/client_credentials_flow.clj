@@ -1,9 +1,11 @@
 (ns slipway.security.openid.client-credentials-flow
   (:require [clojure.tools.logging :as log]
+            [slipway.principal :as principal]
             [slipway.security.openid :as openid]
             [slipway.security.openid.bearer-token :as bearer-token]
             [slipway.security.openid.jwks]
-            [slipway.security.openid.jwt :as openid.jwt])
+            [slipway.security.openid.jwt :as openid.jwt]
+            [slipway.user :as user])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
            (java.util Date)
@@ -36,9 +38,10 @@
   (let [user-id    (get-in access-token user-id-path)
         user-roles (roles access-token opts)]
     (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
-    {:name                 user-id
-     :roles                user-roles
-     :expires-at           (when-let [access-token-exp (get access-token "exp")]
+    {::principal/type      ::openid/principal
+     ::principal/name      user-id
+     ::user/roles          user-roles
+     ::user/expires-at     (when-let [access-token-exp (get access-token "exp")]
                              ;; JOSE Nimbus library provides exp as a java.util.Date at this point
                              (.toInstant ^Date access-token-exp))
      ::openid/access-token access-token}))

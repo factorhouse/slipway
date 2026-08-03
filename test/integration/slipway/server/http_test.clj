@@ -5,11 +5,13 @@
             [slipway.context :as context]
             [slipway.example.app :as app]
             [slipway.example.html :as html]
+            [slipway.principal :as principal]
             [slipway.security :as security]
             [slipway.security.hash :as hash]
             [slipway.server :as server]
             [slipway.test-client :as client]
-            [slipway.test-server :as test-server])
+            [slipway.test-server :as test-server]
+            [slipway.user :as user])
   (:import (java.net ConnectException)
            (javax.net.ssl SSLException)
            (org.eclipse.jetty.security.authentication BasicAuthenticator FormAuthenticator)))
@@ -288,7 +290,8 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/user" session)
@@ -377,7 +380,8 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
-              :body                  (html/user-page {:slipway.user/identity {:name "user" :roles #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/name "user"
+                                                                       ::user/roles     #{"user"}}})}
              (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
