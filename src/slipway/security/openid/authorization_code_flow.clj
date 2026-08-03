@@ -98,7 +98,7 @@
            :or           {oidc-redirect-success OpenIdAuthenticator/J_SECURITY_CHECK}}]
   (OpenIdAuthenticator. config oidc-redirect-success oidc-redirect-error oidc-redirect-logout))
 
-(defmethod openid/handler :default
+(defmethod openid/flow-handler :default
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing authorization code flow")
   (let [openid-config (configuration opts)]

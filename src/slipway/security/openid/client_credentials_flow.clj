@@ -65,7 +65,7 @@
         (reset! id-service-state identity-service))
       (^void logout [_ ^UserIdentity _user]))))
 
-(defmethod openid/handler :client-credentials
+(defmethod openid/flow-handler :client-credentials
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing client credentials flow")
   (let [jwt-processor-bean (openid.jwt/processor-bean opts)]
@@ -74,3 +74,8 @@
       (.setLoginService (login-service issuer jwt-processor-bean opts))
       (.addBean jwt-processor-bean)
       (.setRealmName issuer))))
+
+(defmethod openid/flow-session-enabled? :client-credentials
+  [_]
+  (log/debug "session handler not required for client-credentials openid flow")
+  false)

@@ -167,7 +167,7 @@
 
 (defn start ^Server
   [{::keys [join?] :as opts}]
-  (log/debugf "starting jetty server %s" opts)
+  (log/debugf "starting jetty server join? %s" join?)
   (let [server (server/create-server opts)]
     (.start server)
     (when join?

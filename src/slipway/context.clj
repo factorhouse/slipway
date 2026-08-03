@@ -24,13 +24,22 @@
     (doto ws-handler (.setHandler handler))
     handler))
 
-(defn wrap-auth
+(defn wrap-session
+  [handler opts]
+  (if (and (not (::security/session-disabled? opts))  ;; possible to manually disable sessions in some scenarios
+           (security/session-enabled? opts))          ;; some security implementations definitively don't require sessions
+    (let [session-handler (session/handler opts)]
+      (.setHandler session-handler ^Handler handler)
+      session-handler)
+    handler))
+
+(defn wrap-security-and-session
+  "We only wrap the session handler if you definitely have a security handler
+   Anonymous sessions are not supported by this context handler"
   [handler opts]
   (if-let [security-handler (security/handler opts)]
-    (let [session-handler (session/handler opts)]
-      (.setHandler security-handler ^Handler handler)
-      (.setHandler session-handler ^Handler security-handler)
-      session-handler)
+    (do (.setHandler security-handler ^Handler handler)
+        (wrap-session security-handler opts))
     handler))
 
 (defn wrap-compression
@@ -64,7 +73,7 @@
   (let [context-handler     (base-handler opts)
         application-handler (-> (app-handler ring-handler opts)
                                 (wrap-websockets context-handler server ring-handler opts)
-                                (wrap-auth opts)
+                                (wrap-security-and-session opts)
                                 (wrap-compression opts))]
     (.setHandler context-handler ^Handler application-handler)
     context-handler))

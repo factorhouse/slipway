@@ -37,15 +37,21 @@
                             :identity-service                 "a concrete Jetty IdentityService"
                             :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 
-(defmulti ^SecurityHandler$PathMapped handler ::authorization-flow)
+(defmulti ^SecurityHandler$PathMapped flow-handler ::authorization-flow)
+(defmulti flow-session-enabled? ::authorization-flow)
+(defmethod flow-session-enabled? :default [_] true)
 
 (defmethod security/handler "openid"
   [{::keys [constraint-mappings identity-service] :as opts}]
   (log/debugf "creating openid security handler with %s constraints" (count constraint-mappings))
-  (let [security-handler (handler opts)]
+  (let [security-handler (flow-handler opts)]
     (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
       (.put security-handler path-spec constraint))
     (when identity-service
       (log/debugf "identity service %s" (type identity-service))
       (.setIdentityService security-handler identity-service))
     security-handler))
+
+(defmethod security/session-enabled? "openid"
+  [opts]
+  (flow-session-enabled? opts))
