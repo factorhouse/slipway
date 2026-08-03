@@ -1,5 +1,6 @@
 (ns slipway.security.openid.user.principal
-  (:require [slipway.principal :as principal])
+  (:require [slipway.principal :as principal]
+            [slipway.security.openid :as-alias openid])
   (:gen-class
    :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
    :extends org.eclipse.jetty.security.openid.OpenIdUserPrincipal
@@ -25,7 +26,7 @@
 
 (defn -redeemRefreshToken
   [this]
-  (if-let [_refresh-token (:slipway.security.openid/refresh-token @(.state this))]
+  (if-let [_refresh-token (::openid/refresh-token @(.state this))]
     ;; TODO: implement refresh logic and swap state
     true
     false))
