@@ -66,7 +66,7 @@
                     :error-handler   "the error-handler used by this context-handler for context level errors"
                     :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 
-  #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
+  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :openid supported by default"}
 
   #:slipway.security.hash{:realm                 "optional Jetty authentication realm"
                           :user-file             "the path to a Jetty hash-user file"

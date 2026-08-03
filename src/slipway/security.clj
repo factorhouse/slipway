@@ -14,4 +14,4 @@
       (p/datafy authentication-state))))
 
 (comment
-  #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"})
+  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :openid supported by default"})
