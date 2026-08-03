@@ -74,8 +74,3 @@
       (.setLoginService (login-service issuer jwt-processor-bean opts))
       (.addBean jwt-processor-bean)
       (.setRealmName issuer))))
-
-(defmethod openid/flow-session-enabled? :client-credentials
-  [_]
-  (log/debug "session handler not required for client-credentials openid flow")
-  false)

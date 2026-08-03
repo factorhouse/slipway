@@ -59,6 +59,13 @@
                            :relative-redirect-allowed? "if true, allow relative redirects, default false"
                            :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
 
+  #:slipway.context{:path            "the context path, default '/'"
+                    :ring-handler    "the ring-handler descendant of this context-handler"
+                    :null-path-info? "true if /path is not redirected to /path/, default true"
+                    :virtual-hosts   "a list of ^String virtual hosts for the context"
+                    :error-handler   "the error-handler used by this context-handler for context level errors"
+                    :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
+
   #:slipway.security{:handler "identifies a SecurityHandler impl, 'jaas', 'hash', and 'openid' supported by default"}
 
   #:slipway.security.hash{:realm                 "optional Jetty authentication realm"
@@ -124,7 +131,8 @@
                                              ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
                                              ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 
-  #:slipway.session{:secure-request-only?    "set the secure flag on session cookies"
+  #:slipway.session{:enabled?                "are sessions enabled for this server? Default true"
+                    :secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"
                     :same-site               "set session cookie same-site policy to :none, :lax, or :strict"
                     :max-inactive-interval-s "max session idle time (in s)"
@@ -147,13 +155,6 @@
                        :max-frame-bytes          "max websocket frame size"
                        :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
                        :auto-fragment            "websocket auto fragment (boolean), default true"}
-
-  #:slipway.context{:path            "the context path, default '/'"
-                    :ring-handler    "the ring-handler descendant of this context-handler"
-                    :null-path-info? "true if /path is not redirected to /path/, default true"
-                    :virtual-hosts   "a list of ^String virtual hosts for the context"
-                    :error-handler   "the error-handler used by this context-handler for context level errors"
-                    :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 
   #:slipway.server{:connector     "the connector supported by this server"
                    :connectors    "the connectors supported by this server (when many connectors supported)"

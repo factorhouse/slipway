@@ -7,10 +7,6 @@
 
 (defmethod handler :default [_] nil)
 
-(defmulti session-enabled? ::handler)
-
-(defmethod handler :default [_] true)
-
 (defn user
   [^Request request]
   (when-let [^AuthenticationState authentication-state (Request/getAuthenticationState request)]

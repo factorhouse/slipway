@@ -25,13 +25,12 @@
     handler))
 
 (defn wrap-session
-  [handler opts]
-  (if (and (not (::security/session-disabled? opts))  ;; possible to manually disable sessions in some scenarios
-           (security/session-enabled? opts))          ;; some security implementations definitively don't require sessions
-    (let [session-handler (session/handler opts)]
-      (.setHandler session-handler ^Handler handler)
-      session-handler)
-    handler))
+  "In some circumstances a server may be configured without a SessionHandler
+   For example a stateless API with OpenID client-credentials authorization flow"
+  [^Handler security-handler opts]
+  (if-let [session-handler (session/handler opts)]
+    (doto session-handler (.setHandler security-handler))
+    security-handler))
 
 (defn wrap-security-and-session
   "We only wrap the session handler if you definitely have a security handler
@@ -79,12 +78,12 @@
     context-handler))
 
 (comment
-  #:slipway.context{:path            "the context path, default '/'"
-                    :ring-handler    "the ring-handler descendant of this context-handler"
-                    :null-path-info? "true if /path is not redirected to /path/, default true"
-                    :virtual-hosts   "a list of ^String virtual hosts for the context"
-                    :error-handler   "the error-handler used by this context-handler for context level errors"
-                    :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"})
+  #:slipway.context{:path             "the context path, default '/'"
+                    :ring-handler     "the ring-handler descendant of this context-handler"
+                    :null-path-info?  "true if /path is not redirected to /path/, default true"
+                    :virtual-hosts    "a list of ^String virtual hosts for the context"
+                    :error-handler    "the error-handler used by this context-handler for context level errors"
+                    :handlers         "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"})
 
 (defmethod server/handler :default
   [^Server server opts]

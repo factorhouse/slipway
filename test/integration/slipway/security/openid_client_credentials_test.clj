@@ -11,6 +11,7 @@
             [slipway.security.openid.jwt.verification :as openid.jwt.verification]
             [slipway.sente]
             [slipway.server :as server]
+            [slipway.session :as session]
             [slipway.test-server :as test-server])
   (:import (com.nimbusds.jose JOSEObjectType JWSAlgorithm JWSHeader$Builder)
            (com.nimbusds.jose.crypto RSASSASigner)
@@ -49,6 +50,7 @@
        #::server{:connector     {::http/port 3000}
                  :handler       {::context/ring-handler              (app/handler)
                                  ::security/handler                  "openid"
+                                 ::session/enabled?                  false
                                  ::openid/authorization-flow         :client-credentials
                                  ::openid.jwk/source                 :rsa
                                  ::openid.jwk.rsa/key                rsa-key
