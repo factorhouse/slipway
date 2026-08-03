@@ -47,6 +47,7 @@
     {:name                  user-id
      :roles                 user-roles
      :expires-at            (when-let [access-token-exp (get access-token "exp")]
+                              ;; Jetty JWT library provides exp as a java.lang.Long at this point
                               (Instant/ofEpochSecond ^Long access-token-exp))
      ::openid/response      response
      ::openid/id-token      id-token

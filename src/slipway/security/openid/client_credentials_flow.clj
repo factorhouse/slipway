@@ -6,7 +6,7 @@
             [slipway.security.openid.jwt :as openid.jwt])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
-           (java.time Instant)
+           (java.util Date)
            (java.util.function Function)
            (javax.security.auth Subject)
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
@@ -39,7 +39,8 @@
     {:name                 user-id
      :roles                user-roles
      :expires-at           (when-let [access-token-exp (get access-token "exp")]
-                             (Instant/ofEpochSecond ^Long access-token-exp))
+                             ;; JOSE Nimbus library provides exp as a java.util.Date at this point
+                             (.toInstant ^Date access-token-exp))
      ::openid/access-token access-token}))
 
 (defn login-service

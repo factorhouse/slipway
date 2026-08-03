@@ -1,7 +1,8 @@
 (ns slipway.security.openid.client-credentials-flow-test
   (:require [clojure.test :refer [deftest is]]
             [slipway.security.openid.client-credentials-flow :as client-credentials-flow]
-            [slipway.security.openid.jwt :as openid.jwt]))
+            [slipway.security.openid.jwt :as openid.jwt])
+  (:import (com.nimbusds.jwt.util DateUtils)))
 
 (defn munge-expiry
   [m]
@@ -13,13 +14,16 @@
           :roles                                #{"1" "2" "3"}
           :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
-                                                 "exp"   1311281970
+                                                 ;; JOSE Nimbus library decodes exp to java.util.Date
+                                                 ;; This is different to the authorization flow which where the JWT
+                                                 ;; decoding is handled by Jetty, and remains a long at this point
+                                                 "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
          (munge-expiry
           (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   1311281970
+                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                           "roles" ["1" "2" "3"]
                                           "other" {"name"  "x-name"
                                                    "roles" ["x-role"]}}
@@ -30,13 +34,13 @@
           :roles                                #{"x-role"}
           :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
-                                                 "exp"   1311281970
+                                                 "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
          (munge-expiry
           (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   1311281970
+                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                           "roles" ["1" "2" "3"]
                                           "other" {"name"  "x-name"
                                                    "roles" ["x-role"]}}
@@ -49,13 +53,13 @@
           :roles                                #{"1"}
           :expires-at                           1311281970
           :slipway.security.openid/access-token {"sub"   "factor-dev"
-                                                 "exp"   1311281970
+                                                 "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                                  "other" {"roles" ["x-role"]
                                                           "name"  "x-name"}
                                                  "roles" "1"}}
          (munge-expiry
           (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   1311281970
+                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
                                           "roles" "1"
                                           "other" {"name"  "x-name"
                                                    "roles" ["x-role"]}}
