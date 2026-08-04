@@ -46,7 +46,8 @@
 (deftest redeem-refresh-token
 
   (is (= false
-         (.redeemRefreshToken (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
-                                                             {:roles ["one" "two" "three"]}
-                                                             (constantly nil))))))
+         (.redeemRefreshToken
+          (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
+                                         {:roles ["one" "two" "three"]}
+                                         (constantly nil))))))
 

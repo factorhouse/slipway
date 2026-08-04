@@ -29,9 +29,10 @@
 
 (defn -redeemRefreshToken
   [this]
-  (let [{:keys [user-state refresh-token-fn]} @(.state this)
-        _new-request (refresh-token-fn (::openid/response user-state))]
-    (log/debug "something")))
+  (let [{:keys [user-state refresh-token-fn]} @(.state this)]
+    (if-let [_new-request (refresh-token-fn (::openid/response user-state))]
+      true
+      false)))
 
 (defn -getState
   [this]
