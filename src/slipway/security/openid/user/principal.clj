@@ -1,6 +1,5 @@
 (ns slipway.security.openid.user.principal
-  (:require [clojure.tools.logging :as log]
-            [slipway.principal :as principal]
+  (:require [slipway.principal :as principal]
             [slipway.security.openid :as-alias openid])
   (:gen-class
    :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
