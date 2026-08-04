@@ -59,10 +59,10 @@
      (.isBefore expires-at at))))
 
 (defn logout
-  [{:keys [^Request slipway.request/request ^Response slipway.request/response ::identity]}]
+  [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as req}]
   (when request
     (try
-      (log/debug "logout" (select-keys identity [::type ::name]))
+      (log/debug "logout" (type req) (name req))
       (AuthenticationState/logout request response)
       (some-> (.getSession request false) (.invalidate))
       (catch Exception ex

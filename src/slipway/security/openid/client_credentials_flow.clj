@@ -57,7 +57,7 @@
           (log/debugf "decoded [%s] claims from access token" (count user-access-token))
           (let [user-state       (state user-access-token opts)
                 user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
-                new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state)
+                new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state (constantly nil))
                 new-subject      (Subject.)]
             (-> (.getPrincipals new-subject) (.add new-principal))
             (-> (.getPrivateCredentials new-subject) (.add user-credentials))

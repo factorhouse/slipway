@@ -122,4 +122,5 @@
   [["/up" Constraint/ALLOWED]
    ["/css/*" Constraint/ALLOWED]
    ["/img/*" Constraint/ALLOWED]
+   ["/logout-success" Constraint/ALLOWED]
    ["/*" Constraint/ANY_USER]])

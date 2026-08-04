@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [slipway.security :as security])
   (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
-           (org.eclipse.jetty.security.openid OpenIdCredentials)
+           (org.eclipse.jetty.security.openid OpenIdConfiguration OpenIdConfiguration$Builder OpenIdCredentials)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
 (extend-protocol p/Datafiable
@@ -17,6 +17,21 @@
   (datafy [principal]
     (assoc (.getState principal) ::principal principal)))
 
+(defn configuration ^OpenIdConfiguration
+  [{::keys [issuer client-id client-secret authorization-endpoint token-endpoint end-session-endpoint
+            authentication-method http-client scopes logout-when-id-token-is-expired?]
+    :or    {scopes ["profile" "email"]}}]
+  (let [config-builder (cond-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
+                         authorization-endpoint (.authorizationEndpoint authorization-endpoint)
+                         token-endpoint (.tokenEndpoint token-endpoint)
+                         end-session-endpoint (.endSessionEndpoint end-session-endpoint)
+                         authentication-method (.authenticationMethod authentication-method)
+                         http-client (.httpClient http-client)
+                         (some? scopes) (.scopes (some->> scopes (into-array String)))
+                         (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?))]
+    (log/debugf "creating openid configuration for %s with scopes %s" issuer (cons "openid" scopes))
+    (.build config-builder)))
+
 (comment
   #:slipway.security.openid{:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
                             :issuer                           "the URL of the OpenID provider"
@@ -28,8 +43,8 @@
                             :end-session-endpoint             "the URL of the OpenID provider's end session endpoint if configured"
                             :authentication-method            "authentication method to use with the Token Endpoint"
                             :http-client                      "the (optional) HttpClient instance to use"
-                            :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested"
-                            :logout-when-id-token-is-expired? "whether to logout when the ID token is expired"
+                            :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested, default is [\"profile\" \"email\"]"
+                            :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
                             :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
                             :oidc-redirect-error              "optional page where authentication errors are redirected"
                             :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"

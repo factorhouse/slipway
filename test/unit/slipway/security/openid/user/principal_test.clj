@@ -14,32 +14,39 @@
 
   (let [creds (OpenIdCredentials. {"sub" "factor-dev"
                                    "a"   "b"})
-        state {::principal/name "name-comes-from-state-not-credentials"
+        state {::principal/type ::openid/principal
+               ::principal/name "name-comes-from-state-not-credentials"
                ::user/roles     ["one" "two" "three"]}]
 
-    (is (instance? Principal (OpenIdUserPrincipalWithState. creds state)))
-    (is (instance? OpenIdUserPrincipal (OpenIdUserPrincipalWithState. creds state)))
+    (is (instance? Principal (OpenIdUserPrincipalWithState. creds state (constantly nil))))
+    (is (instance? OpenIdUserPrincipal (OpenIdUserPrincipalWithState. creds state (constantly nil))))
 
     (is (= "name-comes-from-state-not-credentials"
-           (.getName (OpenIdUserPrincipalWithState. creds state))))
+           (.getName (OpenIdUserPrincipalWithState. creds state (constantly nil)))))
 
     ;; this mimics the behaviour of OpenIdUserPrincipal where .getName and .toString both return the name
     (is (= "name-comes-from-state-not-credentials"
-           (.toString (OpenIdUserPrincipalWithState. creds state))))
+           (.toString (OpenIdUserPrincipalWithState. creds state (constantly nil)))))
 
     (is (= creds
-           (.getCredentials (OpenIdUserPrincipalWithState. creds state))))))
+           (.getCredentials (OpenIdUserPrincipalWithState. creds state (constantly nil)))))))
 
+(deftest get-state
+
+  (is (= {::principal/type      ::openid/principal
+          ::principal/name      "name-comes-from-state-not-credentials"
+          ::user/roles          ["one" "two" "three"]
+          ::openid/access-token {"exp" 1311281975}}
+         (.getState (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
+                                                   {::principal/type      ::openid/principal
+                                                    ::principal/name      "name-comes-from-state-not-credentials"
+                                                    ::user/roles          ["one" "two" "three"]
+                                                    ::openid/access-token {"exp" 1311281975}}
+                                                   (constantly nil))))))
 (deftest redeem-refresh-token
 
   (is (= false
          (.redeemRefreshToken (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
-                                                             {:roles ["one" "two" "three"]})))))
-(deftest get-state
-
-  (is (= {:roles                ["one" "two" "three"]
-          ::openid/access-token {"exp" 1311281975}}
-         (.getState (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
-                                                   {::openid/access-token {"exp" 1311281975}
-                                                    :roles                ["one" "two" "three"]})))))
+                                                             {:roles ["one" "two" "three"]}
+                                                             (constantly nil))))))
 

@@ -36,7 +36,7 @@
                                     ::openid/issuer                "http://localhost:8080/realms/master"
                                     ::openid/client-id             "slipway"
                                     ::openid/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
-                                    ::openid/scopes                ["profile" "email"]
+                                    ;;::openid/scopes                ["profile" "email"] ;; these are the no-config defaults, "openid" is always present regardless.
                                     ::openid.jwt/user-id-path      ["name"]
                                     ::openid.jwt/user-roles-path   ["realm_access" "roles"]
 

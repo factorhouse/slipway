@@ -4,6 +4,7 @@
             [slipway.principal :as principal]
             [slipway.security.openid :as openid]
             [slipway.security.openid.jwt :as openid.jwt]
+            [slipway.security.openid.jwt.refresh :as refresh]
             [slipway.user :as user])
   (:import (java.security Principal)
            (java.time Instant)
@@ -54,8 +55,7 @@
                               (Instant/ofEpochSecond ^Long access-token-exp))
      ::openid/response      response
      ::openid/id-token      id-token
-     ::openid/access-token  access-token
-     ::openid/refresh-token (get response "refresh_token")}))
+     ::openid/access-token  access-token}))
 
 (defn login-module
   "This roles-service is exclusively for OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint,
@@ -63,17 +63,18 @@
    In that flow you can rely on TLS (HTTPS) to authenticate the issuer instead of verifying the JWT signature.
    While that normally only applies to the ID token, in our case the Access token is intended for local use inside this
    client service JVM, and so the same logic applies."
-  ^LoginService [realm opts]
-  (let [id-service-state (atom nil)]
+  ^LoginService [^OpenIdConfiguration openid-config opts]
+  (let [id-service-state (atom nil)
+        refresh-token-fn (refresh/redeem-token-fn openid-config)]
     (reify LoginService
       (^String getName [_]
-        (str realm "-roles"))
+        (str (.getIssuer openid-config) "-roles"))
       (^UserIdentity login [_ ^String _username ^Object _credentials ^Request _request ^Function _get-or-create])
       (^UserIdentity getUserIdentity [_ ^Subject _subject ^Principal user-principal ^boolean _create?]
         (let [user-creds        (.getCredentials ^OpenIdUserPrincipal user-principal) ;; roles-service is only used with OpenID
               user-access-token (access-token user-creds)
               user-state        (state user-creds user-access-token opts)
-              new-principal     (OpenIdUserPrincipalWithState. user-creds user-state)
+              new-principal     (OpenIdUserPrincipalWithState. user-creds user-state refresh-token-fn)
               new-subject       (Subject.)]
           (-> (.getPrincipals new-subject) (.add new-principal))
           (-> (.getPrivateCredentials new-subject) (.add user-creds))
@@ -87,19 +88,6 @@
         (reset! id-service-state identity-service))
       (^void logout [_ ^UserIdentity _user]))))
 
-(defn configuration ^OpenIdConfiguration
-  [{::openid/keys [issuer client-id client-secret authorization-endpoint token-endpoint end-session-endpoint
-                   authentication-method http-client scopes logout-when-id-token-is-expired?]}]
-  (let [config-builder (cond-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
-                         authorization-endpoint (.authorizationEndpoint authorization-endpoint)
-                         token-endpoint (.tokenEndpoint token-endpoint)
-                         end-session-endpoint (.endSessionEndpoint end-session-endpoint)
-                         authentication-method (.authenticationMethod authentication-method)
-                         http-client (.httpClient http-client)
-                         (some? scopes) (.scopes (some->> scopes (into-array String)))
-                         (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?))]
-    (.build config-builder)))
-
 (defn authenticator ^OpenIdAuthenticator
   [config {::openid/keys [oidc-redirect-success oidc-redirect-error oidc-redirect-logout]
            :or           {oidc-redirect-success OpenIdAuthenticator/J_SECURITY_CHECK}}]
@@ -108,8 +96,8 @@
 (defmethod openid/flow-handler :default
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing authorization code flow")
-  (let [openid-config (configuration opts)]
+  (let [openid-config (openid/configuration opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (authenticator openid-config opts))
-      (.setLoginService (OpenIdLoginService. openid-config (login-module issuer opts)))
+      (.setLoginService (OpenIdLoginService. openid-config (login-module openid-config opts)))
       (.setRealmName issuer))))
