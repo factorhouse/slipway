@@ -71,7 +71,7 @@
         (is (= 401
                (:status (client/request {:url              "http://localhost:3000/user"
                                          :method           "GET"
-                                         :headers          {:authorization (str "Bearer gibberish")}
+                                         :headers          {:authorization "Bearer gibberish"}
                                          :throw-exceptions false})))))
 
       (testing "valid token"

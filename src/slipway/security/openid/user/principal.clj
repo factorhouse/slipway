@@ -1,5 +1,6 @@
 (ns slipway.security.openid.user.principal
-  (:require [slipway.principal :as principal]
+  (:require [clojure.tools.logging :as log]
+            [slipway.principal :as principal]
             [slipway.security.openid :as-alias openid])
   (:gen-class
    :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
@@ -28,8 +29,9 @@
 
 (defn -redeemRefreshToken
   [this]
-  (let [{:keys [user-state refresh-token-fn]} @(.state this)]
-    (let [new-request (refresh-token-fn (::openid/response user-state))])))
+  (let [{:keys [user-state refresh-token-fn]} @(.state this)
+        _new-request (refresh-token-fn (::openid/response user-state))]
+    (log/debug "something")))
 
 (defn -getState
   [this]

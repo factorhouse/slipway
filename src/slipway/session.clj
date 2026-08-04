@@ -48,7 +48,7 @@
             using-cookies           true
             using-uri-parameters    false}}]
   (when enabled?
-    (log/debugf "creating session handler")
+    (log/debug "creating session handler")
     (let [same-site       (cookie-same-site same-site)
           session-handler (doto (SessionHandler.)
                             (.setUsingCookies using-cookies)

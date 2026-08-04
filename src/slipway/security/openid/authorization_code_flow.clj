@@ -11,7 +11,7 @@
            (java.util.function Function)
            (javax.security.auth Subject)
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
-           (org.eclipse.jetty.security.openid JwtDecoder OpenIdAuthenticator OpenIdConfiguration OpenIdConfiguration$Builder OpenIdCredentials OpenIdLoginService OpenIdUserPrincipal)
+           (org.eclipse.jetty.security.openid JwtDecoder OpenIdAuthenticator OpenIdConfiguration OpenIdCredentials OpenIdLoginService OpenIdUserPrincipal)
            (org.eclipse.jetty.server Request)
            (slipway.security.openid.user.principal OpenIdUserPrincipalWithState)))
 
@@ -47,15 +47,15 @@
         user-id    (username id-token access-token opts)
         user-roles (roles id-token access-token opts)]
     (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
-    {::principal/type       ::openid/principal
-     ::principal/name       user-id
-     ::user/roles           user-roles
-     ::user/expires-at      (when-let [access-token-exp (get access-token "exp")]
-                              ;; Jetty JWT library provides exp as a java.lang.Long at this point
-                              (Instant/ofEpochSecond ^Long access-token-exp))
-     ::openid/response      response
-     ::openid/id-token      id-token
-     ::openid/access-token  access-token}))
+    {::principal/type      ::openid/principal
+     ::principal/name      user-id
+     ::user/roles          user-roles
+     ::user/expires-at     (when-let [access-token-exp (get access-token "exp")]
+                             ;; Jetty JWT library provides exp as a java.lang.Long at this point
+                             (Instant/ofEpochSecond ^Long access-token-exp))
+     ::openid/response     response
+     ::openid/id-token     id-token
+     ::openid/access-token access-token}))
 
 (defn login-module
   "This roles-service is exclusively for OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint,
