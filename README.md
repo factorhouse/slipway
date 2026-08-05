@@ -61,7 +61,9 @@ In this example we have:
 * An API running on https/3443 with OIDC client credentials auth at path `/api`
 * An OTEL endpoint on http/3000 with Basic/Hash-User auth at path `/otel`
 
-See the integration tests For runnable, example servers.
+See the integration tests for runnable, example servers.
+
+See [slipway.clj](src/slipway.clj) for all configuration options.
 
 ```clojure
 (slipway/start
