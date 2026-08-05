@@ -121,15 +121,16 @@
   #:slipway.security.openid.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
                                 :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
 
-  #:slipway.security.openid.jwt{:user-roles-source "the token containing user roles, either :access-token or :id-token (default is :access-token)"
-                                :user-roles-path   "the path within the :roles token to find user roles, default is [\"roles\"]"
-                                :user-id-source    "the token containing user id, either :access-token or :id-token (default is :id-token)"
-                                :user-id-path      "the path within the :id-token token to find user name, default is [\"sub\"]"}
+  #:slipway.security.openid.jwt{:user-roles-source      "the token containing user roles, either :access-token or :id-token (default is :access-token)"
+                                :user-roles-path        "the path within the :roles token to find user roles, default is [\"roles\"]"
+                                :user-id-source         "the token containing user id, either :access-token or :id-token (default is :id-token)"
+                                :user-id-path           "the path within the :id-token token to find user name, default is [\"sub\"]"
+                                :user-expiration-source "the token used for session expiration, either :access-token or :id-token (default is :access-token)"}
 
-  #:slipway.security.openid.jwt.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
-                                             ::exact-iss       "required: the URL of the OpenID provider"
-                                             ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
-                                             ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
+  #:slipway.security.openid.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+                                                ::exact-iss       "required: the URL of the OpenID provider"
+                                                ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
+                                                ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 
   #:slipway.session{:enabled?                "are sessions enabled for this server? Default true"
                     :secure-request-only?    "set the secure flag on session cookies"
