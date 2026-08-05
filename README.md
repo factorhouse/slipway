@@ -59,7 +59,7 @@ In this example we have:
 
 * A web UI running on https/3443 with websockets enabled and OIDC authorization code auth at path `/`
 * An API running on https/3443 with OIDC client credentials auth at path `/api`
-* A OTEL endpoint on http/3000 with Basic/Hash-User auth at path `/otel`
+* An OTEL endpoint on http/3000 with Basic/Hash-User auth at path `/otel`
 
 See the integration tests For runnable, example servers.
 
