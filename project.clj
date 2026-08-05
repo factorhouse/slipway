@@ -7,7 +7,7 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev      {:dependencies   [[clj-kondo "2026.07.24" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.08.04" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
                                          [ch.qos.logback/logback-classic "1.5.38"]
                                          [hiccup "2.0.0"]
@@ -32,14 +32,14 @@
                  [org.ring-clojure/ring-core-protocols "1.15.5"]
                  [com.taoensso/sente "1.17.0"]
                  [com.nimbusds/nimbus-jose-jwt "10.9.1"]
-                 [org.eclipse.jetty/jetty-server "12.1.11"]
-                 [org.eclipse.jetty/jetty-session "12.1.11"]
-                 [org.eclipse.jetty/jetty-security "12.1.11"]
-                 [org.eclipse.jetty/jetty-openid "12.1.11"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.11"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.11"]
-                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.11"]
-                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.11"]]
+                 [org.eclipse.jetty/jetty-server "12.1.12"]
+                 [org.eclipse.jetty/jetty-session "12.1.12"]
+                 [org.eclipse.jetty/jetty-security "12.1.12"]
+                 [org.eclipse.jetty/jetty-openid "12.1.12"]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.12"]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.12"]
+                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.12"]
+                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.12"]]
 
   :source-paths ["src"]
   :test-paths ["test/unit" "test/integration"]
