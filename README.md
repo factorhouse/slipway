@@ -11,7 +11,7 @@
     * [Archived Versions](#archived-versions)
 * [Using Slipway](#using-slipway)
     * [JVM Version Support](#jvm-version-support)
-* [Configuring Slipway](#configuring-slipway)
+* [Configuring and Starting Slipway](#configuring-and-starting-slipway)
 * [License](#license)
 
 ----
@@ -49,7 +49,7 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
 Slipway (and Jetty 12.1) Requires Java 17+.
 
-## Configuring Slipway
+## Configuring and Starting Slipway
 
 **Note**: This guide will be properly updated shortly, prior to the upcoming 2.1 release.
 
