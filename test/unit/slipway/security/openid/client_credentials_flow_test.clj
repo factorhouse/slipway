@@ -27,12 +27,12 @@
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
          (munge-expiry
-          (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
-                                          "roles" ["1" "2" "3"]
-                                          "other" {"name"  "x-name"
+          (client-credentials-flow/user-state {"sub" "factor-dev"
+                                          "exp"      (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                          "roles"    ["1" "2" "3"]
+                                          "other"    {"name"  "x-name"
                                                    "roles" ["x-role"]}}
-                                         {}))))
+                                              {}))))
 
   ;; different configured path for name and roles
   (is (= {::principal/type                      ::openid/principal
@@ -45,12 +45,12 @@
                                                           "name"  "x-name"}
                                                  "roles" ["1" "2" "3"]}}
          (munge-expiry
-          (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
-                                          "roles" ["1" "2" "3"]
-                                          "other" {"name"  "x-name"
+          (client-credentials-flow/user-state {"sub" "factor-dev"
+                                          "exp"      (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                          "roles"    ["1" "2" "3"]
+                                          "other"    {"name"  "x-name"
                                                    "roles" ["x-role"]}}
-                                         {::openid.jwt/user-roles-path ["other" "roles"]
+                                              {::openid.jwt/user-roles-path ["other" "roles"]
                                           ::openid.jwt/user-id-path    ["other" "name"]}))))
 
   ;; roles is scalar in the jwt, is presented as a single-element-set in the output
@@ -65,9 +65,9 @@
                                                           "name"  "x-name"}
                                                  "roles" "1"}}
          (munge-expiry
-          (client-credentials-flow/state {"sub"   "factor-dev"
-                                          "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
-                                          "roles" "1"
-                                          "other" {"name"  "x-name"
+          (client-credentials-flow/user-state {"sub" "factor-dev"
+                                          "exp"      (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                          "roles"    "1"
+                                          "other"    {"name"  "x-name"
                                                    "roles" ["x-role"]}}
-                                         {})))))
+                                              {})))))

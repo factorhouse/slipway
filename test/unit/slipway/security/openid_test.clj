@@ -22,7 +22,7 @@
                                                           {::principal/type ::openid/principal
                                                            ::principal/name "factor-dev"
                                                            ::user/roles     ["one" "two" "three"]}
-                                                          (constantly nil))]
+                                                          nil)]
       (is (= {::principal/type   ::openid/principal
               ::principal/name   "factor-dev"
               ::user/roles       ["one" "two" "three"]

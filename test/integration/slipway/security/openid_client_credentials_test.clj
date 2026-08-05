@@ -8,7 +8,7 @@
             [slipway.security.openid :as openid]
             [slipway.security.openid.jwk :as openid.jwk]
             [slipway.security.openid.jwk.rsa :as openid.jwk.rsa]
-            [slipway.security.openid.jwt.verification :as openid.jwt.verification]
+            [slipway.security.openid.jwt.at.verification :as openid.jwt.at.verification]
             [slipway.sente]
             [slipway.server :as server]
             [slipway.session :as session]
@@ -48,15 +48,15 @@
 
       (test-server/start!
        #::server{:connector     {::http/port 3000}
-                 :handler       {::context/ring-handler              (app/handler)
-                                 ::security/handler                  :openid
-                                 ::session/enabled?                  false
-                                 ::openid/authorization-flow         :client-credentials
-                                 ::openid.jwk/source                 :rsa
-                                 ::openid.jwk.rsa/key                rsa-key
-                                 ::openid.jwt.verification/exact-iss "http://localhost:8080/realms/master"
-                                 ::openid.jwt.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
-                                 ::openid/constraint-mappings        app/constraints}
+                 :handler       {::context/ring-handler                 (app/handler)
+                                 ::security/handler                     :openid
+                                 ::session/enabled?                     false
+                                 ::openid/authorization-flow            :client-credentials
+                                 ::openid.jwk/source                    :rsa
+                                 ::openid.jwk.rsa/key                   rsa-key
+                                 ::openid.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                                 ::openid.jwt.at.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                 ::openid/constraint-mappings           app/constraints}
                  :error-handler app/server-error-handler})
 
       (testing "no authorization header"

@@ -5,6 +5,7 @@
             [slipway.security.openid.bearer-token :as bearer-token]
             [slipway.security.openid.jwks]
             [slipway.security.openid.jwt :as openid.jwt]
+            [slipway.security.openid.jwt.at :as openid.jwt.at]
             [slipway.user :as user])
   (:import (com.nimbusds.jwt.proc JWTProcessor)
            (java.security Principal)
@@ -31,7 +32,7 @@
   (let [roles-value (get-in access-token user-roles-path)]
     (if (string? roles-value) #{roles-value} (set roles-value))))
 
-(defn state
+(defn user-state
   [access-token {::openid.jwt/keys [user-id-path]
                  :or               {user-id-path ["sub"]}
                  :as               opts}]
@@ -55,14 +56,17 @@
       (^UserIdentity login [_ ^String _username ^Object credentials ^Request _request ^Function _get-or-create]
         (when-let [user-access-token (-> (.getProcessor processor-bean) (access-token credentials))]
           (log/debugf "decoded [%s] claims from access token" (count user-access-token))
-          (let [user-state       (state user-access-token opts)
+          (let [user-state       (user-state user-access-token opts)
                 user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
-                new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state (constantly nil))
+                new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state nil)
                 new-subject      (Subject.)]
             (-> (.getPrincipals new-subject) (.add new-principal))
             (-> (.getPrivateCredentials new-subject) (.add user-credentials))
             (.setReadOnly new-subject)
-            (.newUserIdentity ^IdentityService @id-service-state new-subject new-principal (into-array String (:roles user-state))))))
+            (.newUserIdentity ^IdentityService @id-service-state
+                              new-subject
+                              new-principal
+                              (into-array String (user/roles user-state))))))
       (^UserIdentity getUserIdentity [_ ^Subject _subject ^Principal _user-principal ^boolean _create?])
       (^boolean validate [_ ^UserIdentity _user]
         true)
@@ -75,7 +79,7 @@
 (defmethod openid/flow-handler :client-credentials
   [{::openid/keys [issuer] :as opts}]
   (log/debug "initializing client credentials flow")
-  (let [jwt-processor-bean (openid.jwt/processor-bean opts)]
+  (let [jwt-processor-bean (openid.jwt.at/processor-bean opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (bearer-token/authenticator))
       (.setLoginService (login-service issuer jwt-processor-bean opts))

@@ -1,17 +1,9 @@
 (ns slipway.security
-  (:require [clojure.core.protocols :as p])
-  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded SecurityHandler)
-           (org.eclipse.jetty.server Request)))
+  (:import (org.eclipse.jetty.security SecurityHandler)))
 
 (defmulti ^SecurityHandler handler ::handler)
 
 (defmethod handler :default [_] nil)
-
-(defn user
-  [^Request request]
-  (when-let [^AuthenticationState authentication-state (Request/getAuthenticationState request)]
-    (when (instance? AuthenticationState$Succeeded authentication-state)
-      (p/datafy authentication-state))))
 
 (comment
   #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :openid supported by default"})

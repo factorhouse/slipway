@@ -1,4 +1,4 @@
-(ns slipway.security.openid.jwt.verification
+(ns slipway.security.openid.jwt.at.verification
   (:require [clojure.tools.logging :as log])
   (:import (com.nimbusds.jose JOSEObjectType)
            (com.nimbusds.jose.proc DefaultJOSEObjectTypeVerifier JOSEObjectTypeVerifier)
@@ -7,6 +7,7 @@
            (java.util Set)))
 
 ;; https://datatracker.ietf.org/doc/html/rfc9068#section-2.1
+
 ;; typ MUST conform to "application/at+jwt", RECOMMENDED that "application/" be ommitted
 ;; Keycloak (and possibly other IdP) encodes "JWT" at token type, you can encode that here or:
 ;;  - https://www.keycloak.org/2025/04/keycloak-2620-released
@@ -21,7 +22,12 @@
     (DefaultJOSEObjectTypeVerifier. object-types-set)))
 
 (defn claims-verifier
-  [{::keys [exact-iss exact-aud]}]
+  "A claims verifier for OAuth 2.0 access tokens"
+  [{::keys [exact-iss exact-aud required-claims]
+    :or    {required-claims #{JWTClaimNames/JWT_ID
+                              JWTClaimNames/SUBJECT
+                              JWTClaimNames/ISSUED_AT
+                              JWTClaimNames/EXPIRATION_TIME}}}]
   (when-not exact-iss (throw (ex-info "missing required configuration: exact-iss" {})))
   (when-not exact-aud (throw (ex-info "missing required configuration: exact-aud" {})))
   (log/debugf "creating claims-verifier for issuer %s and aud %s" exact-iss exact-aud)
@@ -30,13 +36,10 @@
    (-> (JWTClaimsSet$Builder.)
        (.issuer exact-iss)
        (.build))
-   #{JWTClaimNames/JWT_ID
-     JWTClaimNames/SUBJECT
-     JWTClaimNames/ISSUED_AT
-     JWTClaimNames/EXPIRATION_TIME}))
+   required-claims))
 
 (comment
-  #:slipway.security.openid.jwt.verification{::exact-typ "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
-                                             ::exact-iss "required: the URL of the OpenID provider"
-                                             ::exact-aud "required: the audience of this service to match the 'aud' field in the jwt"
-                                             ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"})
+  #:slipway.security.openid.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+                                                ::exact-iss       "required: the URL of the OpenID provider"
+                                                ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
+                                                ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"})

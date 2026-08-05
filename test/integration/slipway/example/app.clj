@@ -8,8 +8,8 @@
             [ring.middleware.session.memory :as ring.session.memory]
             [slipway.error :as error]
             [slipway.example.html :as html]
-            [slipway.sente :as sente]
-            [slipway.user :as user])
+            [slipway.request :as request]
+            [slipway.sente :as sente])
   (:import (org.eclipse.jetty.security Constraint)))
 
 (def up (constantly {:body "" :status 200 :headers {"Content-Type" "text/plain"}}))
@@ -28,7 +28,7 @@
 
 (defn logout-handler
   [req]
-  (user/logout req)
+  (request/logout-user req)
   {:status  302
    :headers {"location" "/"}
    :session nil})

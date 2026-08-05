@@ -7,7 +7,7 @@
             [slipway.security.openid :as openid]
             [slipway.security.openid.jwks :as openid.jwks]
             [slipway.security.openid.jwt :as openid.jwt]
-            [slipway.security.openid.jwt.verification :as openid.jwt.verification]
+            [slipway.security.openid.jwt.at.verification :as openid.jwt.at.verification]
             [slipway.sente]
             [slipway.server :as server]
             [slipway.session :as session]))
@@ -62,14 +62,14 @@
 (defn start-with-openid-client-creds!
   []
   (start! #::server{:connector     {::http/port 3000}
-                    :handler       {::context/ring-handler              (app/handler)
-                                    ::security/handler                  :openid
-                                    ::session/enabled?                  false
-                                    ::openid/authorization-flow         :client-credentials
-                                    ::openid.jwks/endpoint              "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                                    ::openid.jwt.verification/exact-iss "http://localhost:8080/realms/master"
-                                    ::openid.jwt.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
-                                    ::openid.jwt/user-id-path           ["preferred_username"]
-                                    ::openid.jwt/user-roles-path        ["realm_access" "roles"]
-                                    ::openid/constraint-mappings        app/constraints}
+                    :handler       {::context/ring-handler                 (app/handler)
+                                    ::security/handler                     :openid
+                                    ::session/enabled?                     false
+                                    ::openid/authorization-flow            :client-credentials
+                                    ::openid.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                                    ::openid.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                                    ::openid.jwt.at.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                    ::openid.jwt/user-id-path              ["preferred_username"]
+                                    ::openid.jwt/user-roles-path           ["realm_access" "roles"]
+                                    ::openid/constraint-mappings           app/constraints}
                     :error-handler app/server-error-handler}))

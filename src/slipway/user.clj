@@ -1,18 +1,16 @@
 (ns slipway.user
   (:refer-clojure :exclude [identity name type])
   (:require [clojure.core.protocols :as p]
-            [clojure.tools.logging :as log]
             [slipway.principal :as principal]
-            [slipway.security.openid :as openid])
+            [slipway.security.openid :as-alias openid])
   (:import (java.time Instant)
-           (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded RolePrincipal UserIdentity UserPrincipal)
-           (org.eclipse.jetty.server Request Response)))
+           (org.eclipse.jetty.security AuthenticationState$Succeeded RolePrincipal UserIdentity UserPrincipal)))
 
 (extend-protocol p/Datafiable
 
   AuthenticationState$Succeeded
   (datafy [authentication-state]
-    #::{:identity (p/datafy (.getUserIdentity authentication-state))})
+    (p/datafy (.getUserIdentity authentication-state)))
 
   UserIdentity
   (datafy [identity]
@@ -35,35 +33,15 @@
   (datafy [role]
     (principal/from ::role (.getName role))))
 
-(defn identity
-  [req]
-  (::identity req))
+(def type principal/type)
 
-(defn type
-  [request]
-  (-> request identity principal/type))
+(def name principal/name)
 
-(defn name
-  [req]
-  (-> req identity principal/name))
-
-(defn roles
-  [req]
-  (-> req identity ::roles))
+(def roles ::roles)
 
 (defn expired?
-  ([req]
-   (expired? req (Instant/now)))
-  ([req ^Instant at]
-   (when-let [^Instant expires-at (-> req identity ::expires-at)]
+  ([user]
+   (expired? user (Instant/now)))
+  ([user ^Instant at]
+   (when-let [^Instant expires-at (::expires-at user)]
      (.isBefore expires-at at))))
-
-(defn logout
-  [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as req}]
-  (when request
-    (try
-      (log/debug "logout" (type req) (name req))
-      (AuthenticationState/logout request response)
-      (some-> (.getSession request false) (.invalidate))
-      (catch Exception ex
-        (log/error ex "logout error")))))

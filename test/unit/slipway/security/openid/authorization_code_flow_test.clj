@@ -22,14 +22,15 @@
           ::openid/access-token {"exp"   1311281970
                                  "other" {"roles" ["x-role"]}
                                  "roles" ["1" "2" "3"]}
-          ::openid/response     nil}
+          ::openid/response     {"access_token" "some-access-token"}}
          (munge-expiry
-          (authorization-code-flow/state
-           (OpenIdCredentials. {"sub"   "factor-dev"
-                                "other" {"id" "x-name"}})
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id" "x-name"}}
            {"roles" ["1" "2" "3"]
             "other" {"roles" ["x-role"]}
             "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {}))))
 
   ;; different configured path for name and roles (default tokens)
@@ -42,14 +43,15 @@
           ::openid/access-token {"other" {"roles" ["x-role"]}
                                  "roles" ["1" "2" "3"]
                                  "exp"   1311281970}
-          ::openid/response     nil}
+          ::openid/response     {"access_token" "some-access-token"}}
          (munge-expiry
-          (authorization-code-flow/state
-           (OpenIdCredentials. {"sub"   "factor-dev"
-                                "other" {"id" "x-name"}})
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id" "x-name"}}
            {"roles" ["1" "2" "3"]
             "other" {"roles" ["x-role"]}
             "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {::openid.jwt/user-roles-path ["other" "roles"]
             ::openid.jwt/user-id-path    ["other" "id"]}))))
 
@@ -64,15 +66,16 @@
           ::openid/access-token {"other" {"roles" ["x-role"]}
                                  "roles" ["1" "2" "3"]
                                  "exp"   1311281970}
-          ::openid/response     nil}
+          ::openid/response     {"access_token" "some-access-token"}}
          (munge-expiry
-          (authorization-code-flow/state
-           (OpenIdCredentials. {"sub"   "factor-dev"
-                                "other" {"id"    "x-name"
-                                         "roles" ["x-from-id-token"]}})
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id"    "x-name"
+                     "roles" ["x-from-id-token"]}}
            {"roles" ["1" "2" "3"]
             "other" {"roles" ["x-role"]}
             "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {::openid.jwt/user-roles-path   ["other" "roles"]
             ::openid.jwt/user-id-path      ["other" "id"]
             ::openid.jwt/user-roles-source :id-token}))))
@@ -88,15 +91,16 @@
                                           "roles" ["x-role"]}
                                  "roles" ["1" "2" "3"]
                                  "exp"   1311281970}
-          ::openid/response     nil}
+          ::openid/response     {"access_token" "some-access-token"}}
          (munge-expiry
-          (authorization-code-flow/state
-           (OpenIdCredentials. {"sub"   "factor-dev"
-                                "other" {"id" "x-name"}})
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id" "x-name"}}
            {"roles" ["1" "2" "3"]
             "other" {"roles" ["x-role"]
                      "id"    "y-name"}
             "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {::openid.jwt/user-roles-path ["other" "roles"]
             ::openid.jwt/user-id-path    ["other" "id"]
             ::openid.jwt/user-id-source  :access-token}))))
@@ -112,14 +116,15 @@
           ::openid/access-token {"other" {"roles" ["x-role"]}
                                  "roles" "1"
                                  "exp"   1311281970}
-          ::openid/response     nil}
+          ::openid/response     {"access_token" "some-access-token"}}
          (munge-expiry
-          (authorization-code-flow/state
-           (OpenIdCredentials. {"sub"   "factor-dev"
-                                "other" {"id" "x-name"}})
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id" "x-name"}}
            {"roles" "1"
             "other" {"roles" ["x-role"]}
             "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {})))))
 
 (deftest no-exp-field-in-access-token
@@ -133,10 +138,11 @@
                                  "sub"   "factor-dev"}
           ::openid/access-token {"other" {"roles" ["x-role"]}
                                  "roles" "1"}
-          ::openid/response     nil}
-         (authorization-code-flow/state
-          (OpenIdCredentials. {"sub"   "factor-dev"
-                               "other" {"id" "x-name"}})
+          ::openid/response     {"access_token" "some-access-token"}}
+         (authorization-code-flow/user-state
+          {"sub"   "factor-dev"
+           "other" {"id" "x-name"}}
           {"roles" "1"
            "other" {"roles" ["x-role"]}}
+          {"access_token" "some-access-token"}
           {}))))

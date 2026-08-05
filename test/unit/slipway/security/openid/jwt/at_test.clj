@@ -1,9 +1,9 @@
-(ns slipway.security.openid.jwt-test
+(ns slipway.security.openid.jwt.at-test
   (:require [clojure.test :refer [deftest is testing]]
             [slipway.security.openid.jwk :as jwk]
             [slipway.security.openid.jwk.rsa :as jwk.rsa]
-            [slipway.security.openid.jwt :as jwt]
-            [slipway.security.openid.jwt.verification :as jwt.verification])
+            [slipway.security.openid.jwt.at :as jwt.at]
+            [slipway.security.openid.jwt.at.verification :as jwt.at.verification])
   (:import (clojure.lang ExceptionInfo)
            (com.nimbusds.jose JOSEObjectType JWSAlgorithm JWSHeader$Builder)
            (com.nimbusds.jose.crypto RSASSASigner)
@@ -37,27 +37,27 @@
 
   (testing "missing required exact-iss"
     (is (thrown? ExceptionInfo
-                 (jwt/processor
+                 (jwt.at/processor
                   (jwk/source {::jwk/source  :rsa
                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                  {::jwt.verification/exact-aud "https://slipway.io/api"}))))
+                  {::jwt.at.verification/exact-aud "https://slipway.io/api"}))))
 
   (testing "missing required exact-aud"
     (is (thrown? ExceptionInfo
-                 (jwt/processor
+                 (jwt.at/processor
                   (jwk/source {::jwk/source  :rsa
                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                  {::jwt.verification/exact-iss "http://localhost:8080/realms/master"})))))
+                  {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"})))))
 
 (deftest processor-defaults
 
   (let [rsa-key   (jwk.rsa/jwk {})
         now       (.getEpochSecond (Instant/now))
-        processor (jwt/processor
+        processor (jwt.at/processor
                    (jwk/source {::jwk/source  :rsa
                                 ::jwk.rsa/key rsa-key})
-                   {::jwt.verification/exact-iss "http://localhost:8080/realms/master"
-                    ::jwt.verification/exact-aud "https://slipway.io/api"})]
+                   {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                    ::jwt.at.verification/exact-aud "https://slipway.io/api"})]
 
     (testing "all valid defaults met"
 
@@ -87,11 +87,11 @@
     (testing "jwt signed by the a different key"
 
       (is (thrown? BadJOSEException
-                   (-> (.process (jwt/processor
+                   (-> (.process (jwt.at/processor
                                   (jwk/source {::jwk/source  :rsa
                                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                                  {::jwt.verification/exact-iss "http://localhost:8080/realms/master"
-                                   ::jwt.verification/exact-aud "https://slipway.io/api"})
+                                  {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                                   ::jwt.at.verification/exact-aud "https://slipway.io/api"})
                                  (signed-jwt rsa-key
                                              {:typ "at+jwt"
                                               :iss "http://localhost:8080/realms/master"

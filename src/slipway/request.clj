@@ -1,9 +1,13 @@
 (ns slipway.request
-  (:require [slipway.security :as security])
-  (:import (java.util Locale)
+  (:require [clojure.core.protocols :as p]
+            [clojure.tools.logging :as log]
+            [slipway.user :as user])
+  (:import (java.time Instant)
+           (java.util Locale)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
-           (org.eclipse.jetty.server Request)))
+           (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
+           (org.eclipse.jetty.server Request Response)))
 
 (defn get-headers
   [^Request request]
@@ -39,9 +43,47 @@
      :ssl-client-cert    (ssl-client-cert request)
      :body               (Request/asInputStream request)}))
 
+(defn authenticated-user
+  [^Request request]
+  (when-let [^AuthenticationState authentication-state (Request/getAuthenticationState request)]
+    (when (instance? AuthenticationState$Succeeded authentication-state)
+      (p/datafy authentication-state))))
+
 (defn request-map
-  [request response]
+  [^Request request ^Response response]
   (merge (ring-like-map request)
-         (security/user request)
-         {::request request}
-         {::response response}))
+         {::request       request
+          ::response      response
+          ::user/identity (authenticated-user request)}))
+
+(defn user
+  [request-map]
+  (::user/identity request-map))
+
+(defn user-type
+  [request-map]
+  (user/type (user request-map)))
+
+(defn user-name
+  [request-map]
+  (user/name (user request-map)))
+
+(defn user-roles
+  [request-map]
+  (user/roles (user request-map)))
+
+(defn user-expired?
+  ([request-map]
+   (user/expired? (user request-map) (Instant/now)))
+  ([request-map ^Instant at]
+   (user/expired? (user request-map) at)))
+
+(defn logout-user
+  [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as req}]
+  (when request
+    (try
+      (log/debug "logout" (user-type req) (user-name req))
+      (AuthenticationState/logout request response)
+      (some-> (.getSession request false) (.invalidate))
+      (catch Exception ex
+        (log/error ex "logout error")))))
