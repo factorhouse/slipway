@@ -38,7 +38,7 @@
     (let [{:keys [user-state refresh-fns]} @state-atom]
       (log/debug "attempting to refresh user state")
       (when-let [new-user-state (redeem-refresh-token user-state refresh-fns)]
-        (swap! state-atom conj :user-state new-user-state)
+        (swap! state-atom assoc :user-state new-user-state)
         new-user-state))
     (catch Exception ex
       (log/debug ex "refresh token redemption failed")
