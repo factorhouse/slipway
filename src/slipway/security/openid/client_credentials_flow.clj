@@ -36,15 +36,16 @@
   [access-token {::openid.jwt/keys [user-id-path]
                  :or               {user-id-path ["sub"]}
                  :as               opts}]
-  (let [user-id    (get-in access-token user-id-path)
-        user-roles (roles access-token opts)]
-    (log/debugf "user %s authorized with [%s] roles" user-id (count user-roles))
+  (let [user-id         (get-in access-token user-id-path)
+        user-roles      (roles access-token opts)
+        user-expires-at (when-let [access-token-exp (get access-token "exp")]
+                          ;; JOSE Nimbus library provides exp as a java.util.Date at this point
+                          (.toInstant ^Date access-token-exp))]
+    (log/debugf "user %s authorized with [%s] roles, expiring at %s" user-id (count user-roles) user-expires-at)
     {::principal/type      ::openid/principal
      ::principal/name      user-id
      ::user/roles          user-roles
-     ::user/expires-at     (when-let [access-token-exp (get access-token "exp")]
-                             ;; JOSE Nimbus library provides exp as a java.util.Date at this point
-                             (.toInstant ^Date access-token-exp))
+     ::user/expires-at     user-expires-at
      ::openid/access-token access-token}))
 
 (defn login-service

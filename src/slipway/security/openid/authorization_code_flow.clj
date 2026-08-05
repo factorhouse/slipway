@@ -54,7 +54,7 @@
   (let [user-id         (username id-token access-token opts)
         user-roles      (roles id-token access-token opts)
         user-expires-at (expiration id-token access-token opts)]
-    (log/debugf "user %s authorized with [%s] roles, expiring at %s" user-id (count user-roles) expiration)
+    (log/debugf "user %s authorized with [%s] roles, expiring at %s" user-id (count user-roles) user-expires-at)
     {::principal/type      ::openid/principal
      ::principal/name      user-id
      ::user/roles          user-roles
