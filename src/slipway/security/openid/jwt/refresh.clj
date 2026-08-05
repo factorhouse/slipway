@@ -26,7 +26,7 @@
                                (.getContentAsString))
           response-data    (.fromJSON (JSON.) response-content)]
       (if (instance? Map response-data)
-        response-data
+        (into {} response-data)
         (throw (OpenIdCredentials$AuthenticationException. "malformed refresh token response"))))))
 
 (defn check-response
@@ -57,7 +57,7 @@
 (defn redeem-token-fn
   [^OpenIdConfiguration openid-config]
   (fn [original-id-token {:strs [refresh_token scope]}]
-    (log/debug "redeem refresh token")
+    (log/debug "redeeming refresh token")
     (if-not (str/blank? refresh_token)
       (let [response     (-> (claim-refresh-token
                               (.getHttpClient openid-config)

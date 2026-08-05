@@ -11,7 +11,7 @@
   OpenIdCredentials
   (datafy [credentials]
     {:id-token (.getClaims credentials)
-     :response (.getResponse credentials)})
+     :response (into {} (.getResponse credentials))})
 
   OpenIdUserPrincipalWithState
   (datafy [principal]

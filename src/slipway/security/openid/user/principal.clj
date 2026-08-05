@@ -18,14 +18,14 @@
 
 (defn redeem-refresh-token
   [{::openid/keys [id-token response] :as user-state} {:keys [refresh-token-fn user-state-fn]}]
-  ;; only redeem the refresh token when there is a refresh-token-fn and the user is expired
-  (when (and refresh-token-fn (user/expired? user-state))
-    ;; refresh-result may be nil if no refresh_token available in previous openid response
-    (when-let [refresh-result (refresh-token-fn id-token response)]
-      ;; id-token refresh is optional, so we fall-back to previous id-token if necessary
-      (user-state-fn (or (::openid/id-token refresh-result) id-token)
-                     (::openid/access-token refresh-result)
-                     (merge response (::openid/response refresh-result))))))
+  (if refresh-token-fn
+    (if (user/expired? user-state)
+      (if-let [refresh-result (refresh-token-fn id-token response)]
+        (user-state-fn (or (::openid/id-token refresh-result) id-token) ;; id-token refresh is optional
+                       (::openid/access-token refresh-result)
+                       (::openid/response refresh-result)))
+      (log/debug "user is not expired"))
+    (log/debug "no refresh-token-fn configured")))
 
 (defn refresh-user-state
   "Refresh the user state, will return:
@@ -36,6 +36,7 @@
   [state-atom]
   (try
     (let [{:keys [user-state refresh-fns]} @state-atom]
+      (log/debug "attempting to refresh user state")
       (when-let [new-user-state (redeem-refresh-token user-state refresh-fns)]
         (swap! state-atom conj :user-state new-user-state)
         new-user-state))
