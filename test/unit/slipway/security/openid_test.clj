@@ -13,7 +13,7 @@
 
     (is (= {:id-token {"sub" "factor-dev"
                        "a"   "b"}
-            :response nil}
+            :response {}}
            (p/datafy (OpenIdCredentials. {"sub" "factor-dev" "a" "b"})))))
 
   (testing "principal"
