@@ -9,8 +9,8 @@
 (defn processor ^JWTProcessor
   [jwk-source opts]
   (let [jwt-processor (DefaultJWTProcessor.)]
-    (.setJWSTypeVerifier jwt-processor (verification/type-verifier opts))
     (.setJWSKeySelector jwt-processor (jws/key-selector jwk-source opts))
+    (.setJWSTypeVerifier jwt-processor (verification/type-verifier opts))
     (.setJWTClaimsSetVerifier jwt-processor (verification/claims-verifier opts))
     jwt-processor))
 

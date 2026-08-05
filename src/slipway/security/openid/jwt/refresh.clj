@@ -12,7 +12,7 @@
 
 (defn claim-refresh-token
   [^HttpClient http-client token-endpoint client-id client-secret scope refresh-token]
-  (log/debug "redeem refresh token")
+  (log/debugf "claim refresh token with scope '%s'" scope)
   (let [fields (Fields.)]
     (.add fields "grant_type" "refresh_token")
     (.add fields "refresh_token" ^String refresh-token)
@@ -31,6 +31,7 @@
 
 (defn check-response
   [response]
+  (log/debugf "check refresh response with [%s] fields" (count response))
   (when (get response "error")
     (throw (ex-info "refresh token error" {:error response})))
   (when-not (get response "access_token")
@@ -40,7 +41,8 @@
   response)
 
 (defn validate-id-token-claims
-  [original-id-token {:strs [iss sub aud azp]}]
+  [original-id-token {:strs [iss sub aud azp] :as id-token}]
+  (log/debugf "validate id-token with [%s] claims" (count id-token))
   (when-not (= (get original-id-token "iss") iss)
     (throw (OpenIdCredentials$AuthenticationException. "refreshed id-token 'iss' field differs from original")))
   (when-not (= (get original-id-token "sub") sub)
