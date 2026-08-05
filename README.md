@@ -16,8 +16,6 @@
 
 ----
 
-![Slipway Login](docs/img/slipway-auth.png)
-
 # Introduction
 
 [Eclipse Jetty](https://www.eclipse.org/jetty/) is the web server at the heart of our products
@@ -49,8 +47,6 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 ### JVM Version Support
 
 Slipway (and Jetty 12.1) Requires Java 17+.
-
-![Slipway Home](docs/img/slipway-home.png)
 
 ## Configuring Slipway
 
