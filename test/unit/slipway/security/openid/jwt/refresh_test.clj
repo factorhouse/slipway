@@ -7,10 +7,10 @@
 (deftest check-response
 
   ;; required access_token and token_type
-  (is {"access_token" "a-token"
-       "token_type"   "Bearer"}
-      (refresh/check-response {"access_token" "a-token"
-                               "token_type"   "Bearer"}))
+  (is (= {"access_token" "a-token"
+          "token_type"   "Bearer"}
+         (refresh/check-response {"access_token" "a-token"
+                                  "token_type"   "Bearer"})))
 
   ;; no access token
   (is (thrown? OpenIdCredentials$AuthenticationException
