@@ -117,7 +117,7 @@
           [:div.mt-5.border-t.border-gray-200
            [:dl.divide-y.divide-gray-200
             [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
-             [:dt.text-sm.font-medium.text-gray-500 "User-type"]
+             [:dt.text-sm.font-medium.text-gray-500 "User Type"]
              [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
               [:span.flex-grow (str (request/user-type req))]]]
             [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4

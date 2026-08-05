@@ -17,23 +17,32 @@
    :prefix "-"))
 
 (defn redeem-refresh-token
-  [refresh-token-fn user-state-fn id-token response]
-  ;; refresh-response may be nil if no refresh_token available in previous openid response
-  (when-let [refresh-response (refresh-token-fn id-token response)]
-    ;; id-token refresh is optional, so we fall-back to previous id-token if necessary
-    (user-state-fn (or (::openid/id-token refresh-response) id-token)
-                   (::openid/access-token refresh-response)
-                   (::openid/response refresh-response))))
+  [{::openid/keys [id-token response] :as user-state} {:keys [refresh-token-fn user-state-fn]}]
+  ;; only redeem the refresh token when there is a refresh-token-fn and the user is expired
+  (when (and refresh-token-fn (user/expired? user-state))
+    ;; refresh-result may be nil if no refresh_token available in previous openid response
+    (when-let [refresh-result (refresh-token-fn id-token response)]
+      ;; id-token refresh is optional, so we fall-back to previous id-token if necessary
+      (user-state-fn (or (::openid/id-token refresh-result) id-token)
+                     (::openid/access-token refresh-result)
+                     (merge response (::openid/response refresh-result))))))
 
 (defn refresh-user-state
+  "Refresh the user state, will return:
+   - nil if no action was performed
+   - map with :error key if any error occurs
+   - map of refreshed user state if refresh successful
+   The internal state atom is updated with refreshed user state on succesfull refresh only"
   [state-atom]
-  (let [{:keys [user-state refresh-fns]} @state-atom
-        {:keys [refresh-token-fn user-state-fn]} refresh-fns
-        {::openid/keys [id-token response]} user-state]
-    (when (and refresh-token-fn (user/expired? user-state))
-      (let [refreshed-user-state (redeem-refresh-token refresh-token-fn user-state-fn id-token response)]
-        (swap! state-atom conj :user-state refreshed-user-state)
-        refreshed-user-state))))
+  (try
+    (let [{:keys [user-state refresh-fns]} @state-atom]
+      (when-let [new-user-state (redeem-refresh-token user-state refresh-fns)]
+        (swap! state-atom conj :user-state new-user-state)
+        new-user-state))
+    (catch Exception ex
+      (log/debug ex "refresh token redemption failed")
+      (or (ex-data ex)
+          {:error {:cause ex}}))))
 
 (defn -init
   [credentials user-state refresh-fns]
@@ -49,14 +58,8 @@
 
 (defn -redeemRefreshToken
   [this]
-  (try
-    (let [state-atom (.state this)]
-      (locking state-atom
-        (refresh-user-state state-atom)))
-    (catch Exception ex
-      (log/debug ex "refresh token redemption failed")
-      (or (ex-data ex)
-          {:error {:cause ex}}))))
+  (let [state-atom (.state this)]
+    (locking state-atom (refresh-user-state state-atom))))
 
 (defn -getState
   [this]
