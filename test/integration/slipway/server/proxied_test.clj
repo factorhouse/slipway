@@ -375,8 +375,10 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                (select-keys [:cookies]))]
                (-> (client/do-get "http" "localhost" 3000 "/user" session)
@@ -386,8 +388,10 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (let [session (-> (client/do-login "https" "localhost" 3443 "" "user" "password" {:insecure? true})
                                (merge {:insecure? true}))]
                (-> (client/do-get "https" "localhost" 3443 "/user" session)
@@ -479,8 +483,10 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (-> (client/do-get "http" "user:password@localhost" 3000 "/user")
                  (select-keys of-interest)))))
 
@@ -559,8 +565,10 @@
               :status                200
               :reason-phrase         "OK"
               :orig-content-encoding "gzip"
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (-> (client/do-get "https" "user:password@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 

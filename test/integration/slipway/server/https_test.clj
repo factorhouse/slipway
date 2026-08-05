@@ -52,7 +52,7 @@
             :status           200
             :reason-phrase    "OK"
             :headers          {"connection"     "close"
-                               "content-length" "2961"      ;; this is the uncompressed bytes-size of content
+                               "content-length" "3422"      ;; this is the uncompressed bytes-size of content
                                "content-type"   "text/html"
                                "vary"           "Accept-Encoding"}
             :body             (html/user-page {})}
@@ -324,8 +324,10 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (let [session (-> (client/do-login "https" "localhost" 3443 "" "user" "password" {:insecure? true})
                                (merge {:insecure? true}))]
                (-> (client/do-get "https" "localhost" 3443 "/user" session)
@@ -421,8 +423,10 @@
               :headers               {"Connection"   "close"
                                       "Content-Type" "text/html"
                                       "Vary"         "Accept-Encoding"}
-              :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                       ::user/roles     #{"user"}}})}
+              :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                       ::principal/name  "user"
+                                                                       ::user/roles      #{"user"}
+                                                                       ::user/expires-at nil}})}
              (-> (client/do-get "https" "user:password@localhost" 3443 "/user" {:insecure? true})
                  (select-keys of-interest)))))
 

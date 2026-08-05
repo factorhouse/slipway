@@ -189,8 +189,10 @@
                   :headers               {"Connection"   "close"
                                           "Content-Type" "text/html"
                                           "Vary"         "Accept-Encoding"}
-                  :body                  (html/user-page {::user/identity {::principal/name "user"
-                                                                           ::user/roles     #{"user"}}})}
+                  :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                           ::principal/name  "user"
+                                                                           ::user/roles      #{"user"}
+                                                                           ::user/expires-at nil}})}
                  (let [session (-> (client/do-login "http" "localhost" 3000 "" "user" "password")
                                    (select-keys [:cookies]))]
                    (-> (client/do-get "http" "localhost" 3000 "/user" session)
@@ -266,8 +268,10 @@
                   :headers               {"Connection"   "close"
                                           "Content-Type" "text/html"
                                           "Vary"         "Accept-Encoding"}
-                  :body                  (html/user-page {::user/identity {::principal/name "prometheus"
-                                                                           ::user/roles     #{"metrics"}}})}
+                  :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                           ::principal/name  "prometheus"
+                                                                           ::user/roles      #{"metrics"}
+                                                                           ::user/expires-at nil}})}
                  (-> (client/do-get "http" "prometheus:password@localhost" 3000 "/metrics/user")
                      (select-keys of-interest)))))
 
@@ -415,8 +419,10 @@
                   :headers               {"Connection"   "close"
                                           "Content-Type" "text/html"
                                           "Vary"         "Accept-Encoding"}
-                  :body                  (html/user-page {::user/identity {::principal/name "x-user"
-                                                                           ::user/roles     #{"x-role"}}})}
+                  :body                  (html/user-page {::user/identity {::principal/type  ::user/principal
+                                                                           ::principal/name  "x-user"
+                                                                           ::user/roles      #{"x-role"}
+                                                                           ::user/expires-at nil}})}
                  (let [session (-> (client/do-login "http" "localhost" 3001 "" "x-user" "x-password")
                                    (select-keys [:cookies]))]
                    (-> (client/do-get "http" "localhost" 3001 "/user" session)

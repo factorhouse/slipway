@@ -4,7 +4,7 @@
    [hiccup.core :as hiccup]
    [hiccup.page :as hiccup.page]
    [ring.middleware.anti-forgery :as ring.forgery]
-   [slipway.user :as user]))
+   [slipway.request :as request]))
 
 (defn login-page
   [retry?]
@@ -117,13 +117,21 @@
           [:div.mt-5.border-t.border-gray-200
            [:dl.divide-y.divide-gray-200
             [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+             [:dt.text-sm.font-medium.text-gray-500 "User-type"]
+             [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+              [:span.flex-grow (str (request/user-type req))]]]
+            [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
              [:dt.text-sm.font-medium.text-gray-500 "Username"]
              [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-              [:span.flex-grow (user/name req)]]]
+              [:span.flex-grow (request/user-name req)]]]
             [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
-             [:dt.text-sm.font-medium.text-gray-500 "Roles"]
+             [:dt.text-sm.font-medium.text-gray-500 "User Roles"]
              [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
-              [:span.flex-grow (str/join ", " (user/roles req))]]]]]]]]]]])))
+              [:span.flex-grow (str/join ", " (request/user-roles req))]]]
+            [:div.py-4.sm:py-5.sm:grid.sm:grid-cols-3.sm:gap-4
+             [:dt.text-sm.font-medium.text-gray-500 "User Expired?"]
+             [:dd.mt-1.flex.text-sm.text-gray-900.sm:mt-0.sm:col-span-2
+              [:span.flex-grow (request/user-expired? req)]]]]]]]]]]])))
 
 (defn error-page
   ([code title]

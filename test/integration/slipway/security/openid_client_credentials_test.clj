@@ -4,6 +4,8 @@
             [slipway.connector.http :as http]
             [slipway.context :as context]
             [slipway.example.app :as app]
+            [slipway.example.html :as html]
+            [slipway.principal :as-alias principal]
             [slipway.security :as security]
             [slipway.security.openid :as openid]
             [slipway.security.openid.jwk :as openid.jwk]
@@ -12,7 +14,8 @@
             [slipway.sente]
             [slipway.server :as server]
             [slipway.session :as session]
-            [slipway.test-server :as test-server])
+            [slipway.test-server :as test-server]
+            [slipway.user :as-alias user])
   (:import (com.nimbusds.jose JOSEObjectType JWSAlgorithm JWSHeader$Builder)
            (com.nimbusds.jose.crypto RSASSASigner)
            (com.nimbusds.jose.jwk RSAKey)
@@ -85,10 +88,23 @@
                                      :iat now
                                      :exp (+ now 120)})
                         (.serialize))]
-          (is (= 200 (:status (client/request {:url              "http://localhost:3000/user"
-                                               :method           "GET"
-                                               :headers          {:authorization (str "Bearer " token)}
-                                               :throw-exceptions false}))))))
+          (is (= {:protocol-version      {:name "HTTP", :major 1, :minor 1}
+                  :status                200
+                  :reason-phrase         "OK"
+                  :orig-content-encoding "gzip"
+                  :headers               {"Connection"   "close"
+                                          "Content-Type" "text/html"
+                                          "Vary"         "Accept-Encoding"}
+                  :body                  (html/user-page {::user/identity
+                                                          {::principal/type  ::openid/principal
+                                                           ::principal/name  "slipway-user-x"
+                                                           ::user/roles      #{}
+                                                           ::user/expires-at (Instant/ofEpochMilli Long/MAX_VALUE)}})}
+                 (-> (client/request {:url              "http://localhost:3000/user"
+                                      :method           "GET"
+                                      :headers          {:authorization (str "Bearer " token)}
+                                      :throw-exceptions false})
+                     (select-keys [:protocol-version :status :reason-phrase :body :headers :orig-content-encoding]))))))
 
       (testing "jwt signed by the a different key"
 
