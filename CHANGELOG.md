@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.7] - 2026-08-06
+
+A signficant release that introduces:
+
+* OpenID Authentication
+  * Authorization Code flow for web-ui
+  * Client Credentials flow for api
+  * Refresh token redemption
+* Mixed context-handlers via context-handler-collection
+* Virtual hosts, pinning context-handlers to specific connectors (and/or domains, etc)
+* Reworking of almost all configuration
+
+This will be documented and re-released as 2.1.0 shortly.
+
 ## [2.0.6] - 2026-06-03
 
 * Reduce websocket error logs to simply type/message rather than full stacktrace
