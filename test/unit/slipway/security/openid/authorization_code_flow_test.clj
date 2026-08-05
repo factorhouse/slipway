@@ -4,8 +4,7 @@
             [slipway.security.openid :as openid]
             [slipway.security.openid.authorization-code-flow :as authorization-code-flow]
             [slipway.security.openid.jwt :as openid.jwt]
-            [slipway.user :as user])
-  (:import (org.eclipse.jetty.security.openid OpenIdCredentials)))
+            [slipway.user :as user]))
 
 (defn munge-expiry
   [m]
