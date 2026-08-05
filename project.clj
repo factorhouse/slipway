@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.0.6"
+(defproject io.factorhouse/slipway-jetty12 "2.0.7"
 
   :description "A Clojure Companion for Jetty 12.1"
 
@@ -7,37 +7,41 @@
   :license {:name "Apache 2.0 License"
             :url  "https://github.com/factorhouse/slipway/blob/main/LICENSE"}
 
-  :profiles {:dev      {:dependencies   [[clj-kondo "2026.05.25" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
+  :profiles {:dev      {:dependencies   [[clj-kondo "2026.08.04" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
-                                         [ch.qos.logback/logback-classic "1.5.34"]
+                                         [ch.qos.logback/logback-classic "1.5.38"]
                                          [hiccup "2.0.0"]
-                                         [ring/ring-core "1.15.4"]
+                                         [ring/ring-core "1.15.5"]
                                          [ring/ring-anti-forgery "1.4.0"]
                                          [metosin/reitit-ring "0.10.1"]]
                         :resource-paths ["dev-resources"]
-                        :plugins        [[dev.weavejester/lein-cljfmt "0.16.3"]]}
+                        :plugins        [[dev.weavejester/lein-cljfmt "0.16.4"]]}
              :pedantic {:pedantic? :abort}}
 
   :aliases {"check"  ["with-profile" "+pedantic" "check"]
-            "kondo"  ["with-profile" "+pedantic" "run" "-m" "clj-kondo.main" "--lint" "src:test" "--parallel"]
+            "kondo"  ["with-profile" "+pedantic" "run" "-m" "clj-kondo.main" "--lint" "src:test/integration:test/unit" "--parallel"]
             "fmt"    ["with-profile" "+pedantic" "cljfmt" "check"]
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
-  :aot [slipway.handler.sync-handler]
+  :aot [slipway.handler.sync-handler
+        slipway.security.openid.jwt.processor
+        slipway.security.openid.user.principal]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]
-                 [org.ring-clojure/ring-core-protocols "1.15.4"]
+                 [org.ring-clojure/ring-core-protocols "1.15.5"]
                  [com.taoensso/sente "1.17.0"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.10"]
-                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.10"]
-                 [org.eclipse.jetty/jetty-server "12.1.10"]
-                 [org.eclipse.jetty/jetty-session "12.1.10"]
-                 [org.eclipse.jetty/jetty-security "12.1.10"]
-                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.10"]
-                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.10"]]
+                 [com.nimbusds/nimbus-jose-jwt "10.9.1"]
+                 [org.eclipse.jetty/jetty-server "12.1.12"]
+                 [org.eclipse.jetty/jetty-session "12.1.12"]
+                 [org.eclipse.jetty/jetty-security "12.1.12"]
+                 [org.eclipse.jetty/jetty-openid "12.1.12"]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-api "12.1.12"]
+                 [org.eclipse.jetty.websocket/jetty-websocket-jetty-server "12.1.12"]
+                 [org.eclipse.jetty.compression/jetty-compression-server "12.1.12"]
+                 [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.12"]]
 
   :source-paths ["src"]
-  :test-paths ["test"]
+  :test-paths ["test/unit" "test/integration"]
 
   :javac-options ["--release" "17"])

@@ -1,0 +1,105 @@
+{
+  "realm": "master",
+  "enabled": true,
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin",
+        "slipway-user"
+      ],
+      "clientRoles": {
+        "master-realm": [
+          "admin"
+        ]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "slipway",
+      "name": "Slipway Test OpenID Client",
+      "description": "A keycloak configuration for testing Slipway OpenID integration",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "81a0d6ea-1468-4b20-b115-fa68a8df9cf8",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "audience-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "https://slipway.io/api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ],
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "access.token.header.type.rfc9068": "true",
+        "display.on.consent.screen": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "request.uris": "",
+        "consent.screen.text": "",
+        "frontchannel.logout.url": "",
+        "backchannel.logout.url": "",
+        "login_theme": ""
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "access": {
+        "view": true,
+        "configure": true,
+        "manage": true
+      },
+      "authorizationServicesEnabled": false
+    }]
+}

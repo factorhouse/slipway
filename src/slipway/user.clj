@@ -1,37 +1,47 @@
 (ns slipway.user
-  (:refer-clojure :exclude [identity name])
+  (:refer-clojure :exclude [identity name type])
   (:require [clojure.core.protocols :as p]
-            [clojure.tools.logging :as log]
-            [slipway.user.identity]
-            [slipway.user.jaas]
-            [slipway.user.principal])
-  (:import (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
-           (org.eclipse.jetty.server Request Response)))
+            [slipway.principal :as principal]
+            [slipway.security.openid :as-alias openid])
+  (:import (java.time Instant)
+           (org.eclipse.jetty.security AuthenticationState$Succeeded RolePrincipal UserIdentity UserPrincipal)))
 
 (extend-protocol p/Datafiable
 
   AuthenticationState$Succeeded
-  (datafy [user]
-    #::{:identity (p/datafy (.getUserIdentity user))}))
+  (datafy [authentication-state]
+    (p/datafy (.getUserIdentity authentication-state)))
 
-(defn identity
-  [req]
-  (::identity req))
+  UserIdentity
+  (datafy [identity]
+    (let [user-principal (p/datafy (.getUserPrincipal identity))]
+      (if (= (principal/type user-principal) ::openid/principal)
+        user-principal                                      ;; OpenID UserIdentity
+        (merge user-principal                               ;; Jaas/LDAP/Hash UserIdentity
+               {::roles (->> (.getSubject identity)
+                             (.getPrincipals)
+                             (map p/datafy)
+                             (filter #(= ::role (principal/type %)))
+                             (map principal/name)
+                             set)}))))
 
-(defn name
-  [req]
-  (-> req identity :name))
+  UserPrincipal
+  (datafy [principal]
+    (principal/from ::principal (.getName principal)))
 
-(defn roles
-  [req]
-  (-> req identity :roles))
+  RolePrincipal
+  (datafy [role]
+    (principal/from ::role (.getName role))))
 
-(defn logout
-  [{:keys [^Request slipway.request/request ^Response slipway.request/response ::identity]}]
-  (when request
-    (try
-      (log/debug "logout" identity)
-      (AuthenticationState/logout request response)
-      (some-> (.getSession request false) (.invalidate))
-      (catch Exception ex
-        (log/error ex "logout error")))))
+(def type principal/type)
+
+(def name principal/name)
+
+(def roles ::roles)
+
+(defn expired?
+  ([user]
+   (expired? user (Instant/now)))
+  ([user ^Instant at]
+   (when-let [^Instant expires-at (::expires-at user)]
+     (.isBefore expires-at at))))
