@@ -20,7 +20,7 @@
   [{::openid/keys [id-token response] :as user-state} {:keys [refresh-token-fn user-state-fn]}]
   (if refresh-token-fn
     (if (user/expired? user-state)
-      (if-let [refresh-result (refresh-token-fn id-token response)]
+      (when-let [refresh-result (refresh-token-fn id-token response)]
         (user-state-fn (or (::openid/id-token refresh-result) id-token) ;; id-token refresh is optional
                        (::openid/access-token refresh-result)
                        (::openid/response refresh-result)))
