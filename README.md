@@ -18,9 +18,11 @@
 
 # Introduction
 
-Slipway provides first-class support for embedded [Eclipse Jetty](https://www.eclipse.org/jetty/) 12.1 with WebSocket support in [Clojure](https://clojure.org/).
+Slipway provides first-class support for embedded [Eclipse Jetty](https://www.eclipse.org/jetty/) 12.1 with WebSocket
+support in [Clojure](https://clojure.org/).
 
-Jetty is the web server at the heart of our products at [Factor House](https://factorhouse.io/), and Slipway is our networking library.
+Jetty is the web server at the heart of our products at [Factor House](https://factorhouse.io/), and Slipway is our
+networking library.
 
 Slipway configuration models Jetty instead of exposing a simplified DSL. This approach allows leverage of all Jetty
 capabilities while providing sensible defaults for basic behaviour. If in doubt, read
@@ -28,8 +30,8 @@ the [Jetty docs](https://jetty.org/docs/).
 
 ### Archived Versions
 
-Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory
-but is no longer maintained. Slipway 2.x targets Jetty 12.1 exclusively.
+Previous support for Jetty 9, 10, and 11 is preserved in the [`archive/`](archive/) directory but is no longer
+maintained.
 
 ## Using Slipway
 
