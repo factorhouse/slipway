@@ -43,8 +43,9 @@
   (::roles user))
 
 (defn in-role?
-  [user role]
-  ((::roles user) role))
+  [{::keys [roles]} role]
+  (when roles
+    (roles role)))
 
 (defn expired?
   ([user]
