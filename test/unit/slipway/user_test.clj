@@ -37,8 +37,7 @@
   ;; should't be possible, but in the case a user has no roles, this is safe
   ;; (a user should always at least have an empty set of roles)
   (is (not (user/in-role? nil "role-1")))
-
-
+  
   (is (not (user/in-role? {::user/roles #{"role-2"}} "role-1")))
 
   (is (user/in-role? {::user/roles #{"role-2"}} "role-2"))
