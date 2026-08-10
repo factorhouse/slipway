@@ -16,7 +16,9 @@
 
 (defn app-handler
   [ring-handler opts]
-  (SyncHandler. ring-handler (websockets/path-spec opts)))
+  (if ring-handler
+    (SyncHandler. ring-handler (websockets/path-spec opts))
+    (throw (ex-info "required ring-handler is nil" {}))))
 
 (defn wrap-websockets
   [handler context-handler server ring-handler opts]

@@ -70,4 +70,21 @@
                                                "roles" "1"
                                                "other" {"name"  "x-name"
                                                         "roles" ["x-role"]}}
+                                              {}))))
+  ;; when roles is nil in the jwt, it is resolved as an empty set
+  (is (= {::principal/type                      ::openid/principal
+          ::principal/name                      "factor-dev"
+          ::user/roles                          #{}
+          ::user/expires-at                     1311281970
+          :slipway.security.openid/access-token {"sub"   "factor-dev"
+                                                 "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                                 "other" {"roles" ["x-role"]
+                                                          "name"  "x-name"}
+                                                 "roles" nil}}
+         (munge-expiry
+          (client-credentials-flow/user-state {"sub"   "factor-dev"
+                                               "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                               "roles" nil
+                                               "other" {"name"  "x-name"
+                                                        "roles" ["x-role"]}}
                                               {})))))
