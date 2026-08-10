@@ -37,7 +37,15 @@
 
 (def name principal/name)
 
-(def roles ::roles)
+(defn roles
+  "Return the set of roles assigned to a user"
+  [user]
+  (::roles user))
+
+(defn in-role?
+  [{::keys [roles]} role]
+  (when roles
+    (roles role)))
 
 (defn expired?
   ([user]

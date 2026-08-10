@@ -79,10 +79,10 @@
    (user/expired? (user request-map) at)))
 
 (defn logout-user
-  [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as req}]
+  [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as request-map}]
   (when request
     (try
-      (log/debug "logout" (user-type req) (user-name req))
+      (log/debug "logout" (user-type request-map) (user-name request-map))
       (AuthenticationState/logout request response)
       (some-> (.getSession request false) (.invalidate))
       (catch Exception ex

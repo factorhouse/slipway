@@ -124,6 +124,27 @@
             "other" {"roles" ["x-role"]}
             "exp"   1311281970}
            {"access_token" "some-access-token"}
+           {}))))
+
+  ;; when roles is nil in the jwt, it is resolved as an empty set
+  (is (= {::principal/type      ::openid/principal
+          ::principal/name      "factor-dev"
+          ::user/roles          #{}
+          ::user/expires-at     1311281970
+          ::openid/id-token     {"other" {"id" "x-name"}
+                                 "sub"   "factor-dev"}
+          ::openid/access-token {"other" {"roles" ["x-role"]}
+                                 "roles" nil
+                                 "exp"   1311281970}
+          ::openid/response     {"access_token" "some-access-token"}}
+         (munge-expiry
+          (authorization-code-flow/user-state
+           {"sub"   "factor-dev"
+            "other" {"id" "x-name"}}
+           {"roles" nil
+            "other" {"roles" ["x-role"]}
+            "exp"   1311281970}
+           {"access_token" "some-access-token"}
            {})))))
 
 (deftest no-exp-field-in-access-token
