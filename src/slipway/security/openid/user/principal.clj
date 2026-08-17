@@ -1,8 +1,7 @@
 (ns slipway.security.openid.user.principal
   (:require [clojure.tools.logging :as log]
             [slipway.principal :as principal]
-            [slipway.security.openid :as-alias openid]
-            [slipway.user :as user])
+            [slipway.security.openid :as-alias openid])
   (:gen-class
    :name slipway.security.openid.user.principal.OpenIdUserPrincipalWithState
    :extends org.eclipse.jetty.security.openid.OpenIdUserPrincipal
@@ -12,19 +11,19 @@
                    clojure.lang.IPersistentMap
                    clojure.lang.IPersistentMap]
                   [org.eclipse.jetty.security.openid.OpenIdCredentials]}
-   :methods [[redeemRefreshToken [] clojure.lang.IPersistentMap]
+   :methods [[redeemRefreshToken [] java.util.concurrent.Future]
              [getState [] clojure.lang.IPersistentMap]]
-   :prefix "-"))
+   :prefix "-")
+  (:import (java.util.concurrent Future)))
 
 (defn redeem-refresh-token
   [{::openid/keys [id-token response] :as user-state} {:keys [refresh-token-fn user-state-fn]}]
   (if refresh-token-fn
-    (if (user/expired? user-state)
-      (when-let [refresh-result (refresh-token-fn id-token response)]
-        (user-state-fn (or (::openid/id-token refresh-result) id-token) ;; id-token refresh is optional
-                       (::openid/access-token refresh-result)
-                       (::openid/response refresh-result)))
-      (log/debug "user is not expired"))
+    (if-let [refresh-result (refresh-token-fn id-token response)]
+      (user-state-fn (or (::openid/id-token refresh-result) id-token) ;; id-token refresh is optional
+                     (::openid/access-token refresh-result)
+                     (::openid/response refresh-result))
+      (log/debug "refresh-token-fn returned nil"))
     (log/debug "no refresh-token-fn configured")))
 
 (defn refresh-user-state
@@ -57,10 +56,10 @@
   [this]
   (::principal/name (:user-state @(.state this))))
 
-(defn -redeemRefreshToken
+(defn -redeemRefreshToken ^Future
   [this]
-  (let [state-atom (.state this)]
-    (locking state-atom (refresh-user-state state-atom))))
+  (locking this
+    (future (refresh-user-state (.state this)))))
 
 (defn -getState
   [this]
