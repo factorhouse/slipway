@@ -17,7 +17,7 @@
   (:import (java.util.concurrent Future)))
 
 (defn redeem-refresh-token
-  [{::openid/keys [id-token response] :as user-state} {:keys [refresh-token-fn user-state-fn]}]
+  [{::openid/keys [id-token response]} {:keys [refresh-token-fn user-state-fn]}]
   (if refresh-token-fn
     (if-let [refresh-result (refresh-token-fn id-token response)]
       (user-state-fn (or (::openid/id-token refresh-result) id-token) ;; id-token refresh is optional
