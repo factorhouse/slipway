@@ -68,3 +68,7 @@
   [{::keys [^OpenIdUserPrincipalWithState principal]}]
   (when principal
     (.redeemRefreshToken principal)))
+
+(defn principal
+  [user]
+  (::principal user))
