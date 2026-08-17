@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.9] - 2026-08-17
+
+* User expires-in function
+
+## [2.0.8] - 2026-08-10
+
+* User in-role function
+* Fix user logout debug output
+
 ## [2.0.7] - 2026-08-06
 
 A signficant release that introduces:

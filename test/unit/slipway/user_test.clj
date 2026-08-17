@@ -7,30 +7,66 @@
 
 (deftest user-state
 
-  (let [user {::principal/type      ::openid/principal
-              ::principal/name      "my-user-id"
-              ::user/roles          ["my-role-1" "my-role-2"]
-              ::user/expires-at     (Instant/ofEpochSecond 1311281970)}]
+  (let [user {::principal/type  ::openid/principal
+              ::principal/name  "my-user-id"
+              ::user/roles      ["my-role-1" "my-role-2"]
+              ::user/expires-at (Instant/ofEpochSecond 1311281970)}]
 
     (is (= ::openid/principal (user/type user)))
     (is (= "my-user-id" (user/name user)))
     (is (= ["my-role-1" "my-role-2"] (user/roles user)))
     (is (user/expired? user))))
 
+(deftest expires-in
+
+  (is (= nil (user/expires-in {})))
+
+  (let [now-ish 1311281970]
+
+    ;; expires now
+    (is (= 0 (user/expires-in {::user/expires-at (Instant/ofEpochSecond now-ish)}
+                              (Instant/ofEpochSecond now-ish))))
+
+    ;; expired one second ago
+    (is (= -1 (user/expires-in {::user/expires-at (Instant/ofEpochSecond (- now-ish 1))}
+                               (Instant/ofEpochSecond now-ish))))
+
+    ;; expired 100 seconds ago
+    (is (= -100 (user/expires-in {::user/expires-at (Instant/ofEpochSecond (- now-ish 100))}
+                                 (Instant/ofEpochSecond now-ish))))
+
+    ;; expires in 1s
+    (is (= 1 (user/expires-in {::user/expires-at (Instant/ofEpochSecond (+ now-ish 1))}
+                              (Instant/ofEpochSecond now-ish))))
+
+    ;; expires in 100s
+    (is (= 100 (user/expires-in {::user/expires-at (Instant/ofEpochSecond (+ now-ish 100))}
+                                (Instant/ofEpochSecond now-ish))))))
+
 (deftest expired?
 
   ;; expired? requires :expires-at to be set on the user identity, otherwise is not expired
   (is (not (user/expired? {})))
 
-  (is (user/expired? {::user/expires-at (Instant/ofEpochSecond 1311281970)}))
+  (let [now-ish 1311281970]
 
-  ;; expiry happens when expires-at is earlier than 'now'
-  (is (not (user/expired? {:expires-at (Instant/ofEpochSecond 1311281970)}
-                          (Instant/ofEpochSecond 1311281970))))
+    (is (user/expired? {::user/expires-at (Instant/ofEpochSecond now-ish)}))
 
-  ;; expiry happens when expires-at is earlier than 'now'
-  (is (user/expired? {::user/expires-at (Instant/ofEpochSecond (- 1311281970 1))}
-                     (Instant/ofEpochSecond 1311281970))))
+    ;; expiry happens when expires-at is earlier than or equal to 'now'
+    (is (not (user/expired? {::user/expires-at (Instant/ofEpochSecond now-ish)}
+                            (Instant/ofEpochSecond now-ish))))
+
+    (is (user/expired? {::user/expires-at (Instant/ofEpochSecond (- now-ish 1))}
+                       (Instant/ofEpochSecond now-ish)))
+
+    (is (user/expired? {::user/expires-at (Instant/ofEpochSecond (- now-ish 100))}
+                       (Instant/ofEpochSecond now-ish)))
+
+    (is (not (user/expired? {::user/expires-at (Instant/ofEpochSecond (+ now-ish 1))}
+                            (Instant/ofEpochSecond now-ish))))
+
+    (is (not (user/expired? {::user/expires-at (Instant/ofEpochSecond (+ now-ish 100))}
+                            (Instant/ofEpochSecond now-ish))))))
 
 (deftest in-role?
 
