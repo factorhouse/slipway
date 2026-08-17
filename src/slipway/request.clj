@@ -84,12 +84,19 @@
   ([request-map ^Instant at]
    (user/expired? (user request-map) at)))
 
+(defn invalidate-session
+  [{:keys [^Request slipway.request/request]}]
+  (try
+    (some-> (.getSession request false) (.invalidate))
+    (catch Exception ex
+      (log/debug ex "invalidate user error"))))
+
 (defn logout-user
   [{:keys [^Request slipway.request/request ^Response slipway.request/response] :as request-map}]
   (when request
     (try
       (log/debug "logout" (user-type request-map) (user-name request-map))
       (AuthenticationState/logout request response)
-      (some-> (.getSession request false) (.invalidate))
+      (invalidate-session request-map)
       (catch Exception ex
-        (log/error ex "logout error")))))
+        (log/debug ex "logout user error")))))
