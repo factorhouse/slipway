@@ -31,13 +31,13 @@
                                      (Instant/ofEpochSecond 1311281970))))
 
   (is (= -100 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (- 1311281970 100))}}
-                                     (Instant/ofEpochSecond 1311281970))))
+                                       (Instant/ofEpochSecond 1311281970))))
 
   (is (= 1 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (+ 1311281970 1))}}
-                                     (Instant/ofEpochSecond 1311281970))))
+                                    (Instant/ofEpochSecond 1311281970))))
 
   (is (= 100 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (+ 1311281970 100))}}
-                                     (Instant/ofEpochSecond 1311281970)))))
+                                      (Instant/ofEpochSecond 1311281970)))))
 
 (deftest request-user-expired?
 
