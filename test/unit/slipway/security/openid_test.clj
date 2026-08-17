@@ -27,7 +27,10 @@
               ::principal/name   "factor-dev"
               ::user/roles       ["one" "two" "three"]
               ::openid/principal openid-principal}
-             (p/datafy openid-principal))))))
+             (p/datafy openid-principal)))
+
+      ;; the original principal object is carried on the datafied output
+      (is (= openid-principal (openid/principal (p/datafy openid-principal)))))))
 
 (deftest configuration
 

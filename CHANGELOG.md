@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.13] - 2026-08-17
+
+* provide openid/principal helper function
+
 ## [2.0.12] - 2026-08-17
 
 * provide standalone invalidate-session function in request ns
