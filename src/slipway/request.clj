@@ -72,6 +72,12 @@
   [request-map]
   (user/roles (user request-map)))
 
+(defn user-expires-in
+  ([request-map]
+   (user/expires-in (user request-map) (Instant/now)))
+  ([request-map ^Instant at]
+   (user/expires-in (user request-map) at)))
+
 (defn user-expired?
   ([request-map]
    (user/expired? (user request-map) (Instant/now)))

@@ -18,6 +18,27 @@
     (is (= ["my-role-1" "my-role-2"] (request/user-roles request-user)))
     (is (request/user-expired? request-user))))
 
+(deftest request-user-expires-in
+
+  ;; expires-in requires :expires-at to be set on the user identity, otherwise is not expired
+  (is (nil? (request/user-expires-in {})))
+
+  ;; expiry happens when expires-at is earlier than or equal to 'now'
+  (is (= 0 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond 1311281970)}}
+                                    (Instant/ofEpochSecond 1311281970))))
+
+  (is (= -1 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (- 1311281970 1))}}
+                                     (Instant/ofEpochSecond 1311281970))))
+
+  (is (= -100 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (- 1311281970 100))}}
+                                     (Instant/ofEpochSecond 1311281970))))
+
+  (is (= 1 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (+ 1311281970 1))}}
+                                     (Instant/ofEpochSecond 1311281970))))
+
+  (is (= 100 (request/user-expires-in {::user/identity {::user/expires-at (Instant/ofEpochSecond (+ 1311281970 100))}}
+                                     (Instant/ofEpochSecond 1311281970)))))
+
 (deftest request-user-expired?
 
   ;; expired? requires :expires-at to be set on the user identity, otherwise is not expired
