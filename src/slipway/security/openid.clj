@@ -63,3 +63,8 @@
       (log/debugf "identity service %s" (type identity-service))
       (.setIdentityService security-handler identity-service))
     security-handler))
+
+(defn redeem-refresh-token
+  [{::keys [^OpenIdUserPrincipalWithState principal]}]
+  (when principal
+    (.redeemRefreshToken principal)))

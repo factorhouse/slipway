@@ -79,10 +79,10 @@
           principal  (OpenIdUserPrincipalWithState. (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
                                                     user-state
                                                     nil)]
-      (is (= nil (.redeemRefreshToken principal)))
+      (is (= nil @(.redeemRefreshToken principal)))
       (is (= user-state (.getState principal)))))
 
-  (testing "user is not expired"
+  (testing "redeem-refresh-token returns a future"
 
     (let [user-state {::principal/type      ::openid/principal
                       ::principal/name      "factor-dev"
@@ -104,8 +104,7 @@
                                                                           ::openid/id-token     id-token
                                                                           ::openid/access-token access-token
                                                                           ::openid/response     response})})]
-      (is (= nil (.redeemRefreshToken principal)))
-      (is (= user-state (.getState principal)))))
+      (is (future? (.redeemRefreshToken principal)))))
 
   (testing "refresh-token-fn returns nil"
 
@@ -125,10 +124,10 @@
                                                                           ::openid/id-token     id-token
                                                                           ::openid/access-token access-token
                                                                           ::openid/response     response})})]
-      (is (= nil (.redeemRefreshToken principal)))
+      (is (= nil @(.redeemRefreshToken principal)))
       (is (= user-state (.getState principal)))))
 
-  (testing "full refresh of expired user"
+  (testing "full refresh of user"
 
     (let [principal (OpenIdUserPrincipalWithState.
                      (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
@@ -167,7 +166,7 @@
                                      "sub" "factor-dev"}
               ::openid/access-token {"exp" 1311289999}
               ::openid/response     {"access_token" "second_at"}}
-             (.redeemRefreshToken principal)))
+             @(.redeemRefreshToken principal)))
 
       ;; after refresh, new state is returned by .getState on principal
       (is (= {::principal/name      "factor-dev"
@@ -178,7 +177,7 @@
               ::openid/response     {"access_token" "second_at"}}
              (.getState principal)))))
 
-  (testing "full refresh of expired user where refresh doesn't return id-token"
+  (testing "full refresh of user where refresh doesn't return id-token"
 
     (let [principal (OpenIdUserPrincipalWithState.
                      (OpenIdCredentials. {"sub" "factor-dev" "exp" 1311281970})
@@ -215,7 +214,7 @@
                                      "sub" "factor-dev"}
               ::openid/access-token {"exp" 1311289999}
               ::openid/response     {"access_token" "second_at"}}
-             (.redeemRefreshToken principal)))
+             @(.redeemRefreshToken principal)))
 
       ;; after refresh, new state is returned by .getState on principal
       (is (= {::principal/name      "factor-dev"
