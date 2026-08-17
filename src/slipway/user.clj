@@ -4,6 +4,7 @@
             [slipway.principal :as principal]
             [slipway.security.openid :as-alias openid])
   (:import (java.time Instant)
+           (java.time.temporal ChronoUnit)
            (org.eclipse.jetty.security AuthenticationState$Succeeded RolePrincipal UserIdentity UserPrincipal)))
 
 (extend-protocol p/Datafiable
@@ -47,9 +48,20 @@
   (when roles
     (roles role)))
 
+(defn expires-in
+  "Seconds until user expiry:
+    - nil if no ::expires-at available for the user
+    - pos? if the user has not expired
+    - neg? or zero? if the user is expired"
+  ([user]
+   (expires-in user (Instant/now)))
+  ([user ^Instant now]
+   (when-let [^Instant expires-at (::expires-at user)]
+     (.between ChronoUnit/SECONDS now expires-at))))
+
 (defn expired?
   ([user]
    (expired? user (Instant/now)))
-  ([user ^Instant at]
+  ([user ^Instant now]
    (when-let [^Instant expires-at (::expires-at user)]
-     (.isBefore expires-at at))))
+     (.isBefore expires-at now))))
