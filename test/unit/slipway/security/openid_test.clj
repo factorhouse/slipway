@@ -54,3 +54,39 @@
                                                      :client-id     "client-id"
                                                      :client-secret "client-secret"
                                                      :scopes        ["another" "one"]})))))
+
+(deftest field-access
+
+  (testing "id-token"
+    (let [user {::principal/type      ::openid/principal
+                ::principal/name      "y-name"
+                ::user/roles          #{"x-role"}
+                ::user/expires-at     1311281970
+                ::openid/id-token     {"other" {"id" "x-name"}
+                                       "sub"   "factor-dev"
+                                       "email" "one@two.com"}
+                ::openid/access-token {"other" {"id"    "y-name"
+                                                "roles" ["x-role"]}
+                                       "roles" ["1" "2" "3"]
+                                       "exp"   1311281970
+                                       "email" "three@four.com"}
+                ::openid/response     {"access_token" "some-access-token"}}]
+      (is (= "one@two.com"
+             (openid/id-token-field user "email")))))
+
+  (testing "access-token"
+    (let [user {::principal/type      ::openid/principal
+                ::principal/name      "y-name"
+                ::user/roles          #{"x-role"}
+                ::user/expires-at     1311281970
+                ::openid/id-token     {"other" {"id" "x-name"}
+                                       "sub"   "factor-dev"
+                                       "email" "one@two.com"}
+                ::openid/access-token {"other" {"id"    "y-name"
+                                                "roles" ["x-role"]}
+                                       "roles" ["1" "2" "3"]
+                                       "exp"   1311281970
+                                       "email" "three@four.com"}
+                ::openid/response     {"access_token" "some-access-token"}}]
+      (is (= "three@four.com"
+             (openid/access-token-field user "email"))))))
