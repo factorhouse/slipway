@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [identity name type])
   (:require [clojure.core.protocols :as p]
             [slipway.principal :as principal]
-            [slipway.security.openid :as-alias openid])
+            [slipway.security.oidc :as-alias oidc])
   (:import (java.time Instant)
            (java.time.temporal ChronoUnit)
            (org.eclipse.jetty.security AuthenticationState$Succeeded RolePrincipal UserIdentity UserPrincipal)))
@@ -16,8 +16,8 @@
   UserIdentity
   (datafy [identity]
     (let [user-principal (p/datafy (.getUserPrincipal identity))]
-      (if (= (principal/type user-principal) ::openid/principal)
-        user-principal                                      ;; OpenID UserIdentity
+      (if (= (principal/type user-principal) ::oidc/principal)
+        user-principal                                      ;; OIDC UserIdentity
         (merge user-principal                               ;; Jaas/LDAP/Hash UserIdentity
                {::roles (->> (.getSubject identity)
                              (.getPrincipals)

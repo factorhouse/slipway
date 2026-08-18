@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.0.15"
+(defproject io.factorhouse/slipway-jetty12 "2.0.16"
 
   :description "A Clojure Companion for Jetty 12.1"
 
@@ -24,8 +24,8 @@
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
   :aot [slipway.handler.sync-handler
-        slipway.security.openid.jwt.processor
-        slipway.security.openid.user.principal]
+        slipway.security.oidc.jwt.processor
+        slipway.security.oidc.user.principal]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/tools.logging "1.3.1"]

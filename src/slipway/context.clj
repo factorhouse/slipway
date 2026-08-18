@@ -4,9 +4,9 @@
             [slipway.security :as security]
             [slipway.security.hash]
             [slipway.security.jaas]
-            [slipway.security.openid]
-            [slipway.security.openid.authorization-code-flow]
-            [slipway.security.openid.client-credentials-flow]
+            [slipway.security.oidc]
+            [slipway.security.oidc.authorization-code-flow]
+            [slipway.security.oidc.client-credentials-flow]
             [slipway.server :as server]
             [slipway.session :as session]
             [slipway.websockets :as websockets])
@@ -28,7 +28,7 @@
 
 (defn wrap-session
   "In some circumstances a server may be configured without a SessionHandler
-   For example a stateless API with OpenID client-credentials authorization flow"
+   For example a stateless API with OIDC client-credentials authorization flow"
   [^Handler security-handler opts]
   (if-let [session-handler (session/handler opts)]
     (doto session-handler (.setHandler security-handler))

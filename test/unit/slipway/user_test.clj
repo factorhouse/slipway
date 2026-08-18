@@ -1,18 +1,18 @@
 (ns slipway.user-test
   (:require [clojure.test :refer [deftest is]]
             [slipway.principal :as-alias principal]
-            [slipway.security.openid :as-alias openid]
+            [slipway.security.oidc :as-alias oidc]
             [slipway.user :as user])
   (:import (java.time Instant)))
 
 (deftest user-state
 
-  (let [user {::principal/type  ::openid/principal
+  (let [user {::principal/type  ::oidc/principal
               ::principal/name  "my-user-id"
               ::user/roles      ["my-role-1" "my-role-2"]
               ::user/expires-at (Instant/ofEpochSecond 1311281970)}]
 
-    (is (= ::openid/principal (user/type user)))
+    (is (= ::oidc/principal (user/type user)))
     (is (= "my-user-id" (user/name user)))
     (is (= ["my-role-1" "my-role-2"] (user/roles user)))
     (is (user/expired? user))))

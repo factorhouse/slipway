@@ -81,28 +81,28 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
                            ::context/handlers    [{::context/virtual-hosts        ["@connector-3443"]
                                                    ::context/ring-handler         (handler/ui-handler)
                                                    ::websockets/enabled?          true
-                                                   ::security/handler             :openid
-                                                   ::openid/issuer                "http://localhost:8080/realms/master"
-                                                   ::openid/client-id             "https://slipway.io/demo-web"
-                                                   ::openid/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
-                                                   ::openid.jwt/user-id-path      ["name"]
-                                                   ::openid.jwt/user-roles-path   ["realm_access" "roles"]
-                                                   ::openid/oidc-redirect-success "/oauth2/openid/callback"
-                                                   ::openid/oidc-redirect-error   "/login-error"
-                                                   ::openid/oidc-redirect-logout  "/logout-success"
+                                                   ::security/handler             :oidc
+                                                   ::oidc/issuer                "http://localhost:8080/realms/master"
+                                                   ::oidc/client-id             "https://slipway.io/demo-web"
+                                                   ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                                                   ::oidc.jwt/user-id-path      ["name"]
+                                                   ::oidc.jwt/user-roles-path   ["realm_access" "roles"]
+                                                   ::oidc/oidc-redirect-success "/oauth2/openid/callback"
+                                                   ::oidc/oidc-redirect-error   "/login-error"
+                                                   ::oidc/oidc-redirect-logout  "/logout-success"
                                                    ::hash/constraint-mappings     app/constraints}
                                                   {::context/path                         "/api"
                                                    ::context/virtual-hosts                ["@connector-3443"]
                                                    ::context/ring-handler                 (app/api-handler)
-                                                   ::security/handler                     :openid
+                                                   ::security/handler                     :oidc
                                                    ::session/enabled?                     false
-                                                   ::openid/authorization-flow            :client-credentials
-                                                   ::openid.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                                                   ::openid.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                                                   ::openid.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
-                                                   ::openid.jwt/user-id-path              ["preferred_username"]
-                                                   ::openid.jwt/user-roles-path           ["realm_access" "roles"]
-                                                   ::openid/constraint-mappings           app/constraints}
+                                                   ::oidc/authorization-flow            :client-credentials
+                                                   ::oidc.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                                                   ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                                                   ::oidc.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
+                                                   ::oidc.jwt/user-id-path              ["preferred_username"]
+                                                   ::oidc.jwt/user-roles-path           ["realm_access" "roles"]
+                                                   ::oidc/constraint-mappings           app/constraints}
                                                   {::context/path             "/otel"
                                                    ::context/virtual-hosts    ["@connector-3000"]
                                                    ::context/ring-handler     (handler/otel-handler)
