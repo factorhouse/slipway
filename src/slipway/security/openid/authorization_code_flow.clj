@@ -77,7 +77,7 @@
    In that flow you can rely on TLS (HTTPS) to authenticate the issuer instead of verifying the JWT signature.
    While that normally only applies to the ID token, in our case the Access token is intended for local use inside this
    client service JVM, and so the same logic applies."
-  ^LoginService [^OpenIdConfiguration openid-config {::openid/keys [identity-fn] :or {identity-fn identity} :as opts}]
+  ^LoginService [^OpenIdConfiguration openid-config opts]
   (let [id-service-state (atom nil)
         refresh-fns      {:refresh-token-fn (refresh/redeem-token-fn openid-config)
                           :user-state-fn    (user-state-fn opts)}]
