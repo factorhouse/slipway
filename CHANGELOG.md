@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.16] - 2026-08-18
+
+* refactor from `openid` to `oidc`
+
 ## [2.0.15] - 2026-08-18
 
 * provide optional post-authentication, pre-identity creation user-fn
