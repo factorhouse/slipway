@@ -36,17 +36,19 @@
   [access-token {::openid.jwt/keys [user-id-path]
                  :or               {user-id-path ["sub"]}
                  :as               opts}]
-  (let [user-id         (get-in access-token user-id-path)
+  (let [identity-fn     (::openid/identity-fn opts)
+        user-id         (get-in access-token user-id-path)
         user-roles      (roles access-token opts)
         user-expires-at (when-let [access-token-exp (get access-token "exp")]
                           ;; JOSE Nimbus library provides exp as a java.util.Date at this point
                           (.toInstant ^Date access-token-exp))]
     (log/debugf "user %s authorized with [%s] roles, expiring at %s" user-id (count user-roles) user-expires-at)
-    {::principal/type      ::openid/principal
-     ::principal/name      user-id
-     ::user/roles          user-roles
-     ::user/expires-at     user-expires-at
-     ::openid/access-token access-token}))
+    (cond-> {::principal/type      ::openid/principal
+             ::principal/name      user-id
+             ::user/roles          user-roles
+             ::user/expires-at     user-expires-at
+             ::openid/access-token access-token}
+      identity-fn identity-fn)))
 
 (defn login-service
   ^LoginService [realm ^JWTProcessorBean processor-bean opts]
@@ -55,19 +57,22 @@
       (^String getName [_]
         (str realm "-bearer"))
       (^UserIdentity login [_ ^String _username ^Object credentials ^Request _request ^Function _get-or-create]
-        (when-let [user-access-token (-> (.getProcessor processor-bean) (access-token credentials))]
-          (log/debugf "decoded [%s] claims from access token" (count user-access-token))
-          (let [user-state       (user-state user-access-token opts)
-                user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
-                new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state nil)
-                new-subject      (Subject.)]
-            (-> (.getPrincipals new-subject) (.add new-principal))
-            (-> (.getPrivateCredentials new-subject) (.add user-credentials))
-            (.setReadOnly new-subject)
-            (.newUserIdentity ^IdentityService @id-service-state
-                              new-subject
-                              new-principal
-                              (into-array String (user/roles user-state))))))
+        (try
+          (when-let [user-access-token (-> (.getProcessor processor-bean) (access-token credentials))]
+            (log/debugf "decoded [%s] claims from access token" (count user-access-token))
+            (when-let [user-state (user-state user-access-token opts)]
+              (let [user-credentials (OpenIdCredentials. {"request" {"access-token" credentials}})
+                    new-principal    (OpenIdUserPrincipalWithState. user-credentials user-state nil)
+                    new-subject      (Subject.)]
+                (-> (.getPrincipals new-subject) (.add new-principal))
+                (-> (.getPrivateCredentials new-subject) (.add user-credentials))
+                (.setReadOnly new-subject)
+                (.newUserIdentity ^IdentityService @id-service-state
+                                  new-subject
+                                  new-principal
+                                  (into-array String (user/roles user-state))))))
+          (catch Exception ex
+            (log/error ex "client credentials flow failure"))))
       (^UserIdentity getUserIdentity [_ ^Subject _subject ^Principal _user-principal ^boolean _create?])
       (^boolean validate [_ ^UserIdentity _user]
         true)

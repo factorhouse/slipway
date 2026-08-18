@@ -1,5 +1,5 @@
 (ns slipway.security.openid.authorization-code-flow-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [slipway.principal :as principal]
             [slipway.security.openid :as openid]
             [slipway.security.openid.authorization-code-flow :as authorization-code-flow]
@@ -31,6 +31,41 @@
             "exp"   1311281970}
            {"access_token" "some-access-token"}
            {}))))
+
+  (testing "identity-fn"
+
+    ;; drop user for any reason (can lead to not-authenticated state)
+    (is (= nil
+           (authorization-code-flow/user-state
+            {"sub"   "factor-dev"
+             "other" {"id" "x-name"}}
+            {"roles" ["1" "2" "3"]
+             "other" {"roles" ["x-role"]}
+             "exp"   1311281970}
+            {"access_token" "some-access-token"}
+            {::openid/identity-fn (constantly nil)})))
+
+    ;; amend roles to include default role, '*' in this case
+    (is (= {::principal/type      ::openid/principal
+            ::principal/name      "factor-dev"
+            ::user/roles          #{"*" "1" "2" "3"}
+            ::user/expires-at     1311281970
+            ::openid/id-token     {"other" {"id" "x-name"}
+                                   "sub"   "factor-dev"}
+            ::openid/access-token {"exp"   1311281970
+                                   "other" {"roles" ["x-role"]}
+                                   "roles" ["1" "2" "3"]}
+            ::openid/response     {"access_token" "some-access-token"}}
+           (munge-expiry
+            (authorization-code-flow/user-state
+             {"sub"   "factor-dev"
+              "other" {"id" "x-name"}}
+             {"roles" ["1" "2" "3"]
+              "other" {"roles" ["x-role"]}
+              "exp"   1311281970}
+             {"access_token" "some-access-token"}
+             {::openid/identity-fn (fn [user]
+                                     (update user ::user/roles conj "*"))})))))
 
   ;; different configured path for name and roles (default tokens)
   (is (= {::principal/type      ::openid/principal
