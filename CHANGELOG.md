@@ -7,11 +7,11 @@ All notable changes to this project will be documented in this file. This change
 
 ## [2.0.14] - 2026-08-18
 
-* provide openid/token-field accessor functions
+* provide oidc/token-field accessor functions
 
 ## [2.0.13] - 2026-08-17
 
-* provide openid/principal helper function
+* provide oidc/principal helper function
 
 ## [2.0.12] - 2026-08-17
 
@@ -38,7 +38,7 @@ All notable changes to this project will be documented in this file. This change
 
 A signficant release that introduces:
 
-* OpenID Authentication
+* OIDC Authentication
   * Authorization Code flow for web-ui
   * Client Credentials flow for api
   * Refresh token redemption

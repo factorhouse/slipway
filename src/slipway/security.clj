@@ -6,4 +6,4 @@
 (defmethod handler :default [_] nil)
 
 (comment
-  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :openid supported by default"})
+  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"})

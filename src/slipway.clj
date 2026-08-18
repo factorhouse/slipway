@@ -66,7 +66,7 @@
                     :error-handler   "the error-handler used by this context-handler for context level errors"
                     :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 
-  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :openid supported by default"}
+  #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
 
   #:slipway.security.hash{:realm                 "optional Jetty authentication realm"
                           :user-file             "the path to a Jetty hash-user file"
@@ -81,57 +81,57 @@
                           :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
                           :identity-service    "an (optional) concrete Jetty IdentityService"}
 
-  #:slipway.security.openid{:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
-                            :issuer                           "the URL of the OpenID provider"
-                            :client-id                        "OAuth 2.0 Client Identifier valid at the OpenID provider"
-                            :client-secret                    "the client secret known only by the Client and the OpenID"
-                            :authorization-endpoint           "the URL of the OpenID provider's authorization endpoint if configured"
-                            :token-endpoint                   "the URL of the OpenID provider's token endpoint if configured"
-                            :authentication-method            "authentication method to use with the Token Endpoint"
-                            :end-session-endpoint             "the URL of the OpenID provider's end session endpoint if configured"
-                            :jwks-endpoint                    "the URL of the OpenID provider's public cryptographic keys for verifying JWT token signatures"
-                            :http-client                      "the (optional) HttpClient instance to use"
-                            :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested, default is [\"profile\" \"email\"]"
-                            :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
-                            :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
-                            :oidc-redirect-error              "optional page where authentication errors are redirected"
-                            :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
-                            :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-identity creation"
-                            :identity-service                 "a concrete Jetty IdentityService"
-                            :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+  #:slipway.security.oidc{:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
+                          :issuer                           "the URL of the OIDC provider"
+                          :client-id                        "OAuth 2.0 Client Identifier valid at the OIDC provider"
+                          :client-secret                    "the client secret known only by the Client and the OIDC provider"
+                          :authorization-endpoint           "the URL of the OIDC provider's authorization endpoint if configured"
+                          :token-endpoint                   "the URL of the OIDC provider's token endpoint if configured"
+                          :authentication-method            "authentication method to use with the Token Endpoint"
+                          :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
+                          :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
+                          :http-client                      "the (optional) HttpClient instance to use"
+                          :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested, default is [\"profile\" \"email\"]"
+                          :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
+                          :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
+                          :oidc-redirect-error              "optional page where authentication errors are redirected"
+                          :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+                          :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
+                          :identity-service                 "a concrete Jetty IdentityService"
+                          :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
 
-  #:slipway.security.openid.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
+  #:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
 
-  #:slipway.security.openid.jwks{:endpoint                  "the jwks endpoint url"
-                                 :cache?                    "enable caching of the jwks set"
-                                 :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
-                                 :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."
-                                 :cache-forever?            "enable caching of the jwks set without expiration"
-                                 :refresh-ahead-cache?      "enable refresh-ahead caching of the JWK set"
-                                 :refresh-ahead-time        "the refresh ahead time, in milliseconds"
-                                 :scheduled?                "refresh in a scheduled manner, regardless of requests"
-                                 :rate-limited?             "rate limit the JWK set retrieval"
-                                 :rate-limited-min-interval "the minimum allowed time interval between two JWK set retrievals"
-                                 :retrying?                 "enables single retrial to retrieve the JWK set to work around transient network issues"
-                                 :outage-tolerant?          "enable outage tolerance by serving a cached JWK set in case of outage"
-                                 :outage-tolerant-forever?  "enable outage tolerance without expiration"
-                                 :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"}
+  #:slipway.security.oidc.jwks{:endpoint                  "the jwks endpoint url"
+                               :cache?                    "enable caching of the jwks set"
+                               :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
+                               :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."
+                               :cache-forever?            "enable caching of the jwks set without expiration"
+                               :refresh-ahead-cache?      "enable refresh-ahead caching of the JWK set"
+                               :refresh-ahead-time        "the refresh ahead time, in milliseconds"
+                               :scheduled?                "refresh in a scheduled manner, regardless of requests"
+                               :rate-limited?             "rate limit the JWK set retrieval"
+                               :rate-limited-min-interval "the minimum allowed time interval between two JWK set retrievals"
+                               :retrying?                 "enables single retrial to retrieve the JWK set to work around transient network issues"
+                               :outage-tolerant?          "enable outage tolerance by serving a cached JWK set in case of outage"
+                               :outage-tolerant-forever?  "enable outage tolerance without expiration"
+                               :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"}
 
-  #:slipway.security.openid.jwk.rsa{:key "the RSA key to use as an immutable JWK source"}
+  #:slipway.security.oidc.jwk.rsa{:key "the RSA key to use as an immutable JWK source"}
 
-  #:slipway.security.openid.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
-                                :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
+  #:slipway.security.oidc.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
+                              :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
 
-  #:slipway.security.openid.jwt{:user-roles-source      "the token containing user roles, either :access-token or :id-token (default is :access-token)"
-                                :user-roles-path        "the path within the :roles token to find user roles, default is [\"roles\"]"
-                                :user-id-source         "the token containing user id, either :access-token or :id-token (default is :id-token)"
-                                :user-id-path           "the path within the :id-token token to find user name, default is [\"sub\"]"
-                                :user-expiration-source "the token used for session expiration, either :access-token or :id-token (default is :access-token)"}
+  #:slipway.security.oidc.jwt{:user-roles-source      "the token containing user roles, either :access-token or :id-token (default is :access-token)"
+                              :user-roles-path        "the path within the :roles token to find user roles, default is [\"roles\"]"
+                              :user-id-source         "the token containing user id, either :access-token or :id-token (default is :id-token)"
+                              :user-id-path           "the path within the :id-token token to find user name, default is [\"sub\"]"
+                              :user-expiration-source "the token used for session expiration, either :access-token or :id-token (default is :access-token)"}
 
-  #:slipway.security.openid.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
-                                                ::exact-iss       "required: the URL of the OpenID provider"
-                                                ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
-                                                ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
+  #:slipway.security.oidc.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+                                              ::exact-iss       "required: the URL of the OIDC provider"
+                                              ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
+                                              ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 
   #:slipway.session{:enabled?                "are sessions enabled for this server? Default true"
                     :secure-request-only?    "set the secure flag on session cookies"
