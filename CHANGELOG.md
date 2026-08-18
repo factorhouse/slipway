@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.14] - 2026-08-18
+
+* provide openid/token-field accessor functions
+
 ## [2.0.13] - 2026-08-17
 
 * provide openid/principal helper function

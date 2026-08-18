@@ -72,3 +72,11 @@
 (defn principal
   [user]
   (::principal user))
+
+(defn id-token-field
+  [{::keys [id-token]} k]
+  (get id-token k))
+
+(defn access-token-field
+  [{::keys [access-token]} k]
+  (get access-token k))
