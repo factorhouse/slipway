@@ -57,7 +57,7 @@
 
 (defmethod security/handler :oidc
   [{::keys [authorization-flow constraint-mappings identity-service] :as opts}]
-  (log/debugf "creating [%s] oidc security handler with %s constraints" authorization-flow (count constraint-mappings))
+  (log/debugf "creating %s oidc security handler with [%s] constraints" authorization-flow (count constraint-mappings))
   (let [security-handler (flow-handler opts)]
     (doseq [[^String path-spec ^Constraint constraint] constraint-mappings]
       (.put security-handler path-spec constraint))
