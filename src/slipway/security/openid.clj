@@ -28,7 +28,8 @@
                          authentication-method (.authenticationMethod authentication-method)
                          http-client (.httpClient http-client)
                          (some? scopes) (.scopes (some->> scopes (into-array String)))
-                         (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?))]
+                         (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?)
+                         true (.authenticateNewUsers false))]
     (log/debugf "creating openid configuration for %s with scopes %s" issuer (cons "openid" scopes))
     (.build config-builder)))
 
@@ -48,6 +49,7 @@
                             :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
                             :oidc-redirect-error              "optional page where authentication errors are redirected"
                             :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+                            :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
                             :identity-service                 "a concrete Jetty IdentityService"
                             :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})
 

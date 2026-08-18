@@ -49,32 +49,35 @@
       (Instant/ofEpochSecond ^Long exp))))
 
 (defn user-state
-  [id-token access-token response opts]
+  [id-token access-token response {::openid/keys [identity-fn]
+                                   :or           {identity-fn identity}
+                                   :as           opts}]
   (log/debugf "decoded [%s] claims from access token" (count access-token))
   (let [user-id         (username id-token access-token opts)
         user-roles      (roles id-token access-token opts)
         user-expires-at (expiration id-token access-token opts)]
     (log/debugf "user %s authorized with [%s] roles, expiring at %s" user-id (count user-roles) user-expires-at)
-    {::principal/type      ::openid/principal
-     ::principal/name      user-id
-     ::user/roles          user-roles
-     ::user/expires-at     user-expires-at
-     ::openid/response     response
-     ::openid/id-token     id-token
-     ::openid/access-token access-token}))
+    (cond-> {::principal/type      ::openid/principal
+             ::principal/name      user-id
+             ::user/roles          user-roles
+             ::user/expires-at     user-expires-at
+             ::openid/response     response
+             ::openid/id-token     id-token
+             ::openid/access-token access-token}
+      identity-fn identity-fn)))
 
 (defn user-state-fn
   [opts]
   (fn [id-token access-token response]
     (user-state id-token access-token response opts)))
 
-(defn login-module
+(defn login-service
   "This roles-service is exclusively for OpenID Connect (OIDC) direct Authorization Code flow via the Token endpoint,
    that is how Jetty implements OIDC authentication interactions.
    In that flow you can rely on TLS (HTTPS) to authenticate the issuer instead of verifying the JWT signature.
    While that normally only applies to the ID token, in our case the Access token is intended for local use inside this
    client service JVM, and so the same logic applies."
-  ^LoginService [^OpenIdConfiguration openid-config opts]
+  ^LoginService [^OpenIdConfiguration openid-config {::openid/keys [identity-fn] :or {identity-fn identity} :as opts}]
   (let [id-service-state (atom nil)
         refresh-fns      {:refresh-token-fn (refresh/redeem-token-fn openid-config)
                           :user-state-fn    (user-state-fn opts)}]
@@ -83,25 +86,28 @@
         (str (.getIssuer openid-config) "-roles"))
       (^UserIdentity login [_ ^String _username ^Object _credentials ^Request _request ^Function _get-or-create])
       (^UserIdentity getUserIdentity [_ ^Subject _subject ^Principal user-principal ^boolean _create?]
-        (let [user-creds        (.getCredentials ^OpenIdUserPrincipal user-principal)
-              {:keys [id-token response]} (p/datafy user-creds)
-              user-access-token (access-token (get response "access_token"))
-              user-state        (user-state id-token user-access-token response opts)
-              new-principal     (OpenIdUserPrincipalWithState. user-creds user-state refresh-fns)
-              new-subject       (Subject.)]
-          (-> (.getPrincipals new-subject) (.add new-principal))
-          (-> (.getPrivateCredentials new-subject) (.add user-creds))
-          ;; TODO: Consider: a refresh-token is redeemed and the user's roles (or other claims, name, etc) have changed.
-          ;;       if we want to push principal/subject mutation on refresh-token redemption down further into Jetty
-          ;;       Security we will have to consider not making the subject readOnly here. (we cant update it later..)
-          ;;       It's not clear what the consequence of that is throughout Jetty Security itself, and we rely only
-          ;;       on Jetty's constraints for determining if user is authenticated, not if a user is in-role.
-          ;;       So for our purposes we can leave this best-behaviour in here for now.
-          (.setReadOnly new-subject)
-          (.newUserIdentity ^IdentityService @id-service-state
-                            new-subject
-                            new-principal
-                            (into-array String (user/roles user-state)))))
+        (try
+          (let [user-creds        (.getCredentials ^OpenIdUserPrincipal user-principal)
+                {:keys [id-token response]} (p/datafy user-creds)
+                user-access-token (access-token (get response "access_token"))]
+            (when-let [user-state (user-state id-token user-access-token response opts)]
+              (let [new-principal (OpenIdUserPrincipalWithState. user-creds user-state refresh-fns)
+                    new-subject   (Subject.)]
+                (-> (.getPrincipals new-subject) (.add new-principal))
+                (-> (.getPrivateCredentials new-subject) (.add user-creds))
+                ;; TODO: Consider: a refresh-token is redeemed and the user's roles (or other claims, name, etc) have changed.
+                ;;       if we want to push principal/subject mutation on refresh-token redemption down further into Jetty
+                ;;       Security we will have to consider not making the subject readOnly here. (we cant update it later..)
+                ;;       It's not clear what the consequence of that is throughout Jetty Security itself, and we rely only
+                ;;       on Jetty's constraints for determining if user is authenticated, not if a user is in-role.
+                ;;       So for our purposes we can leave this best-behaviour in here for now.
+                (.setReadOnly new-subject)
+                (.newUserIdentity ^IdentityService @id-service-state
+                                  new-subject
+                                  new-principal
+                                  (into-array String (user/roles user-state))))))
+          (catch Exception ex
+            (log/error ex "authorization code flow failure"))))
       (^boolean validate [_ ^UserIdentity _user]
         true)
       (^IdentityService getIdentityService [_]
@@ -121,5 +127,5 @@
   (let [openid-config (openid/configuration opts)]
     (doto (SecurityHandler$PathMapped.)
       (.setAuthenticator (authenticator openid-config opts))
-      (.setLoginService (OpenIdLoginService. openid-config (login-module openid-config opts)))
+      (.setLoginService (OpenIdLoginService. openid-config (login-service openid-config opts)))
       (.setRealmName issuer))))

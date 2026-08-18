@@ -1,5 +1,5 @@
 (ns slipway.security.openid.client-credentials-flow-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [slipway.principal :as principal]
             [slipway.security.openid :as openid]
             [slipway.security.openid.client-credentials-flow :as client-credentials-flow]
@@ -33,6 +33,39 @@
                                                "other" {"name"  "x-name"
                                                         "roles" ["x-role"]}}
                                               {}))))
+
+  (testing "identity-fn"
+
+    ;; drop user for any reason (can lead to not-authenticated state)
+    (is (= nil
+           (client-credentials-flow/user-state {"sub"   "factor-dev"
+                                                "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                                "roles" ["1" "2" "3"]
+                                                "other" {"name"  "x-name"
+                                                         "roles" ["x-role"]}}
+                                               {::openid/identity-fn (constantly nil)})))
+
+    ;; amend roles to include default role, '*' in this case
+    (is (= {::principal/type                      ::openid/principal
+            ::principal/name                      "factor-dev"
+            ::user/roles                          #{"*" "1" "2" "3"}
+            ::user/expires-at                     1311281970
+            :slipway.security.openid/access-token {"sub"   "factor-dev"
+                                                   ;; JOSE Nimbus library decodes exp to java.util.Date
+                                                   ;; This is different to the authorization flow which where the JWT
+                                                   ;; decoding is handled by Jetty, and remains a long at this point
+                                                   "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                                   "other" {"roles" ["x-role"]
+                                                            "name"  "x-name"}
+                                                   "roles" ["1" "2" "3"]}}
+           (munge-expiry
+            (client-credentials-flow/user-state {"sub"   "factor-dev"
+                                                 "exp"   (DateUtils/fromSecondsSinceEpoch 1311281970)
+                                                 "roles" ["1" "2" "3"]
+                                                 "other" {"name"  "x-name"
+                                                          "roles" ["x-role"]}}
+                                                {::openid/identity-fn (fn [user]
+                                                                        (update user ::user/roles conj "*"))})))))
 
   ;; different configured path for name and roles
   (is (= {::principal/type                      ::openid/principal
