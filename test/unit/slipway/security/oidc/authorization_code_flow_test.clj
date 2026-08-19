@@ -112,7 +112,7 @@
            {"access_token" "some-access-token"}
            {::oidc.jwt/user-roles-path   ["other" "roles"]
             ::oidc.jwt/user-id-path      ["other" "id"]
-            ::oidc.jwt/user-roles-source :id-token}))))
+            ::oidc.jwt/user-roles-source "id_token"}))))
 
   ;; different configured path for name and roles (id taken from access-token)
   (is (= {::principal/type    ::oidc/principal
@@ -137,7 +137,7 @@
            {"access_token" "some-access-token"}
            {::oidc.jwt/user-roles-path ["other" "roles"]
             ::oidc.jwt/user-id-path    ["other" "id"]
-            ::oidc.jwt/user-id-source  :access-token}))))
+            ::oidc.jwt/user-id-source  "access_token"}))))
 
   ;; roles is scalar in the jwt, is presented as a single-element-set in the output
   ;; we encounter this occasionally with IdP that reduce single-role claims to a string

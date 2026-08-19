@@ -20,7 +20,8 @@
 (defn configuration ^OpenIdConfiguration
   [{::keys [issuer client-id client-secret authorization-endpoint token-endpoint end-session-endpoint
             authentication-method http-client scopes logout-when-id-token-is-expired?]
-    :or    {scopes ["profile" "email"]}}]
+    :or    {scopes                           ["profile" "email"]
+            logout-when-id-token-is-expired? false}}]
   (let [config-builder (cond-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
                          authorization-endpoint (.authorizationEndpoint authorization-endpoint)
                          token-endpoint (.tokenEndpoint token-endpoint)
@@ -30,7 +31,7 @@
                          (some? scopes) (.scopes (some->> scopes (into-array String)))
                          (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?)
                          true (.authenticateNewUsers false))]
-    (log/debugf "creating openid configuration for %s with scopes %s" issuer (cons "openid" scopes))
+    (log/debugf "creating openid configuration with scopes %s for %s" (cons "openid" scopes) issuer)
     (.build config-builder)))
 
 (comment
@@ -44,7 +45,7 @@
                           :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
                           :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
                           :http-client                      "the (optional) HttpClient instance to use"
-                          :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested, default is [\"profile\" \"email\"]"
+                          :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
                           :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
                           :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
                           :oidc-redirect-error              "optional page where authentication errors are redirected"

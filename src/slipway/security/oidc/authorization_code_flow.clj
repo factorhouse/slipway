@@ -27,23 +27,23 @@
 
 (defn username
   [id-token access-token {::oidc.jwt/keys [user-id-source user-id-path]
-                          :or             {user-id-source :id-token
+                          :or             {user-id-source "id_token"
                                            user-id-path   ["sub"]}}]
-  (let [name-token (if (= :access-token user-id-source) access-token id-token)]
+  (let [name-token (if (= "access_token" user-id-source) access-token id-token)]
     (get-in name-token user-id-path)))
 
 (defn roles
   [id-token access-token {::oidc.jwt/keys [user-roles-source user-roles-path]
-                          :or             {user-roles-source :access-token
+                          :or             {user-roles-source "access_token"
                                            user-roles-path   ["roles"]}}]
-  (let [roles-token (if (= :id-token user-roles-source) id-token access-token)
+  (let [roles-token (if (= "id_token" user-roles-source) id-token access-token)
         roles-value (get-in roles-token user-roles-path)]
     (if (string? roles-value) #{roles-value} (set roles-value))))
 
 (defn expiration
   [id-token access-token {::oidc.jwt/keys [user-expiration-source]
-                          :or             {user-expiration-source :access-token}}]
-  (let [expiration-token (if (= :id-token user-expiration-source) id-token access-token)]
+                          :or             {user-expiration-source "access_token"}}]
+  (let [expiration-token (if (= "id_token" user-expiration-source) id-token access-token)]
     (when-let [exp (get expiration-token "exp")]
       ;; Jetty JWT library provides exp as a java.lang.Long at this point
       (Instant/ofEpochSecond ^Long exp))))
