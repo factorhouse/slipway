@@ -31,7 +31,7 @@
                          (some? scopes) (.scopes (some->> scopes (into-array String)))
                          (some? logout-when-id-token-is-expired?) (.logoutWhenIdTokenIsExpired logout-when-id-token-is-expired?)
                          true (.authenticateNewUsers false))]
-    (log/debugf "creating openid configuration for %s with scopes %s" issuer (cons "openid" scopes))
+    (log/debugf "creating openid configuration with scopes %s for %s" (cons "openid" scopes) issuer)
     (.build config-builder)))
 
 (comment
