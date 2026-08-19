@@ -20,7 +20,8 @@
 (defn configuration ^OpenIdConfiguration
   [{::keys [issuer client-id client-secret authorization-endpoint token-endpoint end-session-endpoint
             authentication-method http-client scopes logout-when-id-token-is-expired?]
-    :or    {scopes ["profile" "email"]}}]
+    :or    {scopes                           ["profile" "email"]
+            logout-when-id-token-is-expired? false}}]
   (let [config-builder (cond-> (OpenIdConfiguration$Builder. issuer client-id client-secret)
                          authorization-endpoint (.authorizationEndpoint authorization-endpoint)
                          token-endpoint (.tokenEndpoint token-endpoint)
