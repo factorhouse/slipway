@@ -1,33 +1,37 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.0.17] - 2026-08-19
+
+* Adjust jwt configuration to take oidc standard token names instead of keywords
+
 ## [2.0.16] - 2026-08-18
 
-* refactor from `openid` to `oidc`
+* Refactor from `openid` to `oidc`
 
 ## [2.0.15] - 2026-08-18
 
-* provide optional post-authentication, pre-identity creation user-fn
+* Provide optional post-authentication, pre-identity creation user-fn
 
 ## [2.0.14] - 2026-08-18
 
-* provide oidc/token-field accessor functions
+* Provide oidc/token-field accessor functions
 
 ## [2.0.13] - 2026-08-17
 
-* provide oidc/principal helper function
+* Provide oidc/principal helper function
 
 ## [2.0.12] - 2026-08-17
 
-* provide standalone invalidate-session function in request ns
+* Provide standalone invalidate-session function in request ns
 
 ## [2.0.11] - 2026-08-17
 
-* make redeem-refresh-token return a future
+* Make redeem-refresh-token return a future
 
 ## [2.0.10] - 2026-08-17
 
-* add user-expires-in function to request ns
+* Add user-expires-in function to request ns
 
 ## [2.0.9] - 2026-08-17
 
