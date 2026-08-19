@@ -91,7 +91,7 @@
                           :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
                           :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
                           :http-client                      "the (optional) HttpClient instance to use"
-                          :scopes                           "a sequence of ^String scopes to request, included in addition to \"openid\" scope which is always requested, default is [\"profile\" \"email\"]"
+                          :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
                           :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
                           :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
                           :oidc-redirect-error              "optional page where authentication errors are redirected"
@@ -122,11 +122,11 @@
   #:slipway.security.oidc.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
                               :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
 
-  #:slipway.security.oidc.jwt{:user-roles-source      "the token containing user roles, either :access-token or :id-token (default is :access-token)"
-                              :user-roles-path        "the path within the source token to find user roles, default is [\"roles\"]"
-                              :user-id-source         "the token containing user id, either :access-token or :id-token (default is :id-token)"
-                              :user-id-path           "the path within the source token to find user name, default is [\"sub\"]"
-                              :user-expiration-source "the token used for session expiration, either :access-token or :id-token (default is :access-token)"}
+  #:slipway.security.oidc.jwt{:user-roles-source      "the token containing user roles, either 'access_token' or 'id_token' (default is 'access_token')"
+                              :user-roles-path        "the path within the source token to find user roles, default is ['roles']"
+                              :user-id-source         "the token containing user id, either 'access_token' or 'id_token' (default is 'id_token')"
+                              :user-id-path           "the path within the source token to find user name, default is ['sub']"
+                              :user-expiration-source "the token used for session expiration, either 'access_token' or 'id_token' (default is 'access_token')"}
 
   #:slipway.security.oidc.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
                                               ::exact-iss       "required: the URL of the OIDC provider"
