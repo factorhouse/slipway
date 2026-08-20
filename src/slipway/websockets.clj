@@ -64,7 +64,7 @@
          :or    {path-spec       "/chsk"
                  idle-timeout-ms 300000}} opts]
     (when enabled?
-      (log/debugf "configuring websockets at %s with %s" path-spec opts)
+      (log/debugf "configuring websockets at %s" path-spec)
       (WebSocketUpgradeHandler/from
        server
        handler
