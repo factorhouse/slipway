@@ -13,7 +13,8 @@
   * [JVM Support](#jvm-support)
   * [Archived Versions](#archived-versions)
 * [Eclipse Jetty](#eclipse-jetty)
-* [Configuring Slipway](#configuring-slipway)
+  * [Slipway Requests](#slipway-requests)
+* [Configuration](#configuration)
 * [License](#license)
 
 ----
@@ -106,7 +107,7 @@ map with additional request, response, and authentication information, see: [src
 
 Maintaining compatibility with Ring is not a goal of this project and future request-maps may not be 'Ring-like'.
 
-## Configuring Slipway
+## Configuration
 
 In this example we have:
 
