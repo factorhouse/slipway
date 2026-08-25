@@ -31,11 +31,11 @@ leverage of Jetty capabilities while providing sensible defaults in a data-orien
 
 In a very simple sense, Slipway is currently:
 
-1. Eclipse Jetty
-2. Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente))
-3. Extended OIDC support including Authorization Code Flow, Client Credentials Flow, and Refresh Token redemption
+1. Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
+2. Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente)).
+3. Extended OIDC support including Authorization Code Flow, Client Credentials Flow, and Refresh Token redemption.
 
-Predominantly Slipway is Jetty, if in doubt read the [Jetty docs](https://jetty.org/docs/).
+Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
 ## Using Slipway
 
@@ -57,13 +57,24 @@ Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and 
 
 ### Archived Versions
 
-Implementations supporting Jetty 9, 10, and 11 are preserved in the [`archive/`](archive/) directory, but no longer maintained.
+Implementations supporting Jetty 9, 10, and 11 are no longer maintained and preserved in the [`archive/`](archive/) directory.
 
-## Configuring and Starting Slipway
+## Eclipse Jetty
 
-**Note**: This guide will be properly updated shortly, prior to the upcoming 2.1 release.
+Eclipse Jetty is a widely deployed, open-source Java web server that is considered ubiquitous across enterprise Java 
+applications and cloud-native development.
 
-Slipway provides namespaced configuration that closely models the Jetty domain.
+Key Jetty concepts are the [Server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html) that manages
+network connections, [Connectors](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector) that 
+listen on network ports and decode incoming messages using specific protocol like HTTP 1.1, and 
+[Handlers](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler) that process a request and
+return a response.
+
+A Jetty Server is composed of Connectors and Handlers. Handlers can be pinned to specific Connectors with Virtual Hosts.
+
+Slipway supports complex Jetty deployments where one Server can expose many Connectors and Handlers. 
+
+## Configuring Slipway
 
 In this example we have:
 
@@ -76,52 +87,54 @@ See the integration tests for runnable, example servers.
 See [slipway.clj](src/slipway.clj) for all configuration options.
 
 ```clojure
-(slipway/start
- #::server{:connectors    [{::http/name "connector-3000"
-                            ::http/port 3000}
-                           {::https/name                 "connector-3443"
-                            ::https/:port                3443
-                            ::https/:keystore            "dev-resources/my-keystore.jks"
-                            ::https/:keystore-type       "PKCS12"
-                            ::https/:keystore-password   "password"
-                            ::https/:truststore          "dev-resources/my-truststore.jks"
-                            ::https/:truststore-password "password"
-                            ::https/:truststore-type     "PKCS12"}]
-           :handler       {::server/handler-type ::context/handler-collection
-                           ::context/handlers    [{::context/virtual-hosts        ["@connector-3443"]
-                                                   ::context/ring-handler         (handler/ui-handler)
-                                                   ::websockets/enabled?          true
-                                                   ::security/handler             :oidc
-                                                   ::oidc/issuer                "http://localhost:8080/realms/master"
-                                                   ::oidc/client-id             "https://slipway.io/demo-web"
-                                                   ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
-                                                   ::oidc.jwt/user-id-path      ["name"]
-                                                   ::oidc.jwt/user-roles-path   ["realm_access" "roles"]
-                                                   ::oidc/oidc-redirect-success "/oauth2/openid/callback"
-                                                   ::oidc/oidc-redirect-error   "/login-error"
-                                                   ::oidc/oidc-redirect-logout  "/logout-success"
-                                                   ::hash/constraint-mappings     app/constraints}
-                                                  {::context/path                         "/api"
-                                                   ::context/virtual-hosts                ["@connector-3443"]
-                                                   ::context/ring-handler                 (app/api-handler)
-                                                   ::security/handler                     :oidc
-                                                   ::session/enabled?                     false
-                                                   ::oidc/authorization-flow            :client-credentials
-                                                   ::oidc.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                                                   ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                                                   ::oidc.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
-                                                   ::oidc.jwt/user-id-path              ["preferred_username"]
-                                                   ::oidc.jwt/user-roles-path           ["realm_access" "roles"]
-                                                   ::oidc/constraint-mappings           app/constraints}
-                                                  {::context/path             "/otel"
-                                                   ::context/virtual-hosts    ["@connector-3000"]
-                                                   ::context/ring-handler     (handler/otel-handler)
-                                                   ::security/handler         :hash
-                                                   ::hash/realm               "slipway"
-                                                   ::hash/users               [["prometheus" "password" ["metrics"]]]
-                                                   ::hash/authenticator       (BasicAuthenticator.)
-                                                   ::hash/constraint-mappings app/constraints}]}
-           :error-handler app/server-error-handler})
+(let [connector-http  {::http/name "connector-3000"
+                       ::http/port 3000}
+      connector-https {::https/name                 "connector-3443"
+                       ::https/:port                3443
+                       ::https/:keystore            "dev-resources/my-keystore.jks"
+                       ::https/:keystore-type       "PKCS12"
+                       ::https/:keystore-password   "password"
+                       ::https/:truststore          "dev-resources/my-truststore.jks"
+                       ::https/:truststore-password "password"
+                       ::https/:truststore-type     "PKCS12"}
+      handler-ui      {::context/virtual-hosts      ["@connector-3443"]
+                       ::context/ring-handler       (handler/ui-handler)
+                       ::websockets/enabled?        true
+                       ::security/handler           :oidc
+                       ::oidc/issuer                "http://localhost:8080/realms/master"
+                       ::oidc/client-id             "https://slipway.io/demo-web"
+                       ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                       ::oidc.jwt/user-id-path      ["name"]
+                       ::oidc.jwt/user-roles-path   ["realm_access" "roles"]
+                       ::oidc/oidc-redirect-success "/oauth2/openid/callback"
+                       ::oidc/oidc-redirect-error   "/login-error"
+                       ::oidc/oidc-redirect-logout  "/logout-success"
+                       ::hash/constraint-mappings   app/constraints}
+      handler-api     {::context/path                       "/api"
+                       ::context/virtual-hosts              ["@connector-3443"]
+                       ::context/ring-handler               (app/api-handler)
+                       ::security/handler                   :oidc
+                       ::session/enabled?                   false
+                       ::oidc/authorization-flow            :client-credentials
+                       ::oidc.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                       ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
+                       ::oidc.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
+                       ::oidc.jwt/user-id-path              ["preferred_username"]
+                       ::oidc.jwt/user-roles-path           ["realm_access" "roles"]
+                       ::oidc/constraint-mappings           app/constraints}
+      handler-otel    {::context/path             "/otel"
+                       ::context/virtual-hosts    ["@connector-3000"]
+                       ::context/ring-handler     (handler/otel-handler)
+                       ::security/handler         :hash
+                       ::hash/realm               "slipway"
+                       ::hash/users               [["prometheus" "password" ["metrics"]]]
+                       ::hash/authenticator       (BasicAuthenticator.)
+                       ::hash/constraint-mappings app/constraints}]
+  (slipway/start
+   #::server{:connectors    [connector-http connector-https]
+             :handler       {::server/handler-type ::context/handler-collection
+                             ::context/handlers    [handler-ui handler-api handler-otel]}
+             :error-handler app/server-error-handler}))
 ```
 
 ## License
