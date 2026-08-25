@@ -25,10 +25,20 @@ The goal of this project is to provide access in Clojure to the full set of capa
 In addition to those capabilities, this library extends Jetty's feature-set where required to meet the needs
 of the [Factor House](https://factorhouse.io/) team in their product delivery work.
 
-Slipway configuration models Jetty instead of exposing a simplified DSL or a new web-server abstraction. This approach
-allows leverage of Jetty capabilities while providing sensible defaults in a data-oriented way. 
+Slipway configuration models Jetty instead of exposing a simplified DSL or a new web-server abstraction. This allows
+leverage of Jetty capabilities while providing sensible defaults in a data-oriented way. 
 
-If in doubt, read the [Jetty docs](https://jetty.org/docs/).
+In a very simple sense, Slipway is currently:
+
+1. Eclipse Jetty
+2. Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente))
+3. Extended OIDC support including Authorization Code Flow, Client Credentials Flow, and Refresh Token redemption
+
+Predominantly Slipway is Jetty, if in doubt read the [Jetty docs](https://jetty.org/docs/).
+
+### JVM Version Support
+
+Slipway (and Jetty 12.1) Requires Java 17+.
 
 ### Archived Versions
 
@@ -45,10 +55,6 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 ;; project.clj
 [io.factorhouse/slipway-jetty12 "2.0.7"]
 ```
-
-### JVM Version Support
-
-Slipway (and Jetty 12.1) Requires Java 17+.
 
 ## Configuring and Starting Slipway
 
