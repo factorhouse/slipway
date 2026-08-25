@@ -110,7 +110,7 @@ Maintaining compatibility with Ring is not a goal of this project and future req
 
 ## Future Goals
 
-* Remove `org.ring-clojure/ring-core-protocols` depdendency.
+* Remove `org.ring-clojure/ring-core-protocols` dependency.
 * Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
 * Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
   * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
