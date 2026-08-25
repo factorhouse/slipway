@@ -90,6 +90,20 @@ Slipway provides a base ContextHandler that processes a Request in the following
 -> ring-handler
 ```
 
+### Slipway Requests
+
+Slipway decodes incoming Jetty Request objects into a Clojure map that resembles a Ring map with additional request, 
+response, and authentication information [like so](src/slipway/request.clj):
+
+```Clojure
+(defn request-map
+  [^Request request ^Response response]
+  (merge (ring-like-map request)
+         {::request       request
+          ::response      response
+          ::user/identity (authenticated-user request)}))
+```
+
 ## Configuring Slipway
 
 In this example we have:
