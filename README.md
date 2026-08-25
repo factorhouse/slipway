@@ -70,7 +70,7 @@ listen on network ports and decode incoming messages using protocols like HTTP 1
 [Handlers](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler) that process a request and 
 response.
 
-A Jetty Server is composed of Connectors and Handlers. Virtual Hosts can pin a Handler to a specific Connectors.
+A Jetty Server is composed of Connectors and Handlers. Virtual Hosts can pin a Handler to a specific Connector.
 
 Slipway supports complex Jetty deployments where one Server can expose many Connectors and Handlers.
 
