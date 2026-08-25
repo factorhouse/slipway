@@ -66,7 +66,7 @@ applications and cloud-native development.
 
 Key Jetty concepts are the [Server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html) that manages
 network connections, [Connectors](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector) that 
-listen on network ports and decode incoming messages using specific protocol like HTTP 1.1, and 
+listen on network ports and decode incoming messages using protocols like HTTP 1.1, and 
 [Handlers](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler) that process a request and 
 response.
 
