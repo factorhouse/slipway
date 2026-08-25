@@ -34,7 +34,7 @@ leverage of Jetty capabilities while providing sensible defaults in a data-orien
 In a very simple sense, Slipway is currently:
 
 * Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
-* Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente)).
+* Websockets (combining Jetty with [Sente](https://github.com/taoensso/sente)).
 * Extended OIDC support including:
   * Authorization Code Flow with Refresh Token redemption
   * Client Credentials Flow
@@ -106,6 +106,14 @@ map with additional request, response, and authentication information, see: [src
 ```
 
 Maintaining compatibility with Ring is not a goal of this project and future request-maps may not be 'Ring-like'.
+
+## Future Goals
+
+* Remove `org.ring-clojure/ring-core-protocols` depdendency.
+* Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
+* Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
+  * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
+  * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
 
 ## Configuration
 
