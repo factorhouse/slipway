@@ -116,6 +116,22 @@ Maintaining compatibility with Ring is not a goal of this project and future req
   * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
   * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
 
+## Full-Stack Development
+
+Slipway is constrained to the stated goals of this project, and those goals exclude any interest beyond Jetty.
+
+[Factor House](https://factorhouse.io) has a commmon product architecture which is a conservative, security-conscious
+web-server deployment with websocket support and a rich, data-oriented UI.
+
+To meet the needs of that architecture we leverage [HSX](https://github.com/factorhouse/hsx) and
+[RFX](https://github.com/factorhouse/rfx) among other libraries.
+
+This project's [integration tests](test/integration/slipway) contain many example server deployments, but those examples
+have a very simple non-websocket architecture due to the constraints of this library.
+
+It is our desire to provide a full-stack reference architecture in [Shortcut](https://github.com/factorhouse/shortcut), 
+however that has been a desire for quite some time and we have lots of other priorites.
+
 ## Configuration
 
 In this example we have:
