@@ -14,6 +14,7 @@
   * [Archived Versions](#archived-versions)
 * [Eclipse Jetty](#eclipse-jetty)
   * [Slipway Requests](#slipway-requests)
+* [Future Goals](#future-goals)
 * [Configuration](#configuration)
 * [License](#license)
 
