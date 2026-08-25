@@ -67,12 +67,23 @@ applications and cloud-native development.
 Key Jetty concepts are the [Server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html) that manages
 network connections, [Connectors](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector) that 
 listen on network ports and decode incoming messages using specific protocol like HTTP 1.1, and 
-[Handlers](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler) that process a request and
-return a response.
+[Handlers](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler) that process a request and 
+response.
 
-A Jetty Server is composed of Connectors and Handlers. Handlers can be pinned to specific Connectors with Virtual Hosts.
+A Jetty Server is composed of Connectors and Handlers. Virtual Hosts can pin a Handler to a specific Connectors.
 
-Slipway supports complex Jetty deployments where one Server can expose many Connectors and Handlers. 
+Slipway supports complex Jetty deployments where one Server can expose many Connectors and Handlers.
+
+Slipway provides a base ContextHandler that processes a Request in the following order:
+
+-> Request
+-> ContextHandler
+-> CompressionHandler (optional)
+-> SessionHandler (optional)
+-> SecurityHandler (optional)
+-> WebsocketHandler (optional)
+-> SyncHandler
+-> ring-handler
 
 ## Configuring Slipway
 
