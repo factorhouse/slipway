@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.0] - 2026-08-26
+
+* Update README.md
+
 ## [2.0.17] - 2026-08-19
 
 * Adjust jwt configuration to take oidc standard token names instead of keywords
