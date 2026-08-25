@@ -8,9 +8,10 @@
 ## Slipway by [Factor House](https://factorhouse.io)
 
 * [Introduction](#introduction)
-    * [Archived Versions](#archived-versions)
 * [Using Slipway](#using-slipway)
-    * [JVM Version Support](#jvm-version-support)
+  * [Installation](#installation)
+  * [JVM Support](#jvm-support)
+  * [Archived Versions](#archived-versions)
 * [Configuring and Starting Slipway](#configuring-and-starting-slipway)
 * [License](#license)
 
@@ -36,15 +37,9 @@ In a very simple sense, Slipway is currently:
 
 Predominantly Slipway is Jetty, if in doubt read the [Jetty docs](https://jetty.org/docs/).
 
-### JVM Version Support
-
-Slipway (and Jetty 12.1) Requires Java 17+.
-
-### Archived Versions
-
-Implementations supporting Jetty 9, 10, and 11 are preserved in the [`archive/`](archive/) directory, but no longer maintained.
-
 ## Using Slipway
+
+### Installation
 
 Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
@@ -55,6 +50,14 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 ;; project.clj
 [io.factorhouse/slipway-jetty12 "2.0.7"]
 ```
+
+### JVM Support
+
+Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and Java 11.
+
+### Archived Versions
+
+Implementations supporting Jetty 9, 10, and 11 are preserved in the [`archive/`](archive/) directory, but no longer maintained.
 
 ## Configuring and Starting Slipway
 
