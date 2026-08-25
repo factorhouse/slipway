@@ -109,6 +109,8 @@ map with additional request, response, and authentication information, see: [src
 
 Maintaining compatibility with Ring is not a goal of this project and future request-maps may not be 'Ring-like'.
 
+Read more about our intention to remove Ring and Sente from this project [here](docs/ring-and-sente.md).
+
 ## Future Goals
 
 * Remove `org.ring-clojure/ring-core-protocols` dependency.
