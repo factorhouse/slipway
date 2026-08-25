@@ -4,6 +4,8 @@ https://www.reddit.com/r/Clojure/comments/1vy2hgd/comment/p5vr1cg/?utm_source=sh
 
 ----
 
+Author: Derek Troy-West, CEO and Co-Founder, [Factor House](https://factorhouse.io).
+
 We started moving away from Ring about five years ago.
 
 This is a complex issue, because the Clojure community is very enamoured by Ring, and it's my intention to be at first kind to that community, and particularly the maintainers of the library. Rich Hickey is very clear on his expectations for collegial behaviour when communicating in this community.
