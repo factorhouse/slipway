@@ -12,7 +12,8 @@
   * [Installation](#installation)
   * [JVM Support](#jvm-support)
   * [Archived Versions](#archived-versions)
-* [Configuring and Starting Slipway](#configuring-and-starting-slipway)
+* [Eclipse Jetty](#eclipse-jetty)
+* [Configuring Slipway](#configuring-slipway)
 * [License](#license)
 
 ----
@@ -31,9 +32,11 @@ leverage of Jetty capabilities while providing sensible defaults in a data-orien
 
 In a very simple sense, Slipway is currently:
 
-1. Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
-2. Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente)).
-3. Extended OIDC support including Authorization Code Flow, Client Credentials Flow, and Refresh Token redemption.
+* Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
+* Websockets (combinging Jetty with [Sente](https://github.com/taoensso/sente)).
+* Extended OIDC support including:
+  * Authorization Code Flow with Refresh Token redemption
+  * Client Credentials Flow
 
 Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
