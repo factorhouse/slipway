@@ -79,6 +79,7 @@ Slipway supports complex Jetty deployments where one Server can expose many Conn
 
 Slipway provides a base ContextHandler that processes a Request in the following order:
 
+```
 -> Request
 -> ContextHandler
 -> CompressionHandler (optional)
@@ -87,6 +88,7 @@ Slipway provides a base ContextHandler that processes a Request in the following
 -> WebsocketHandler (optional)
 -> SyncHandler
 -> ring-handler
+```
 
 ## Configuring Slipway
 
