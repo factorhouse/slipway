@@ -18,7 +18,7 @@ I have been working with Jetty for twenty years, I was at one point an fairly ac
 
 I think your opinion is one that is probably fairly well shared within our community, because if you ask a Clojure developer what web server they use, they will say Ring. That is a problem, because Ring is not a webserver, it is 'Clojure HTTP server abstraction' that operates as an application running on top of a webserver, most commonly the underlying webserver is Jetty.
 
-I don't need a server abstraction, I need to use Jetty. The server abstraction provided by Ring covers a very small part of the surface area of Jetty.
+I don't need a server abstraction, I need to use Jetty. The server abstraction provided by Ring covers a very small part of the surface area of Jetty. To its credit, Ring supports many other underlying webservers, that is also explicitly not a goal of Slipway.
 
 I think this is a point to stop and reflect on for a moment. The scope of Eclipse Jetty is enormous, the project is maintained by an active team of four developers, one of whom has been working on Jetty since before Java existed. Jetty is used everywhere, including as the underlying servlet framework for Google App Engine. Jetty is a very, very big deal.
 
