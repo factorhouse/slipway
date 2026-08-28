@@ -18,6 +18,8 @@
 * [Full-Stack Development](#full-stack-development)
 * [Configuration](#configuration)
   * [Example](#example)
+  * [How is Slipway configured?](#how-is-slipway-configured)
+  * [slipway](#slipway)
 * [License](#license)
 
 ----
@@ -203,6 +205,36 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
              :handler       {::server/handler-type ::context/handler-collection
                              ::context/handlers    [handler-ui handler-api handler-otel]}
              :error-handler app/server-error-handler}))
+```
+
+### How is Slipway configured?
+
+Slipway is configured with namespaced maps, each of those namespaced maps corresponds to a Slipway namespace that 
+provides the implementation of the Jetty concepts described by the configuration.
+
+In some cases maps of many namespaces are merged, in particular this is the case for handlers. A handler may be 
+configured with many different Jetty concepts, including authentication, compression, session, etc. Each of those
+concepts has a namespace, and merging maps (or just providing a map of mixed namespaces as above) results in the 
+handler being created with all of the capabilities configured.
+
+Slipway is extensible, many of the underlying implementations are driven by multimethods that dispatch on the values
+within those namespaced maps. Because Slipway uses multimethods, Slipway is open for extension by you.
+
+Slipway comes with sensible defaults, and in the general case will always fall-back to whatever Jetty provides as default.
+
+Each namespace in Slipway contains a comment describing its configuration, each of those comments is also copied into
+the `slipway.clj` namespace, so there is a single point of reference in code.
+
+Each of those namespaces are described below, the title links to the source code in each case.
+
+### [slipway](src/slipway.clj)
+
+The root namespace contains `start` and `stop` functions that do exactly what you expect with a map of configuration.
+
+This namespace also contains a single configuration value, determining if the calling thread blocks or not.
+
+```clojure
+#:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
 ```
 
 ## License
