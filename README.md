@@ -353,7 +353,8 @@ Configure a Jetty [ContextHandler](https://jetty.org/docs/jetty/12.1/programming
 scoped to a context-path, all requests to that path will be handled by this context handler, and ultimately the ring-handler
 that it is configured with.
 
-The default implementation of ContextHandler can be configured with compression, session, security, and websocket support.
+The default implementation of ContextHandler can be configured with compression, session, security, and websocket support. 
+These features are configured by providing a map of mxied namespaces, see the examples configuration for more.
 
 #### slipway.context configuration
 
