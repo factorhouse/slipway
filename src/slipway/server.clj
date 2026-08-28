@@ -11,7 +11,8 @@
 (comment
   #:slipway.server{:connector     "the connector supported by this server"
                    :connectors    "the connectors supported by this server (when many connectors supported)"
-                   :handler       "the handler for this server, dispatches on :slipway.server/handler-type, :default is slipway.context/handler"
+                   :handler       "the handler for this server"
+                   :handler-type  "the dispatch value for the handler implementation :default is slipway.context/handler"
                    :thread-pool   "the thread-pool used by this server (nil for default behaviour)"
                    :scheduler     "the scheduler used by this server (nil for default behaviour)"
                    :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
