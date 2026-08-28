@@ -19,7 +19,7 @@
 * [Configuration](#configuration)
   * [Example](#example)
   * [How is Slipway configured?](#how-is-slipway-configured)
-  * [slipway](#slipway)
+  * [slipway](#ns--slipway)
 * [License](#license)
 
 ----
@@ -227,11 +227,11 @@ the `slipway.clj` namespace, so there is a single point of reference in code.
 
 Each of those namespaces are described below, the title links to the source code in each case.
 
-### [slipway](src/slipway.clj)
+### [ns: slipway](src/slipway.clj)
 
-The root namespace contains `start` and `stop` functions that do exactly what you expect with a map of configuration.
+The root namespace containing `start` and `stop` functions. They do what you would expect with a map of config.
 
-This namespace also contains a single configuration value, determining if the calling thread blocks or not.
+#### slipway configuration
 
 ```clojure
 #:slipway{:join? "join the Jetty threadpool, blocks the calling thread until jetty exits, default false"})
