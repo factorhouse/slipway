@@ -27,6 +27,7 @@
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
+    * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
 * [License](#license)
 
 ----
@@ -429,7 +430,7 @@ Configured within a handler, enables websockets within that handler. Is disabled
 
 ### [ns: slipway.security](src/slipway/security.clj)
 
-### slipway.security configuration
+#### slipway.security configuration
 
 Configured within a handler, enables authz within that handler.
 
@@ -439,6 +440,22 @@ Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
 ```
 
+### [ns: slipway.security.hash](src/slipway/security/hash.clj)
+
+Configured within a handler, enables [HashLoginService](### [ns: slipway.security](src/slipway/security.clj) authz.
+
+#### slipway.sercurity.hash configuration
+
+```clojure
+#:slipway.security.hash
+        {:realm                 "optional Jetty authentication realm"
+         :user-file             "the path to a Jetty hash-user file"
+         :hot-reload-interval-s "the period in seconds to scan :user-file for changes"
+         :users                 "a sequence of [^String user-name, ^String credential, ^String[] [roles]]"
+         :authenticator         "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+         :constraint-mappings   "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+         :identity-service      "an (optional) concrete Jetty IdentityService"}
+```
 ## License
 
 Distributed under the Apache 2.0 License.
