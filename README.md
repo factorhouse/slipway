@@ -309,7 +309,7 @@ Configure a [HTTPS ServerConnector](https://jetty.org/docs/jetty/12.1/programmin
 
 The same rules about `:name` and `:http-forwarded` apply as to the `slipway.connector.http` configuration.
 
-#### slipway.connector.http configuration
+#### slipway.connector.https configuration
 
 ```clojure
 #:slipway.connector.https
@@ -344,6 +344,26 @@ The same rules about `:name` and `:http-forwarded` apply as to the `slipway.conn
          :send-date-header?          "if true, send the Date header in responses"
          :relative-redirect-allowed? "if true, allow relative redirects, default false"
          :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
+```
+
+### [ns: slipway.context](src/slipway/context.clj)
+
+#### slipway.context configuration
+
+Configure a Jetty [ContextHandler](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) 
+scoped to a context-path, all requests to that path will be handled by this context handler, and ultimately the ring-handler
+that it is configured with.
+
+The default implementation of ContextHandler can be configured with compression, session, security, and websocket support.
+
+```clojure
+#:slipway.context
+        {:path            "the context path, default '/'"
+         :ring-handler    "the ring-handler descendant of this context-handler"
+         :null-path-info? "true if /path is not redirected to /path/, default true"
+         :virtual-hosts   "a list of ^String virtual hosts for the context"
+         :error-handler   "the error-handler used by this context-handler for context level errors"
+         :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 ```
 
 ## License
