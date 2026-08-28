@@ -368,6 +368,21 @@ These features are configured by providing a map of mxied namespaces, see the ex
          :handlers        "a sequence of [:slipway.context], when used with ::server/handler of ::context/handler-collection"}
 ```
 
+### [ns: slipway.compression](src/slipway/compression.clj)
+
+Configured within a handler, enables compression for that handler. Is enabled with `:gzip` compression by default
+
+#### slipway.compression configuration
+
+```clojure
+#:slipway.compression
+        {:enabled?           "is a compression handler enabled? default true"
+         :path-spec          "the compression path-spec, default '/*'"
+         :format             "compression format, defaults to :gzip"
+         :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
+         :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
+```
+
 ## License
 
 Distributed under the Apache 2.0 License.
