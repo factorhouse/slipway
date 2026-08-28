@@ -220,7 +220,7 @@ handler being created with all of the capabilities configured.
 Slipway is extensible, many of the underlying implementations are driven by multimethods that dispatch on the values
 within those namespaced maps. Because Slipway uses multimethods, Slipway is open for extension by you.
 
-Slipway comes with sensible defaults, and in the general case will always fall-back to whatever Jetty provides as default.
+Slipway contains sensible defaults and in will always fall-back to whatever Jetty provides as default.
 
 Each namespace in Slipway contains a comment describing its configuration, each of those comments is also copied into
 the `slipway.clj` namespace, so there is a single point of reference in code.
@@ -230,6 +230,17 @@ Each of those namespaces are described below, the title links to the source code
 ### [ns: slipway](src/slipway.clj)
 
 The root namespace containing `start` and `stop` functions. They do what you would expect with a map of config.
+
+`slipway/start` takes a map of `slipway.server` configuration, and returns a Jetty server.
+
+```clojure 
+(slipway/start
+ #:slipway.server{:connectors    []
+                  :handler       {}
+                  :error-handler an-optional-error-handler})
+```
+
+`slipway/stop` takes a Jetty server, and stops it.
 
 #### slipway configuration
 
