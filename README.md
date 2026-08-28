@@ -20,7 +20,7 @@
     * [Example](#example)
     * [How is Slipway configured?](#how-is-slipway-configured)
     * [ns: slipway](#ns-slipway)
-    * [ns: slipway.server](#ns-slipway-server)
+    * [ns: slipway.server](#ns-slipwayserver)
 * [License](#license)
 
 ----
