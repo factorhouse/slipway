@@ -28,6 +28,7 @@
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
+    * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
 * [License](#license)
 
 ----
@@ -442,7 +443,7 @@ Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 
 ### [ns: slipway.security.hash](src/slipway/security/hash.clj)
 
-Configured within a handler, enables [HashLoginService](### [ns: slipway.security](src/slipway/security.clj) authz.
+Configured within a handler, enables [HashLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) authz.
 
 #### slipway.sercurity.hash configuration
 
@@ -456,6 +457,35 @@ Configured within a handler, enables [HashLoginService](### [ns: slipway.securit
          :constraint-mappings   "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
          :identity-service      "an (optional) concrete Jetty IdentityService"}
 ```
+
+### [ns: slipway.security.jaas](src/slipway/security/jaas.clj)
+
+Configured within a handler, enables [JaasLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) authz.
+
+JAAS enables a user to configure Jetty's [LDAPLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule) 
+and [PropertyFileLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule), 
+which is effectively the same as the HashLoginService, above.
+
+JAAS security requires extra configuration to be provided to the JVM at startup time like so:
+
+```bash
+-Djava.security.auth.login.config=/dev-resources/jaas/ldap-jaas.conf
+```
+
+See the [Jetty JAAS documentation](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#loginconf) 
+and Slipways example [ldap-jaas.conf](dev-resources/jaas/ldap-jaas.conf) and [hash-jaas.conf](dev-resources/jaas/hash-jaas.conf) 
+for more information.
+
+#### slipway.sercurity.jaas configuration
+
+```clojure
+#:slipway.security.jaas
+        {:realm               "the Jetty authentication realm"
+         :authenticator       "a concrete Jetty Authenticator (e.g. FormAuthenticator or BasicAuthenticator)"
+         :constraint-mappings "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"
+         :identity-service    "an (optional) concrete Jetty IdentityService"}
+```
+
 ## License
 
 Distributed under the Apache 2.0 License.
