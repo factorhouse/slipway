@@ -24,6 +24,8 @@
     * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
     * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
     * [ns: slipway.context](#ns-slipwaycontext)
+    * [ns: slipway.compression](#ns-slipwaycompression)
+    * [ns: slipway.session](#ns-slipwaysession)
 * [License](#license)
 
 ----
@@ -383,6 +385,26 @@ Configured within a handler, enables compression for that handler. Is enabled wi
          :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"}
 ```
 
+### [ns: slipway.session](src/slipway/session.clj)
+
+Configured within a handler, enables sessions for that handler. Is enabled by default. 
+
+#### slipway.session configuration
+
+```clojure
+#:slipway.session
+        {:enabled?                "are sessions enabled for this server? Default true"
+         :secure-request-only?    "set the secure flag on session cookies"
+         :http-only?              "set the http-only flag on session cookies"
+         :same-site               "set session cookie same-site policy to :none, :lax, or :strict"
+         :max-inactive-interval-s "max session idle time (in s)"
+         :cookie-name             "the name of the session cookie"
+         :session-id-manager      "the meta manager used for cross context session management"
+         :refresh-cookie-age-s    "max time before a session cookie is re-set (in s)"
+         :using-cookies           "true if cookies are used to track sessions (default true)"
+         :using-uri-parameters    "true if uri parameters are used to track sessions (default false)"
+         :path-parameter-name     "name of path parameter used for URL session tracking"}
+```
 ## License
 
 Distributed under the Apache 2.0 License.
