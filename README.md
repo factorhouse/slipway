@@ -259,7 +259,7 @@ allows for multi-handler implementations. The example (above) is configured with
 
 As always, these implementations represent Jetty `ContextHandler` or `ContextHandlerCollection` objects.
 
-This is a good example of Slipway representing Jetty concepts, rather than trying to support `:handlers` plural in config.
+This is a good example of Slipway representing Jetty concepts, rather than trying to support `:handlers` plural.
 
 #### slipway.server configuration
 
