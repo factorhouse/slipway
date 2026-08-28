@@ -370,7 +370,7 @@ These features are configured by providing a map of mxied namespaces, see the ex
 
 ### [ns: slipway.compression](src/slipway/compression.clj)
 
-Configured within a handler, enables compression for that handler. Is enabled with `:gzip` compression by default
+Configured within a handler, enables compression for that handler. Is enabled with `:gzip` compression by default.
 
 #### slipway.compression configuration
 
