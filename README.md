@@ -22,6 +22,7 @@
     * [ns: slipway](#ns-slipway)
     * [ns: slipway.server](#ns-slipwayserver)
     * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
+    * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
 * [License](#license)
 
 ----
@@ -296,6 +297,49 @@ The `:http-forwarded` field enables Jetty's [Forwarded Module](https://jetty.org
          :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
          :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
          :configurator               "a fn taking the final connector as argument, allowing further configuration"
+         :send-server-version?       "if true, send the Server header in responses"
+         :send-date-header?          "if true, send the Date header in responses"
+         :relative-redirect-allowed? "if true, allow relative redirects, default false"
+         :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
+```
+
+### [ns: slipway.connector.https](src/slipway/connector/https.clj)
+
+Configure a HTTPS ServerConnector.
+
+The same rules about `:name` and `:http-forwarded` apply as to the `slipway.connector.http` configuration.
+
+#### slipway.connector.http configuration
+
+```clojure
+#:slipway.connector.https
+        {:name                       "the name of this connector (useful for VirtualHosts configuration)"
+         :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+         :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(). default 443"
+         :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
+         :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+         :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+         :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+         :configurator               "a fn taking the final connector as argument, allowing further configuration"
+         :keystore                   "keystore to use, either path (String) or concrete KeyStore"
+         :keystore-type              "type of keystore, e.g. JKS"
+         :keystore-password          "password of the keystore"
+         :key-manager-password       "password for the specific key within the keystore"
+         :truststore                 "truststore to use, either path (String) or concrete KeyStore"
+         :truststore-password        "password of the truststore"
+         :truststore-type            "type of the truststore, eg. JKS"
+         :include-protocols          "a list of protocol name patterns to include in SSLEngine"
+         :exclude-protocols          "a list of protocol name patterns to exclude from SSLEngine"
+         :replace-exclude-protocols? "if true will replace existing exclude-protocols, otherwise will add them"
+         :exclude-ciphers            "a list of cipher suite names to exclude from SSLEngine"
+         :replace-exclude-ciphers?   "if true will replace existing exclude-ciphers, otherwise will add them"
+         :security-provider          "the security provider name"
+         :client-auth                "either :need or :want to set the corresponding need/wantClientAuth field"
+         :ssl-context                "a concrete pre-configured SslContext"
+         :sni-required?              "if true SNI is required, else requests will be rejected with 400 response, default false"
+         :sni-host-check?            "if true the SNI Host name must match when there is an SNI certificate, default false"
+         :sts-max-age-s              "set the Strict-Transport-Security max age in seconds, default -1"
+         :sts-include-subdomains?    "true if a include subdomain property is sent with any Strict-Transport-Security header"
          :send-server-version?       "if true, send the Server header in responses"
          :send-date-header?          "if true, send the Date header in responses"
          :relative-redirect-allowed? "if true, allow relative redirects, default false"
