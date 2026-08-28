@@ -17,6 +17,7 @@
 * [Future Goals](#future-goals)
 * [Full-Stack Development](#full-stack-development)
 * [Configuration](#configuration)
+  * [Example](#example)
 * [License](#license)
 
 ----
@@ -139,11 +140,15 @@ however that has been a desire for quite some time and we have lots of other pri
 
 ## Configuration
 
-In this example we have:
+### Example
+
+Here is an example of a server with multiples connectors and multiple handlers, where handlers are pinned to specific
+connectors with virtual-host configuration, and where each handler has a different authentication mode.
 
 * A web UI running on https/3443 with websockets enabled and OIDC authorization code auth at path `/`
 * An API running on https/3443 with OIDC client credentials auth at path `/api`
 * An OTEL endpoint on http/3000 with Basic/Hash-User auth at path `/otel`
+
 
 See the [integration tests](test/integration/slipway) for runnable, example servers.
 
