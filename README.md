@@ -427,7 +427,7 @@ Configured within a handler, enables websockets within that handler. Is disabled
          :auto-fragment            "websocket auto fragment (boolean), default true"}
 ```
 
-### [ns: slipway.websockets](src/slipway/security.clj)
+### [ns: slipway.security](src/slipway/security.clj)
 
 ### slipway.security configuration
 
