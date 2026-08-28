@@ -486,6 +486,33 @@ for more information.
          :identity-service    "an (optional) concrete Jetty IdentityService"}
 ```
 
+### [ns: slipway.security.jaas](src/slipway/security/oidc.clj)
+
+Configured within a handler, enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) authz.
+
+Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `Client Credentials Flow`.
+
+```clojure
+#:slipway.security.oidc
+        {:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
+         :issuer                           "the URL of the OIDC provider"
+         :client-id                        "OAuth 2.0 Client Identifier valid at the OIDC provider"
+         :client-secret                    "the client secret known only by the Client and the OIDC provider"
+         :authorization-endpoint           "the URL of the OIDC provider's authorization endpoint if configured"
+         :token-endpoint                   "the URL of the OIDC provider's token endpoint if configured"
+         :authentication-method            "authentication method to use with the Token Endpoint"
+         :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
+         :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
+         :http-client                      "the (optional) HttpClient instance to use"
+         :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
+         :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
+         :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
+         :oidc-redirect-error              "optional page where authentication errors are redirected"
+         :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+         :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
+         :identity-service                 "a concrete Jetty IdentityService"
+         :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+```
 ## License
 
 Distributed under the Apache 2.0 License.
