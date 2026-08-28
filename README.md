@@ -21,6 +21,7 @@
     * [How is Slipway configured?](#how-is-slipway-configured)
     * [ns: slipway](#ns-slipway)
     * [ns: slipway.server](#ns-slipwayserver)
+    * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
 * [License](#license)
 
 ----
@@ -274,6 +275,32 @@ This is a good example of Slipway representing Jetty concepts, rather than tryin
          :buffer-pool   "the buffer-pool used by this server (nil for default behaviour)"
          :error-handler "the error-handler used by this server for Jetty level errors (nil for default behaviour)"}
 ```                   
+
+### [ns: slipway.connector.http](src/slipway/connector/http.clj)
+
+Configure a HTTP ServerConnector.
+
+The `:name` field can be used to bind one or more handlers to ths connector via [Jetty Virtual Hosts](https://jetty.org/docs/jetty/12.1/operations-guide/deploy/index.html#virtual-hosts).
+
+The `:http-forwarded` field enables Jetty's [Forwarded Module](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) which can be critical for proxied deployments, specifically when authentication is configured and url-redirects need to be aware of the originating request context. 
+
+#### slipway.connector.http configuration
+
+```clojure
+#:slipway.connector.http
+        {:name                       "the name of this connector (useful for VirtualHosts configuration)"
+         :host                       "the network interface this connector binds to as an IP address or a hostname.  If null or 0.0.0.0, then bind to all interfaces. Default null/all interfaces"
+         :port                       "port this connector listens on. If set to 0 a random port is assigned which may be obtained with getLocalPort(), default 80"
+         :idle-timeout-ms            "max idle time for a connection, roughly translates to the Socket.setSoTimeout. Default 30000 ms"
+         :http-forwarded?            "if true, add the ForwardRequestCustomizer. See Jetty Forward HTTP docs"
+         :proxy-protocol?            "if true, add the ProxyConnectionFactory. See Jetty Proxy Protocol docs"
+         :http-config                "a concrete HttpConfiguration object to replace the default config entirely"
+         :configurator               "a fn taking the final connector as argument, allowing further configuration"
+         :send-server-version?       "if true, send the Server header in responses"
+         :send-date-header?          "if true, send the Date header in responses"
+         :relative-redirect-allowed? "if true, allow relative redirects, default false"
+         :http-compliance            "set the HttpCompliance mode, defaults to HttpCompliance/RFC9110"}
+```
 
 ## License
 
