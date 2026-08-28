@@ -19,7 +19,7 @@
 * [Configuration](#configuration)
   * [Example](#example)
   * [How is Slipway configured?](#how-is-slipway-configured)
-  * [ns: slipway](#ns--slipway)
+  * [ns: slipway](#ns-slipway)
 * [License](#license)
 
 ----
