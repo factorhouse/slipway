@@ -279,7 +279,7 @@ This is a good example of Slipway representing Jetty concepts, rather than tryin
 
 ### [ns: slipway.connector.http](src/slipway/connector/http.clj)
 
-Configure a HTTP ServerConnector.
+Configure a [HTTP ServerConnector](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector).
 
 The `:name` field can be used to bind one or more handlers to ths connector via [Jetty Virtual Hosts](https://jetty.org/docs/jetty/12.1/operations-guide/deploy/index.html#virtual-hosts).
 
@@ -305,7 +305,7 @@ The `:http-forwarded` field enables Jetty's [Forwarded Module](https://jetty.org
 
 ### [ns: slipway.connector.https](src/slipway/connector/https.clj)
 
-Configure a HTTPS ServerConnector.
+Configure a [HTTPS ServerConnector](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector).
 
 The same rules about `:name` and `:http-forwarded` apply as to the `slipway.connector.http` configuration.
 
