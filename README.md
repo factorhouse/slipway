@@ -349,13 +349,13 @@ The same rules about `:name` and `:http-forwarded` apply as to the `slipway.conn
 
 ### [ns: slipway.context](src/slipway/context.clj)
 
-#### slipway.context configuration
-
 Configure a Jetty [ContextHandler](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) 
 scoped to a context-path, all requests to that path will be handled by this context handler, and ultimately the ring-handler
 that it is configured with.
 
 The default implementation of ContextHandler can be configured with compression, session, security, and websocket support.
+
+#### slipway.context configuration
 
 ```clojure
 #:slipway.context
