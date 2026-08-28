@@ -23,6 +23,7 @@
     * [ns: slipway.server](#ns-slipwayserver)
     * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
     * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
+    * [ns: slipway.context](#ns-slipwaycontext)
 * [License](#license)
 
 ----
