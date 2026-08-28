@@ -26,6 +26,7 @@
     * [ns: slipway.context](#ns-slipwaycontext)
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
+    * [ns: slipway.security](#ns-slipwaysecurity)
 * [License](#license)
 
 ----
@@ -405,6 +406,39 @@ Configured within a handler, enables sessions for that handler. Is enabled by de
          :using-uri-parameters    "true if uri parameters are used to track sessions (default false)"
          :path-parameter-name     "name of path parameter used for URL session tracking"}
 ```
+
+### [ns: slipway.websockets](src/slipway/websockets.clj)
+
+Configured within a handler, enables websockets within that handler. Is disabled by default.
+
+#### slipway.websockets configuration
+
+```clojure
+#:slipway.websockets
+        {:enabled?                 "are websockets enabled? default false"
+         :path-spec                "the websocket path-spec, default '/chsk'"
+         :idle-timeout-ms          "max websocket idle time, default 300000"
+         :input-buffer-bytes       "max websocket input buffer size"
+         :output-buffer-bytes      "max websocket output buffer size"
+         :max-text-message-bytes   "max websocket text message size that can be received"
+         :max-binary-message-bytes "max websocket binary message size that can be received"
+         :max-frame-bytes          "max websocket frame size"
+         :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
+         :auto-fragment            "websocket auto fragment (boolean), default true"}
+```
+
+### [ns: slipway.websockets](src/slipway/security.clj)
+
+### slipway.security configuration
+
+Configured within a handler, enables authz within that handler.
+
+Slipway supports `jaas`, `hash`, and `oidc` out of the box.
+
+```clojure
+#:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
+```
+
 ## License
 
 Distributed under the Apache 2.0 License.
