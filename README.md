@@ -29,6 +29,7 @@
     * [ns: slipway.security](#ns-slipwaysecurity)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
     * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
+    * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
 * [License](#license)
 
 ----
@@ -486,7 +487,7 @@ for more information.
          :identity-service    "an (optional) concrete Jetty IdentityService"}
 ```
 
-### [ns: slipway.security.jaas](src/slipway/security/oidc.clj)
+### [ns: slipway.security.oidc](src/slipway/security/oidc.clj)
 
 Configured within a handler, enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) authz.
 
