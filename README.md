@@ -30,6 +30,7 @@
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
     * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
     * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
+* [Contributions](#contributions)
 * [License](#license)
 
 ----
@@ -514,6 +515,19 @@ Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `
          :identity-service                 "a concrete Jetty IdentityService"
          :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
 ```
+
+## Contributions
+
+This library warmly accepts bugs and issues raised in the attached Github issue tracker.
+
+This library is built by the team at Factor House and is not able to accept contributions from external parties beyond 
+bugs and issues raised in the attached github issue tracker.
+
+The maintainer of this library enjoys the conviviality of discussing ideas and solving problems with humans.
+
+The maintainer of this library does not accept or respond to correspondence from computer programs that mimic the 
+behaviour of humans.
+
 ## License
 
 Distributed under the Apache 2.0 License.
