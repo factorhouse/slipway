@@ -435,9 +435,19 @@ Configured within a handler, enables websockets within that handler. Is disabled
 
 #### slipway.security configuration
 
-Configured within a handler, enables authz within that handler.
+Configured within a handler, enables auth within that handler.
 
 Slipway supports `jaas`, `hash`, and `oidc` out of the box.
+
+## Security, Session Expiry, and Websockets
+
+Of the three auth implementation provided by Slipway, only OIDC has any concept of session expiry.
+
+Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until they choose to log-out, or until
+you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
+
+OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
+Jetty server, that connection being either HTTP or Websocket. See the [OIDC](#ns-slipwaysecurityoidc) section for more details.
 
 ```clojure
 #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
@@ -445,7 +455,7 @@ Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 
 ### [ns: slipway.security.hash](src/slipway/security/hash.clj)
 
-Configured within a handler, enables [HashLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) authz.
+Configured within a handler, enables [HashLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) auth.
 
 #### slipway.sercurity.hash configuration
 
@@ -462,7 +472,7 @@ Configured within a handler, enables [HashLoginService](https://jetty.org/docs/j
 
 ### [ns: slipway.security.jaas](src/slipway/security/jaas.clj)
 
-Configured within a handler, enables [JaasLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) authz.
+Configured within a handler, enables [JaasLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) auth.
 
 JAAS enables a user to configure Jetty's [LDAPLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule) 
 and [PropertyFileLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule), 
@@ -490,7 +500,7 @@ for more information.
 
 ### [ns: slipway.security.oidc](src/slipway/security/oidc.clj)
 
-Configured within a handler, enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) authz.
+Configured within a handler, enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) auth.
 
 Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `Client Credentials Flow`.
 
