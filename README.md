@@ -379,6 +379,9 @@ These features are configured by providing a map of mxied namespaces, see the ex
 
 Configured within a handler, enables compression for that handler. Is enabled with `:gzip` compression by default.
 
+Jetty provides support for `brotli` and `zstd` compression, but we have currently only implemented `gzip` because that
+is all we need. If you need either of the other compression formats please just raise a bug ticket.
+
 #### slipway.compression configuration
 
 ```clojure
