@@ -27,6 +27,7 @@
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
+        * [Security, Session Expiration, and Websockets](#security-session-expiry-and-websockets)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
     * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
     * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
@@ -263,7 +264,7 @@ The root namespace containing `start` and `stop` functions. They do what you wou
 
 Server configuration must include at least one `connector` or multiple `connectors`, and one `handler`.
 
-The type of handler used can vary depending on the dispatch value of `::handler-type`. Slipway provides two 
+The type of handler used can vary depending on the dispatch value of `::handler-type`. Slipway provides two
 handlers by default, a `:slipway.context/handler` (the default), and a `:slipway.context/handler-collection` which
 allows for multi-handler implementations. The example (above) is configured with a handler-collection.
 
@@ -289,9 +290,13 @@ This is a good example of Slipway representing Jetty concepts, rather than tryin
 
 Configure a [HTTP ServerConnector](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#connector).
 
-The `:name` field can be used to bind one or more handlers to ths connector via [Jetty Virtual Hosts](https://jetty.org/docs/jetty/12.1/operations-guide/deploy/index.html#virtual-hosts).
+The `:name` field can be used to bind one or more handlers to ths connector
+via [Jetty Virtual Hosts](https://jetty.org/docs/jetty/12.1/operations-guide/deploy/index.html#virtual-hosts).
 
-The `:http-forwarded` field enables Jetty's [Forwarded Module](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) which can be critical for proxied deployments, specifically when authentication is configured and url-redirects need to be aware of the originating request context. 
+The `:http-forwarded` field enables
+Jetty's [Forwarded Module](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) which can
+be critical for proxied deployments, specifically when authentication is configured and url-redirects need to be aware
+of the originating request context.
 
 #### slipway.connector.http configuration
 
@@ -356,11 +361,14 @@ The same rules about `:name` and `:http-forwarded` apply as to the `slipway.conn
 
 ### [ns: slipway.context](src/slipway/context.clj)
 
-Configure a Jetty [ContextHandler](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) 
-scoped to a context-path, all requests to that path will be handled by this context handler, and ultimately the ring-handler
+Configure a
+Jetty [ContextHandler](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context)
+scoped to a context-path, all requests to that path will be handled by this context handler, and ultimately the
+ring-handler
 that it is configured with.
 
-The default implementation of ContextHandler can be configured with compression, session, security, and websocket support. 
+The default implementation of ContextHandler can be configured with compression, session, security, and websocket
+support.
 These features are configured by providing a map of mxied namespaces, see the examples configuration for more.
 
 #### slipway.context configuration
@@ -395,7 +403,7 @@ is all we need. If you need either of the other compression formats please just 
 
 ### [ns: slipway.session](src/slipway/session.clj)
 
-Configured within a handler, enables sessions for that handler. Is enabled by default. 
+Configured within a handler, enables sessions for that handler. Is enabled by default.
 
 #### slipway.session configuration
 
@@ -442,7 +450,11 @@ Configured within a handler, enables auth within that handler.
 
 Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 
-## Security, Session Expiry, and Websockets
+#### Security, Session Expiry, and Websockets
+
+```clojure
+#:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
+```
 
 Of the three auth implementation provided by Slipway, only OIDC has any concept of session expiry.
 
@@ -450,15 +462,14 @@ Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until the
 you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
 
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
-Jetty server, that connection being either HTTP or Websocket. See the [OIDC](#ns-slipwaysecurityoidc) section for more details.
-
-```clojure
-#:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
-```
+Jetty server, that connection being either HTTP or Websocket. See the [OIDC](#ns-slipwaysecurityoidc) section for more
+details.
 
 ### [ns: slipway.security.hash](src/slipway/security/hash.clj)
 
-Configured within a handler, enables [HashLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) auth.
+Configured within a handler,
+enables [HashLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service)
+auth.
 
 #### slipway.sercurity.hash configuration
 
@@ -475,10 +486,13 @@ Configured within a handler, enables [HashLoginService](https://jetty.org/docs/j
 
 ### [ns: slipway.security.jaas](src/slipway/security/jaas.clj)
 
-Configured within a handler, enables [JaasLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service) auth.
+Configured within a handler,
+enables [JaasLoginService](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html#security-login-service)
+auth.
 
-JAAS enables a user to configure Jetty's [LDAPLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule) 
-and [PropertyFileLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule), 
+JAAS enables a user to configure
+Jetty's [LDAPLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule)
+and [PropertyFileLoginModule](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#ldaploginmodule),
 which is effectively the same as the HashLoginService, above.
 
 JAAS security requires extra configuration to be provided to the JVM at startup time like so:
@@ -487,8 +501,10 @@ JAAS security requires extra configuration to be provided to the JVM at startup 
 -Djava.security.auth.login.config=/dev-resources/jaas/ldap-jaas.conf
 ```
 
-See the [Jetty JAAS documentation](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#loginconf) 
-and Slipways example [ldap-jaas.conf](dev-resources/jaas/ldap-jaas.conf) and [hash-jaas.conf](dev-resources/jaas/hash-jaas.conf) 
+See
+the [Jetty JAAS documentation](https://jetty.org/docs/jetty/12.1/operations-guide/security/jaas-support.html#loginconf)
+and Slipways example [ldap-jaas.conf](dev-resources/jaas/ldap-jaas.conf)
+and [hash-jaas.conf](dev-resources/jaas/hash-jaas.conf)
 for more information.
 
 #### slipway.sercurity.jaas configuration
@@ -503,7 +519,8 @@ for more information.
 
 ### [ns: slipway.security.oidc](src/slipway/security/oidc.clj)
 
-Configured within a handler, enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) auth.
+Configured within a handler,
+enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/openid-support.html) auth.
 
 Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `Client Credentials Flow`.
 
@@ -533,12 +550,12 @@ Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `
 
 This library warmly accepts bugs and issues raised in the attached Github issue tracker.
 
-This library is built by the team at Factor House and is not able to accept contributions from external parties beyond 
+This library is built by the team at Factor House and is not able to accept contributions from external parties beyond
 bugs and issues raised in the attached github issue tracker.
 
 The maintainer of this library enjoys the conviviality of discussing ideas and solving problems with humans.
 
-The maintainer of this library does not accept or respond to correspondence from computer programs that mimic the 
+The maintainer of this library does not accept or respond to correspondence from computer programs that mimic the
 behaviour of humans.
 
 ## License
