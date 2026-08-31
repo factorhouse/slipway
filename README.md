@@ -621,6 +621,8 @@ provenance of the bearer token.
 
 The example system in this readme demonstrates both flows for your reference.
 
+#### slipway.security.oidc configuration
+
 ```clojure
 #:slipway.security.oidc
         {:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
