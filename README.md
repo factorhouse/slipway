@@ -28,7 +28,7 @@
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
         * [Security constraints](#security-constraints)
-        * [Session expiration, and websockets](#security-session-expiry-and-websockets)
+        * [Session expiration and websockets](#session-expiration-and-websockets)
         * [Proxied installations and redirects](#proxied-installations-and-redirects)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
     * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
@@ -483,7 +483,7 @@ Jetty constraints are easily configured in Slipway with simple Clojure vectors:
    ["/*" Constraint/ANY_USER]])
 ```
 
-#### Session expiry, and websockets
+#### Session expiration and websockets
 
 Of the three auth implementation provided by Slipway, only OIDC has any concept of session expiry.
 
