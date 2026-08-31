@@ -505,12 +505,51 @@ Jetty constraints are easily configured in Slipway with simple Clojure vectors:
    ["/*" Constraint/ANY_USER]])
 ```
 
+#### Requests and user state
+
+Once a user has been authenticated, their user state is available on the Jetty request object, and on the request-map
+Clojure map that is decoded from that request and passed to the handlers.
+
+In the simplest case, for Hash and Jaas users, the user state contains a `type`, `name`, and `roles`.
+
+```clojure
+{:slipway.user/identity
+ {:slipway.principal/type :slipway.security.jaas/principal
+  :slipway.principal/name "a-user"
+  :slipway.user/roles     #{"a-role" "b-role"}}}
+```
+
+For OIDC users the user state is a super-set of this basic state that also includes expiry information, OIDC state,
+and a custom OpenIdUserPrincipalWithState object that contains the mutable session state that allows refresh-token
+redemption.
+
+```clojure
+
+{:slipway.user/identity
+ {:slipway.principal/type             :slipway.security.oidc/principal
+  :slipway.principal/name             "factor-dev"
+  :slipway.user/expires-at            (Instant/ofEpochMilli 1311281975)
+  :slipway.security.oidc/id-token     {"sub" "factor-dev"
+                                       "exp" 1311281970
+                                       "..." "..."}
+  :slipway.security.oidc/access-token {"exp" 1311281975
+                                       "..." "..."}
+  :slipway.security.oidc/response     {"id_token"      "..."
+                                       "access_token"  "..."
+                                       "refresh_token" "..."}
+  :slipway.security.oidc/principal    (OpenIdUserPrincipalWithState. "...")}}
+```
+
+Functions for accessing and mutating user state are found within the [slipway.request](src/slipway/request.clj)
+and [slipway.user](src/slipway/user.clj) namespaces.
+
 #### Session expiration and websockets
 
 Of the three auth implementation provided by Slipway, only OIDC has any concept of session expiry.
 
 Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until they choose to log-out, or until
-you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
+you deliberately invalidate the user session; see `request/invalidate-session` in
+the [slipway.request](src/slipway/request.clj) namespace.
 
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
 Jetty server, that connection being either HTTP or Websocket. OIDC also has the concept of session refresh, which is
