@@ -715,10 +715,25 @@ algorithm or algorithms that can apply when validating the provided access-token
                             :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
 ```
 
+### [ns: slipway.security.oidc.jwt.at.verification](src/slipway/security/oidc/jwt/at/verification.clj)
+
+When implementing `Client Credentials Flow` for OIDC, it is necessary to specify how the access-token should be
+verified. This configuration gives you the flexibility required to ensure the access-token isl reliable.
+
+#### slipway.security.oidc.jwt.at.verification configuration
+
+```clojure
+#:slipway.security.oidc.jwt.at.verification
+        {::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+         ::exact-iss       "required: the URL of the OIDC provider"
+         ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
+         ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
+```
+
 ### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
 
 It is not expected that you will use this configuration, however it is possible to swap out the `jwks` implementation
-for a different one if you prefer.
+for a different one if you prefer when implementing `Client Credentials Flow` for OIDC,
 
 For instance, in our tests we use an `ImmutableJWKSet` of a single key, rather than a full `jwks` source for testing
 purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj)
