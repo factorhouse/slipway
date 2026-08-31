@@ -16,27 +16,27 @@
     * [Slipway requests](#slipway-requests)
 * [Future goals](#future-goals)
 * [Full-stack development](#full-stack-development)
+* [Example system](#example-system)
+* [Example](#example)
 * [Configuration](#configuration)
-    * [Example](#example)
-    * [How is Slipway configured?](#how-is-slipway-configured)
-    * [ns: slipway](#ns-slipway)
-    * [ns: slipway.server](#ns-slipwayserver)
-    * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
-    * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
-    * [ns: slipway.context](#ns-slipwaycontext)
-    * [ns: slipway.compression](#ns-slipwaycompression)
-    * [ns: slipway.session](#ns-slipwaysession)
-    * [ns: slipway.security](#ns-slipwaysecurity)
-        * [Security constraints](#security-constraints)
-        * [Session expiration and websockets](#session-expiration-and-websockets)
-        * [Proxied installations and redirects](#proxied-installations-and-redirects)
-    * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
-    * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
-    * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
-        * [Authorization Code Flow](#authorization-code-flow)
-        * [Client Credentials Flow](#client-credentials-flow)
-    * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
-    * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
+  * [ns: slipway](#ns-slipway)
+  * [ns: slipway.server](#ns-slipwayserver)
+  * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
+  * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
+  * [ns: slipway.context](#ns-slipwaycontext)
+  * [ns: slipway.compression](#ns-slipwaycompression)
+  * [ns: slipway.session](#ns-slipwaysession)
+  * [ns: slipway.security](#ns-slipwaysecurity)
+      * [Security constraints](#security-constraints)
+      * [Session expiration and websockets](#session-expiration-and-websockets)
+      * [Proxied installations and redirects](#proxied-installations-and-redirects)
+  * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
+  * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
+  * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
+      * [Authorization Code Flow](#authorization-code-flow)
+      * [Client Credentials Flow](#client-credentials-flow)
+  * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
+  * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -164,9 +164,7 @@ have a very simple non-websocket architecture due to the constraints of this lib
 It is our desire to provide a full-stack reference architecture in [Shortcut](https://github.com/factorhouse/shortcut),
 however that has been a desire for quite some time and we have lots of other priorites.
 
-## Configuration
-
-### Example
+## Example System
 
 Here is an example of a server with multiples connectors and multiple handlers, where handlers are pinned to specific
 connectors with virtual-host configuration, and where each handler has a different authentication mode.
@@ -230,7 +228,7 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
              :error-handler app/server-error-handler}))
 ```
 
-### How is Slipway configured?
+## Configuration
 
 Slipway is configured with namespaced maps, each of those namespaced maps corresponds to a Slipway namespace that
 provides the implementation of the Jetty concepts described by the configuration.
