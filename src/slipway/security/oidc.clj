@@ -1,8 +1,11 @@
 (ns slipway.security.oidc
   (:require [clojure.core.protocols :as p]
             [clojure.tools.logging :as log]
-            [slipway.security :as security])
-  (:import (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
+            [slipway.request :as request]
+            [slipway.security :as security]
+            [slipway.user :as user])
+  (:import (java.time Instant)
+           (org.eclipse.jetty.security Constraint SecurityHandler$PathMapped)
            (org.eclipse.jetty.security.openid OpenIdConfiguration OpenIdConfiguration$Builder OpenIdCredentials)
            (slipway.security.oidc.user.principal OpenIdUserPrincipalWithState)))
 
@@ -83,3 +86,18 @@
 (defn access-token-field
   [{::keys [access-token]} k]
   (get access-token k))
+
+(defn check-credentials
+  "Given a request-map with holding an authenticated OIDC user principal:
+    - Determine the duration in seconds until the user expires
+    - Attempt refresh-token redemption if user within refresh-period-s of expiry
+    - Invalidate user session if user has expired
+   Returns: true if the user has expired"
+  [request-map ^Instant now refresh-period-s]
+  (let [expires-in (some-> request-map request/user principal p/datafy (user/expires-in now))]
+    (log/debugf "expiry check of %s, expires-in %s" (request/user-name request-map) expires-in)
+    (when (and (pos? refresh-period-s) (some-> expires-in pos?) (< expires-in refresh-period-s))
+      (redeem-refresh-token (request/user request-map)))
+    (when (some-> expires-in neg?)
+      (request/invalidate-session request-map)
+      true)))
