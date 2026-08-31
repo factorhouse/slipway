@@ -27,7 +27,7 @@
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
-        * [Security constraints]
+        * [Security constraints](#security-constraints)
         * [Session expiration, and websockets](#security-session-expiry-and-websockets)
         * [Proxied installations and redirects](#proxied-installations-and-redirects)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
