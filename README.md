@@ -250,7 +250,7 @@ within those namespaced maps. Because Slipway uses multimethods, Slipway is open
 Slipway contains sensible defaults and in will always fall-back to whatever Jetty provides as default.
 
 Each namespace in Slipway contains a comment describing its configuration, each of those comments is also copied into
-the `slipway.clj` namespace, so there is a single point of reference in code.
+the [slipway.clj](src/slipway.clj) namespace, so there is a single point of reference in code.
 
 Each of those namespaces are described below, the title links to the source code in each case.
 
