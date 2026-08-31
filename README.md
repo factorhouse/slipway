@@ -35,6 +35,7 @@
     * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
         * [Authorization Code Flow](#authorization-code-flow)
         * [Client Credentials Flow](#client-credentials-flow)
+    * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -643,6 +644,26 @@ The example system in this readme demonstrates both flows for your reference.
          :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
          :identity-service                 "a concrete Jetty IdentityService"
          :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
+```
+
+### [ns: slipway.security.oidc.jwt]
+
+Configured within a handler, determines how token-state for a user is interpreted.
+
+Vendor IdP (e.g Microsoft Entra-ID, Okta, Keycloak) often encode user information differently in the auth tokens, then
+client-side implementations tend to differ again.
+
+This configuration gives you the ability to decode id, roles, and expiration information with some flexibility.
+
+#### slipway.security.oidc.jwt configuration
+
+```clojure
+#:slipway.security.oidc.jwt
+        {:user-roles-source      "the token containing user roles, either 'access_token' or 'id_token' (default is 'access_token')"
+         :user-roles-path        "the path within the source token to find user roles, default is ['roles']"
+         :user-id-source         "the token containing user id, either 'access_token' or 'id_token' (default is 'id_token')"
+         :user-id-path           "the path within the source token to find user name, default is ['sub']"
+         :user-expiration-source "the token used for session expiration, either 'access_token' or 'id_token' (default is 'access_token')"}
 ```
 
 ## Contributions
