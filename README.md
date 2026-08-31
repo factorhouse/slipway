@@ -456,7 +456,7 @@ Configured within a handler, enables websockets within that handler. Is disabled
 
 ### [ns: slipway.sente](src/slipway/sente.clj)
 
-An adapter to Jetty Websockets of the [Sente] library.
+An adapter to Jetty Websockets of the [Sente](https://github.com/taoensso/sente) library.
 
 See the [slipway.example.app](test/integration/slipway/example/app.clj) within our integration tests for an example
 of how to start a Sente server with Slipway.
