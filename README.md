@@ -37,6 +37,7 @@
       * [Client Credentials Flow](#client-credentials-flow)
   * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
   * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
+  * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -698,6 +699,20 @@ keys to perform a cryptographic validation that the JWT has been signed by the c
          :outage-tolerant?          "enable outage tolerance by serving a cached JWK set in case of outage"
          :outage-tolerant-forever?  "enable outage tolerance without expiration"
          :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"}
+```
+
+### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
+
+It is not expected that you will use this configuration, however it is possible to swap out the `jwks` implementation
+for a different one if you prefer.
+
+For instance, in our tests we use an `ImmutableJWKSet` of a single key, rather than a full `jwks` source for testing
+purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj).
+
+#### configuration
+
+```clojure
+#:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
 ```
 
 ## Contributions
