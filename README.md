@@ -38,7 +38,7 @@
     * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
     * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
     * [ns: slipway.security.oidc.jws](#ns-slipwaysecurityoidcjws)
-    * [ns: slipway.security.oidc.jwt.at.verification](#ns--slipwaysecurityoidcjwtatverification)
+    * [ns: slipway.security.oidc.jwt.at.verification](#ns-slipwaysecurityoidcjwtatverification)
     * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
 * [Contributions](#contributions)
 * [License](#license)
