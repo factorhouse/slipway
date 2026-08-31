@@ -30,6 +30,7 @@
     * [ns: slipway.sente](#ns-slipwaysente)
     * [ns: slipway.security](#ns-slipwaysecurity)
         * [Security constraints](#security-constraints)
+        * [Requests and user state](#requests-and-user-state)
         * [Session expiration and websockets](#session-expiration-and-websockets)
         * [Proxied installations and redirects](#proxied-installations-and-redirects)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
@@ -137,9 +138,9 @@ see: [src/slipway/request.clj](src/slipway/request.clj):
 (defn request-map
   [^Request request ^Response response]
   (merge (ring-like-map request)
-         {::request       request
-          ::response      response
-          ::user/identity (authenticated-user request)}))
+         {:slipway.request       request
+          :slipway.response      response
+          :slipway.user/identity (authenticated-user request)}))
 ```
 
 Maintaining compatibility with Ring is not a goal of this project and future request-maps may not be 'Ring-like'.
