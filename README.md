@@ -8,14 +8,14 @@
 ## Slipway by [Factor House](https://factorhouse.io)
 
 * [Introduction](#introduction)
-* [Using Slipway](#using-slipway)
+* [Using slipway](#using-slipway)
     * [Installation](#installation)
-    * [JVM Support](#jvm-support)
-    * [Archived Versions](#archived-versions)
+    * [JVM support](#jvm-support)
+    * [Archived versions](#archived-versions)
 * [Eclipse Jetty](#eclipse-jetty)
-    * [Slipway Requests](#slipway-requests)
-* [Future Goals](#future-goals)
-* [Full-Stack Development](#full-stack-development)
+    * [Slipway requests](#slipway-requests)
+* [Future goals](#future-goals)
+* [Full-stack development](#full-stack-development)
 * [Configuration](#configuration)
     * [Example](#example)
     * [How is Slipway configured?](#how-is-slipway-configured)
@@ -27,12 +27,14 @@
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
     * [ns: slipway.security](#ns-slipwaysecurity)
-        * [Security, Session Expiration, and Websockets](#security-session-expiry-and-websockets)
+        * [Security constraints]
+        * [Session expiration, and websockets](#security-session-expiry-and-websockets)
+        * [Proxied installations and redirects](#proxied-installations-and-redirects)
     * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
     * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
     * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
-      * [Authorization Code Flow](#authorization-code-flow)
-      * [Client Credentials Flow](#client-credentials-flow)
+        * [Authorization Code Flow](#authorization-code-flow)
+        * [Client Credentials Flow](#client-credentials-flow)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -77,11 +79,11 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 [io.factorhouse/slipway-jetty12 "2.1.0"]
 ```
 
-### JVM Support
+### JVM support
 
 Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and Java 11.
 
-### Archived Versions
+### Archived versions
 
 Implementations supporting Jetty 9, 10, and 11 are no longer maintained and preserved in the [`archive/`](archive/)
 directory.
@@ -114,7 +116,7 @@ Slipway provides a base ContextHandler that processes a Request in the following
 -> ring-handler
 ```
 
-### Slipway Requests
+### Slipway requests
 
 Slipway decodes incoming Jetty Request objects into a Clojure map that resembles
 a [Ring](https://github.com/ring-clojure/ring)
@@ -134,7 +136,7 @@ Maintaining compatibility with Ring is not a goal of this project and future req
 
 Read more about our intention to remove Ring and Sente from this project [here](docs/ring-and-sente.md).
 
-## Future Goals
+## Future goals
 
 * Remove `org.ring-clojure/ring-core-protocols` dependency.
 * Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
@@ -142,7 +144,7 @@ Read more about our intention to remove Ring and Sente from this project [here](
     * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
     * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
 
-## Full-Stack Development
+## Full-stack development
 
 Slipway is constrained to the stated goals of this project, and those goals exclude any interest beyond Jetty.
 
@@ -298,7 +300,7 @@ via [Jetty Virtual Hosts](https://jetty.org/docs/jetty/12.1/operations-guide/dep
 The `:http-forwarded` field enables
 Jetty's [Forwarded Module](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) which can
 be critical for proxied deployments, specifically when authentication is configured and url-redirects need to be aware
-of the originating request context.
+of the originating request context. See further explanation in the security section.
 
 #### slipway.connector.http configuration
 
@@ -446,17 +448,42 @@ Configured within a handler, enables websockets within that handler. Is disabled
 
 ### [ns: slipway.security](src/slipway/security.clj)
 
+Read the [Jetty Security](https://jetty.org/docs/jetty/12.1/programming-guide/security/index.html) documentation to
+better understand concepts like SecurityHandlers, Constraints, and AuthenticationState.
+
 #### slipway.security configuration
 
 Configured within a handler, enables auth within that handler.
 
 Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 
-#### Security, Session Expiry, and Websockets
-
 ```clojure
 #:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
 ```
+
+#### Security constraints
+
+Security implementations within Jetty detect if a request is being made for resource that has
+a [Constraint](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/security/class-use/Constraint.html)
+that requires authentication, and then if the request contains
+[AuthenticationState](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/server/Request.AuthenticationState.html)
+representing an authenticated user.
+
+If the resource is protected, and the request contains no AuthenticationState, the server will respond with a redirect,
+sending the user to some sort of `/login` flow. This flow differs per implementation.
+
+Jetty constraints are easily configured in Slipway with simple Clojure vectors:
+
+```clojure
+(def constraints
+  [["/up" Constraint/ALLOWED]
+   ["/css/*" Constraint/ALLOWED]
+   ["/img/*" Constraint/ALLOWED]
+   ["/logout-success" Constraint/ALLOWED]
+   ["/*" Constraint/ANY_USER]])
+```
+
+#### Session expiry, and websockets
 
 Of the three auth implementation provided by Slipway, only OIDC has any concept of session expiry.
 
@@ -466,6 +493,41 @@ you deliberately invalidate the user session; see `slipway.request/invalidate-se
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
 Jetty server, that connection being either HTTP or Websocket. See the [OIDC](#ns-slipwaysecurityoidc) section for more
 details.
+
+#### Proxied installations and redirects
+
+Imagine you are running a Slipway-based system behind a reverse-proxy, where the proxy terminates HTTPS, and further
+your instance is running at a sub-path that it is unaware of.
+
+E.g. your instance thinks it is running inside a Docker container and is simply binding to:
+
+```
+http://localhost:3000/
+```
+
+Your users are accessing that system via the URL exposed by the reverse-proxy:
+
+```
+https://devtools.zcorp.com/kafka/kpow
+```
+
+Regardless if your implementation requires relative or absolute redirect URLs, there's no way of performaning that
+redirect from the Slipway server without any further context.
+
+One solution is to encode the 'true' base URL in configuration to your server, in each instance, and then rely on that
+information to calculate the redirects.
+
+Jetty has a better solution, which is to implement as broad a range possible of the different request-header
+based solutions that have been implemented by teams at scale trying to solve this problem already.
+
+This solution is presented as the
+Jetty [Http Forwarded](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) module, and
+when configured Jetty will detect and use a range of standard forwarded-headers provided by the proxy to the server,
+and adjust redirects accordingly.
+
+This can be very important specifically with Jetty Security implementations. Set the `http-forwarded?` option on
+your [slipway.connector.http](#ns-slipwayconnectorhttp) or [slipway.connector.https](#ns-slipwayconnectorhttps)
+connectors to enable the module.
 
 ### [ns: slipway.security.hash](src/slipway/security/hash.clj)
 
