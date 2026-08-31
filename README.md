@@ -528,13 +528,15 @@ redemption.
 
 {:slipway.user/identity
  {:slipway.principal/type             :slipway.security.oidc/principal
-  :slipway.principal/name             "factor-dev"
+  :slipway.principal/name             "a-user"
+  :slipway.user/roles                 #{"a-role" "b-role"}
   :slipway.user/expires-at            (Instant/ofEpochMilli 1311281975)
-  :slipway.security.oidc/id-token     {"sub" "factor-dev"
+  :slipway.security.oidc/id-token     {"sub" "a-user"
                                        "exp" 1311281970
                                        "..." "..."}
-  :slipway.security.oidc/access-token {"exp" 1311281975
-                                       "..." "..."}
+  :slipway.security.oidc/access-token {"roles" ["a-role" "b-role"]
+                                       "exp"   1311281975
+                                       "..."   "..."}
   :slipway.security.oidc/response     {"id_token"      "..."
                                        "access_token"  "..."
                                        "refresh_token" "..."}
