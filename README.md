@@ -26,6 +26,8 @@
     * [ns: slipway.context](#ns-slipwaycontext)
     * [ns: slipway.compression](#ns-slipwaycompression)
     * [ns: slipway.session](#ns-slipwaysession)
+    * [ns: slipway.websockets](#ns-slipwaywebsockets)
+    * [ns: slipway.sente](#ns-slipwaysente)
     * [ns: slipway.security](#ns-slipwaysecurity)
         * [Security constraints](#security-constraints)
         * [Session expiration and websockets](#session-expiration-and-websockets)
@@ -451,6 +453,20 @@ Configured within a handler, enables websockets within that handler. Is disabled
          :max-outgoing-frames      "max websocket frames waiting to be sent per session, default -1"
          :auto-fragment            "websocket auto fragment (boolean), default true"}
 ```
+
+### [ns: slipway.sente](src/slipway/sente.clj)
+
+An adapter to Jetty Websockets of the [Sente] library.
+
+See the [slipway.example.app](test/integration/slipway/example/app.clj) within our integration tests for an example
+of how to start a Sente server with Slipway.
+
+**Note:** The version of Sente used with Slipway is pinned to `[com.taoensso/sente "1.17.0"]` for performance and
+compatibilty reasons. It is not easy or safe to change that to a later version.
+
+#### slipway.sente configuration
+
+#:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"}
 
 ### [ns: slipway.security](src/slipway/security.clj)
 
