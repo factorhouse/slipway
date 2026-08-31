@@ -511,7 +511,7 @@ Your users are accessing that system via the URL exposed by the reverse-proxy:
 https://devtools.zcorp.com/kafka/kpow
 ```
 
-Regardless if your implementation requires relative or absolute redirect URLs, there's no way of performaning that
+Regardless if your implementation requires relative or absolute redirect URLs, there's no way of performing that
 redirect from the Slipway server without any further context.
 
 One solution is to encode the 'true' base URL in configuration to your server, in each instance, and then rely on that
