@@ -491,7 +491,8 @@ Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until the
 you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
 
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
-Jetty server, that connection being either HTTP or Websocket.
+Jetty server, that connection being either HTTP or Websocket. OIDC also has the concept of session refresh, which is 
+very useful if you provide a Single Page Application (SPA), however it makes things slightly more complicated again.
 
 Jetty is primarily for the business of serving Http traffic, and contains many mature and common features for the
 purpose of serving that traffic, HttpSessions, Cookies, AuthenticationState on Requests, and so on.
