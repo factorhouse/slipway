@@ -61,9 +61,11 @@ In a very simple sense, Slipway is currently:
 
 * Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
 * Websockets (combining Jetty with [Sente](https://github.com/taoensso/sente)).
+* Multi-connector, multi-handler support with Virtual Hosts configuration.
+* Full support for Jaas, LDAP, Hash, and OIDC authentication.
 * Extended OIDC support including:
-    * Authorization Code Flow with Refresh Token redemption
-    * Client Credentials Flow
+    * Authorization Code Flow with refresh token redemption.
+    * Client Credentials Flow with token validation via [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt).
 
 Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
