@@ -491,8 +491,20 @@ Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until the
 you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
 
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
-Jetty server, that connection being either HTTP or Websocket. See the [OIDC](#ns-slipwaysecurityoidc) section for more
-details.
+Jetty server, that connection being either HTTP or Websocket.
+
+Jetty is primarily for the business of serving Http traffic, and contains many mature and common features for the
+purpose of serving that traffic, HttpSessions, Cookies, AuthenticationState on Requests, and so on.
+
+Jetty will check your AuthenticationState on each HttpRequest and invalidate your session if your AuthenticationState
+has expired (optionally, and by default this check is not enabled).
+
+However once you have upgraded your connection to Websocket from Http, those HTTP features are discarded. There is 
+normally no further HttpRequest, Jetty does not monitor and act on Websocket traffic in the same way, the users
+HttpSession will expire and be scavenged, all while the Websockets channel remains active.
+
+This means that you have to implement your own expiration check of user sessions once you have moved the user connection
+into Websocket world. You also have to implement your own Constraint system, as Jetty Constraints only apply to Http.
 
 #### Proxied installations and redirects
 
