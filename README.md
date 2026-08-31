@@ -524,6 +524,22 @@ enables [OIDC](https://jetty.org/docs/jetty/12.1/programming-guide/security/open
 
 Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `Client Credentials Flow`.
 
+[Authorization Code Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth) is the flow you are
+probably most familiar with, it is commonly used to authenticate human users who are redirected through the IdP
+authentication flow, and after authenticating the RP retrieves tokens (id, access, and refresh) for that user from the
+IdP token endpoint.
+
+When using Authorization Code Flow, you can configure only the `client-id`, `client-secret`, and `issuer`. If your IdP
+respects the `/.well-known/openid-configuration` OIDC format the rest of the configuration is discovered. 
+
+[Client Credentials Flow](https://oauth.net/2/grant-types/client-credentials/) is for machine-to-machine communication.
+A user manually obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
+a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
+to configure the `jwks-endpoint`, as that endpoint provides the public certificates that are used to validate the
+provenance of the bearer token.
+
+The example system in this readme demonstrates both flows for your reference.
+
 ```clojure
 #:slipway.security.oidc
         {:authorization-flow               ":authorization-code or :client-credentials (default :authorization-code)"
