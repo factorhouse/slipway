@@ -19,25 +19,25 @@
 * [Example system](#example-system)
 * [Example](#example)
 * [Configuration](#configuration)
-  * [ns: slipway](#ns-slipway)
-  * [ns: slipway.server](#ns-slipwayserver)
-  * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
-  * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
-  * [ns: slipway.context](#ns-slipwaycontext)
-  * [ns: slipway.compression](#ns-slipwaycompression)
-  * [ns: slipway.session](#ns-slipwaysession)
-  * [ns: slipway.security](#ns-slipwaysecurity)
-      * [Security constraints](#security-constraints)
-      * [Session expiration and websockets](#session-expiration-and-websockets)
-      * [Proxied installations and redirects](#proxied-installations-and-redirects)
-  * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
-  * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
-  * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
-      * [Authorization Code Flow](#authorization-code-flow)
-      * [Client Credentials Flow](#client-credentials-flow)
-  * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
-  * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
-  * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
+    * [ns: slipway](#ns-slipway)
+    * [ns: slipway.server](#ns-slipwayserver)
+    * [ns: slipway.connector.http](#ns-slipwayconnectorhttp)
+    * [ns: slipway.connector.https](#ns-slipwayconnectorhttps)
+    * [ns: slipway.context](#ns-slipwaycontext)
+    * [ns: slipway.compression](#ns-slipwaycompression)
+    * [ns: slipway.session](#ns-slipwaysession)
+    * [ns: slipway.security](#ns-slipwaysecurity)
+        * [Security constraints](#security-constraints)
+        * [Session expiration and websockets](#session-expiration-and-websockets)
+        * [Proxied installations and redirects](#proxied-installations-and-redirects)
+    * [ns: slipway.security.hash](#ns-slipwaysecurityhash)
+    * [ns: slipway.security.jaas](#ns-slipwaysecurityjaas)
+    * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
+        * [Authorization Code Flow](#authorization-code-flow)
+        * [Client Credentials Flow](#client-credentials-flow)
+    * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
+    * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
+    * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -66,7 +66,8 @@ In a very simple sense, Slipway is currently:
 * Full support for Jaas, LDAP, Hash, and OIDC authentication.
 * Extended OIDC support including:
     * Authorization Code Flow with refresh token redemption.
-    * Client Credentials Flow with token validation via [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt).
+    * Client Credentials Flow with token validation
+      via [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt).
 
 Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
@@ -707,7 +708,8 @@ It is not expected that you will use this configuration, however it is possible 
 for a different one if you prefer.
 
 For instance, in our tests we use an `ImmutableJWKSet` of a single key, rather than a full `jwks` source for testing
-purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj).
+purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj)
+and [the test that uses that source](test/integration/slipway/security/oidc_client_credentials_test.clj).
 
 #### configuration
 
