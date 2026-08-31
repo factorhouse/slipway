@@ -529,6 +529,9 @@ HttpSession will expire and be scavenged, all while the Websockets channel remai
 This means that you have to implement your own expiration check of user sessions once you have moved the user connection
 into Websocket world. You also have to implement your own Constraint system, as Jetty Constraints only apply to Http.
 
+An example of checking (and potentially refreshing) OIDC user sessions can be found in the `oidc/check-credentials`
+function in the `slipway.security.oidc` namespace.
+
 #### Proxied installations and redirects
 
 Imagine you are running a Slipway-based system behind a reverse-proxy, where the proxy terminates HTTPS, and further
