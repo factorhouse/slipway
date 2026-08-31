@@ -36,6 +36,7 @@
         * [Authorization Code Flow](#authorization-code-flow)
         * [Client Credentials Flow](#client-credentials-flow)
     * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
+    * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
 * [Contributions](#contributions)
 * [License](#license)
 
@@ -492,7 +493,7 @@ Jaas (including LDAP) and Hash auth both consider the user 'logged-in' until the
 you deliberately invalidate the user session; see `slipway.request/invalidate-session`.
 
 OIDC has a concept of session expiry that is complected with the type of connection your user has with the underlying
-Jetty server, that connection being either HTTP or Websocket. OIDC also has the concept of session refresh, which is 
+Jetty server, that connection being either HTTP or Websocket. OIDC also has the concept of session refresh, which is
 very useful if you provide a Single Page Application (SPA), however it makes things slightly more complicated again.
 
 Jetty is primarily for the business of serving Http traffic, and contains many mature and common features for the
@@ -501,7 +502,7 @@ purpose of serving that traffic, HttpSessions, Cookies, AuthenticationState on R
 Jetty will check your AuthenticationState on each HttpRequest and invalidate your session if your AuthenticationState
 has expired (optionally, and by default this check is not enabled).
 
-However once you have upgraded your connection to Websocket from Http, those HTTP features are discarded. There is 
+However once you have upgraded your connection to Websocket from Http, those HTTP features are discarded. There is
 normally no further HttpRequest, Jetty does not monitor and act on Websocket traffic in the same way, the users
 HttpSession will expire and be scavenged, all while the Websockets channel remains active.
 
@@ -646,7 +647,7 @@ The example system in this readme demonstrates both flows for your reference.
          :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
 ```
 
-### [ns: slipway.security.oidc.jwt]
+### [ns: slipway.security.oidc.jwt](src/slipway/security/oidc/jwt.clj)
 
 Configured within a handler, determines how token-state for a user is interpreted.
 
@@ -664,6 +665,39 @@ This configuration gives you the ability to decode id, roles, and expiration inf
          :user-id-source         "the token containing user id, either 'access_token' or 'id_token' (default is 'id_token')"
          :user-id-path           "the path within the source token to find user name, default is ['sub']"
          :user-expiration-source "the token used for session expiration, either 'access_token' or 'id_token' (default is 'access_token')"}
+```
+
+### [ns: slipway.security.oidc.jwks](src/slipway/security/oidc/jwks.clj)
+
+When implementing `Client Credentials Flow` for OIDC, it is necessary to validate the provenance of the access-token
+provided as a `Bearer: your-token-here` request header.
+
+This library integrates the widely-used [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt) library to
+perform that provenance validation.
+
+In short, the JOSE library will retrieve public keys from the configured `jwks` endpoint, cache them, and use those
+keys to perform a cryptographic validation that the JWT has been signed by the configured source.
+
+#### slipway.security.oidc.jwks configuration
+
+```clojure
+;; This configuration is interesting because many of them are required to be input as pairs.
+;; The user should familiarise themselves with the underlying builder implementation.
+#:slipway.security.oidc.jwks
+        {:endpoint                  "the jwks endpoint url"
+         :cache?                    "enable caching of the jwks set"
+         :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
+         :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."
+         :cache-forever?            "enable caching of the jwks set without expiration"
+         :refresh-ahead-cache?      "enable refresh-ahead caching of the JWK set"
+         :refresh-ahead-time        "the refresh ahead time, in milliseconds"
+         :scheduled?                "refresh in a scheduled manner, regardless of requests"
+         :rate-limited?             "rate limit the JWK set retrieval"
+         :rate-limited-min-interval "the minimum allowed time interval between two JWK set retrievals"
+         :retrying?                 "enables single retrial to retrieve the JWK set to work around transient network issues"
+         :outage-tolerant?          "enable outage tolerance by serving a cached JWK set in case of outage"
+         :outage-tolerant-forever?  "enable outage tolerance without expiration"
+         :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"}
 ```
 
 ## Contributions
