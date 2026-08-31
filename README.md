@@ -37,6 +37,7 @@
         * [Client Credentials Flow](#client-credentials-flow)
     * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
     * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
+    * [ns: slipway.security.oidc.jws](#ns-slipwaysecurityoidcjws)
     * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
 * [Contributions](#contributions)
 * [License](#license)
@@ -702,6 +703,18 @@ keys to perform a cryptographic validation that the JWT has been signed by the c
          :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"}
 ```
 
+### [ns: slipway.security.oidc.jws](src/slipway/security/oidc/jws.clj)
+
+When implementing `Client Credentials Flow` for OIDC, it may be necessary to specify the Json Web Signature (JWS)
+algorithm or algorithms that can apply when validating the provided access-token.
+
+#### slipway.security.oidc.jws configuration
+
+```clojure
+#:slipway.security.oidc.jws{:algorithm  "JSON Web Signature (JWS) algorithm name, represents the alg header parameter in JWS objects. Default is RS256"
+                            :algorithms "a sequence of :algorithm if accepting multiple JWS algorithms"}
+```
+
 ### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
 
 It is not expected that you will use this configuration, however it is possible to swap out the `jwks` implementation
@@ -711,7 +724,7 @@ For instance, in our tests we use an `ImmutableJWKSet` of a single key, rather t
 purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj)
 and [the test that uses that source](test/integration/slipway/security/oidc_client_credentials_test.clj).
 
-#### configuration
+#### slipway.security.oidc.jwk configuration
 
 ```clojure
 #:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
