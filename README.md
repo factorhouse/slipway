@@ -530,7 +530,7 @@ This means that you have to implement your own expiration check of user sessions
 into Websocket world. You also have to implement your own Constraint system, as Jetty Constraints only apply to Http.
 
 An example of checking (and potentially refreshing) OIDC user sessions can be found in the `oidc/check-credentials`
-function in the `slipway.security.oidc` namespace.
+function in the [slipway.security.oidc](src/slipway/security/oidc.clj) namespace.
 
 #### Proxied installations and redirects
 
