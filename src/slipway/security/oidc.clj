@@ -88,7 +88,7 @@
   (get access-token k))
 
 (defn check-credentials
-  "Given a request-map with holding an authenticated OIDC user principal:
+  "Given a request-map holding an authenticated OIDC user principal:
     - Determine the duration in seconds until the user expires
     - Attempt refresh-token redemption if user within refresh-period-s of expiry
     - Invalidate user session if user has expired
