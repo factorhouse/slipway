@@ -22,8 +22,8 @@ building enterprise-grade web applications professionally since 1999. I happen t
 frameworks, and the JVM. It's my jam.
 
 I think your opinion is one that is probably fairly well shared within our community, because if you ask a Clojure
-developer what web server they use, they will say Ring. That is a problem, because Ring is not a webserver, it is '
-Clojure HTTP server abstraction' that operates as an application running on top of a webserver, most commonly the
+developer what web server they use, they will say Ring. That is a problem, because Ring is not a webserver, it is a 
+'Clojure HTTP server abstraction' that operates as an application running on top of a webserver, most commonly the
 underlying webserver is Jetty.
 
 I don't need a server abstraction, I need to use Jetty. The server abstraction provided by Ring covers a very small part
