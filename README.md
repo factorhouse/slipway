@@ -38,6 +38,7 @@
     * [ns: slipway.security.oidc](#ns-slipwaysecurityoidc)
         * [Authorization Code Flow](#authorization-code-flow)
         * [Client Credentials Flow](#client-credentials-flow)
+        * [Testing OIDC with local Keycloak](#testing-oidc-with-local-keycloak)
     * [ns: slipway.security.oidc.jwt](#ns-slipwaysecurityoidcjwt)
     * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
     * [ns: slipway.security.oidc.jws](#ns-slipwaysecurityoidcjws)
