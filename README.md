@@ -672,10 +672,9 @@ Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `
 
 When configured with Authorization Code Flow, your Slipway server acts as
 an [OIDC Relying Party](https://openid.net/specs/openid-connect-core-1_0.html#Terminology). This flow is often used by
-web applications, clients who try to access protected resources are redirected to the OIDC IdP for authentication.
+web applications. Users who try to access protected resources are redirected to the OIDC IdP for authentication.
 
-This is the flow you are probably most familiar with, it is commonly used to authenticate human users of web
-applications who are redirected through the IdP UI for authentication, and after authenticating the RP retrieves
+After authenticating the IdP redirects the user back to the RP (your Slipway server), and the RP retrieves
 tokens (id, access, and refresh) for that user from the IdP token endpoint.
 
 When using Authorization Code Flow, you can configure only the `client-id`, `client-secret`, and `issuer`. If your IdP
