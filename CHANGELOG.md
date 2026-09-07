@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.3] - 2026-09-07
+
+* Rename :slipway.security.oidc.jwks/endpoint > :slipway.security.oidc.jwks/uri
+
 ## [2.1.2] - 2026-09-07
 
 * Update Jetty, Clojure, and Logback dependencies to latest.
