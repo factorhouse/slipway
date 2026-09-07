@@ -102,7 +102,7 @@
 
   #:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
 
-  #:slipway.security.oidc.jwks{:endpoint                  "the jwks endpoint url"
+  #:slipway.security.oidc.jwks{:uri                       "the jwks uri"
                                :cache?                    "enable caching of the jwks set"
                                :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
                                :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."

@@ -66,7 +66,7 @@
                                     ::session/enabled?                   false
                                     ::oidc/authorization-flow            :client-credentials
                                     ::oidc/constraint-mappings           app/constraints
-                                    ::oidc.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                                    ::oidc.jwks/uri                      "http://localhost:8080/realms/master/protocol/openid-connect/certs"
                                     ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master" ;; <-- set in keycloak-realms-with-client.json
                                     ::oidc.jwt.at.verification/exact-aud "https://slipway.io/api"
                                     ::oidc.jwt/user-id-path              ["preferred_username"]

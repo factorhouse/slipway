@@ -8,7 +8,7 @@
 ;; This configuration is interesting because many of them are required to be input as pairs.
 ;; The user should familiarise themselves with the underlying builder implementation.
 (comment
-  #:slipway.security.oidc.jwks{:endpoint                  "the jwks endpoint url"
+  #:slipway.security.oidc.jwks{:uri                       "the jwks uri"
                                :cache?                    "enable caching of the jwks set"
                                :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
                                :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."
@@ -24,13 +24,13 @@
                                :outage-tolerant-ttl       "the time to live of the cached JWK set to cover outages, in milliseconds"})
 
 (defmethod oidc.jwk/source :default
-  [{::keys [endpoint cache? cache-ttl cache-refresh-timeout cache-forever? refresh-ahead-cache? refresh-ahead-time
+  [{::keys [uri cache? cache-ttl cache-refresh-timeout cache-forever? refresh-ahead-cache? refresh-ahead-time
             scheduled? rate-limited? rate-limited-min-interval retrying? outage-tolerant? outage-tolerant-forever?
             outage-tolerant-ttl]}]
-  (log/debugf "creating jwks source with endpoint %s" endpoint)
-  (if (str/blank? endpoint)
-    (throw (ex-info "required jwks endpoint url is missing" {}))
-    (let [builder (JWKSourceBuilder/create (.toURL (URI. endpoint)))]
+  (log/debugf "creating jwks source with uri %s" uri)
+  (if (str/blank? uri)
+    (throw (ex-info "required jwks uri is missing" {}))
+    (let [builder (JWKSourceBuilder/create (.toURL (URI. uri)))]
       (when cache?
         (.cache builder true))
       (when (and cache-ttl cache-refresh-timeout)

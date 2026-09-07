@@ -215,7 +215,7 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
                        ::security/handler                   :oidc
                        ::session/enabled?                   false
                        ::oidc/authorization-flow            :client-credentials
-                       ::oidc.jwks/endpoint                 "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                       ::oidc.jwks/uri                      "http://localhost:8080/realms/master/protocol/openid-connect/certs"
                        ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
                        ::oidc.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
                        ::oidc.jwt/user-id-path              ["preferred_username"]
@@ -761,7 +761,7 @@ keys to perform a cryptographic validation that the JWT has been signed by the c
 ;; This configuration is interesting because many of them are required to be input as pairs.
 ;; The user should familiarise themselves with the underlying builder implementation.
 #:slipway.security.oidc.jwks
-        {:endpoint                  "the jwks endpoint url"
+        {:uri                       "the jwks uri"
          :cache?                    "enable caching of the jwks set"
          :cache-ttl                 "the time to live of the cached JWK set, in milliseconds"
          :cache-refresh-timeout     "the cache refresh timeout, in milliseconds."
