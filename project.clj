@@ -9,7 +9,7 @@
 
   :profiles {:dev      {:dependencies   [[clj-kondo "2026.08.04" :exclusions [org.clojure/tools.reader]] ;; conflict with sente
                                          [clj-http "3.13.1" :exclusions [commons-io]] ;; later version in reitit-ring
-                                         [ch.qos.logback/logback-classic "1.6.3"]
+                                         [ch.qos.logback/logback-classic "1.6.3" :exclusions [org.slf4j/slf4j-api]] ;; conflict with jetty-server 12.1.13
                                          [hiccup "2.0.0"]
                                          [ring/ring-core "1.15.5"]
                                          [ring/ring-anti-forgery "1.4.0"]
