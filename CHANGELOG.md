@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.2] - 2026-09-07
+
+* Update Jetty, Clojure, and Logback dependencies to latest.
+
 ## [2.1.1] - 2026-08-31
 
 * Update to suitable README.md for current implementation
