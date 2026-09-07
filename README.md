@@ -693,6 +693,12 @@ provenance of the bearer token.
 
 The example system in this readme demonstrates both flows for your reference.
 
+#### Testing OIDC with Local Keycloak
+
+This repository contains [scripts to run Keycloak locally](/scripts)
+and [test server](/test/integration/slipway/test_server.clj) implementations that integrate local Keycloak with both
+Authorization Code Flow and Client Credentials flow.
+
 #### slipway.security.oidc configuration
 
 ```clojure
