@@ -209,18 +209,18 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
                        ::oidc/oidc-redirect-error   "/login-error"
                        ::oidc/oidc-redirect-logout  "/logout-success"
                        ::hash/constraint-mappings   app/constraints}
-      handler-api     {::context/path                       "/api"
-                       ::context/virtual-hosts              ["@connector-3443"]
-                       ::context/ring-handler               (app/api-handler)
-                       ::security/handler                   :oidc
-                       ::session/enabled?                   false
-                       ::oidc/authorization-flow            :client-credentials
-                       ::oidc.jwks/uri                      "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                       ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                       ::oidc.jwt.at.verification/exact-aud "https://slipway.io/demo-api"
-                       ::oidc.jwt/user-id-path              ["preferred_username"]
-                       ::oidc.jwt/user-roles-path           ["realm_access" "roles"]
-                       ::oidc/constraint-mappings           app/constraints}
+      handler-api     {::context/path                               "/api"
+                       ::context/virtual-hosts                      ["@connector-3443"]
+                       ::context/ring-handler                       (app/api-handler)
+                       ::security/handler                           :oidc
+                       ::session/enabled?                           false
+                       ::oidc/authorization-flow                    :client-credentials
+                       ::oidc.jwks/uri                              "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                       ::oidc.jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                       ::oidc.jwt.at.verification/required-audience "https://slipway.io/demo-api"
+                       ::oidc.jwt/user-id-path                      ["preferred_username"]
+                       ::oidc.jwt/user-roles-path                   ["realm_access" "roles"]
+                       ::oidc/constraint-mappings                   app/constraints}
       handler-otel    {::context/path             "/otel"
                        ::context/virtual-hosts    ["@connector-3000"]
                        ::context/ring-handler     (handler/otel-handler)
