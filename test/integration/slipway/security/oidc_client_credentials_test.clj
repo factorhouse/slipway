@@ -51,15 +51,15 @@
 
       (test-server/start!
        #::server{:connector     {::http/port 3000}
-                 :handler       {::context/ring-handler               (app/handler)
-                                 ::security/handler                   :oidc
-                                 ::session/enabled?                   false
-                                 ::oidc/authorization-flow            :client-credentials
-                                 ::oidc.jwk/source                    :rsa
-                                 ::oidc.jwk.rsa/key                   rsa-key
-                                 ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                                 ::oidc.jwt.at.verification/exact-aud "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
-                                 ::oidc/constraint-mappings           app/constraints}
+                 :handler       {::context/ring-handler                       (app/handler)
+                                 ::security/handler                           :oidc
+                                 ::session/enabled?                           false
+                                 ::oidc/authorization-flow                    :client-credentials
+                                 ::oidc.jwk/source                            :rsa
+                                 ::oidc.jwk.rsa/key                           rsa-key
+                                 ::oidc.jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                                 ::oidc.jwt.at.verification/required-audience "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                 ::oidc/constraint-mappings                   app/constraints}
                  :error-handler app/server-error-handler})
 
       (testing "no authorization header"

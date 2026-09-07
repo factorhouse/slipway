@@ -128,10 +128,10 @@
                               :user-id-path           "the path within the source token to find user name, default is ['sub']"
                               :user-expiration-source "the token used for session expiration, either 'access_token' or 'id_token' (default is 'access_token')"}
 
-  #:slipway.security.oidc.jwt.at.verification{::exact-typ       "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
-                                              ::exact-iss       "required: the URL of the OIDC provider"
-                                              ::exact-aud       "required: the audience of this service to match the 'aud' field in the jwt"
-                                              ::required-claims "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
+  #:slipway.security.oidc.jwt.at.verification{::allowed-types     "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
+                                              ::required-issuer   "required: the URL of the OIDC provider"
+                                              ::required-audience "required: the audience of this service to match the 'aud' field in the jwt"
+                                              ::required-claims   "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 
   #:slipway.session{:enabled?                "are sessions enabled for this server? Default true"
                     :secure-request-only?    "set the secure flag on session cookies"
