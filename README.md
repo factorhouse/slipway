@@ -687,7 +687,7 @@ When configured with Client Credentials Flow, your Slipway server acts as
 an [OAuth 2.0 Resource Server](https://www.oauth.com/oauth2-servers/the-resource-server/). This flow is often used for
 machine-to-machine communication, but can also be used by humans or agents operating a CLI or TUI for example.
 
-A user manually obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
+A client obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
 a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
 to configure the `jwks-endpoint`, as that endpoint provides the public certificates that are used to validate the
 provenance of the bearer token.
