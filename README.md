@@ -670,16 +670,22 @@ Slipway supports two OIDC flows out of the box, `Authorization Code Flow`, and `
 
 #### [Authorization Code Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
 
-This is the flow you are probably most familiar with, it is commonly used to authenticate human users who are redirected
-through the IdP authentication flow, and after authenticating the RP retrieves tokens (id, access, and refresh) for that
-user from the IdP token endpoint.
+When configured with Authorization Code Flow, your Slipway server acts as
+an [OIDC Relying Party](https://openid.net/specs/openid-connect-core-1_0.html#Terminology). This flow is often used by
+web applications, clients who try to access protected resources are redirected to the OIDC IdP for authentication.
+
+This is the flow you are probably most familiar with, it is commonly used to authenticate human users of web
+applications who are redirected through the IdP UI for authentication, and after authenticating the RP retrieves
+tokens (id, access, and refresh) for that user from the IdP token endpoint.
 
 When using Authorization Code Flow, you can configure only the `client-id`, `client-secret`, and `issuer`. If your IdP
 respects the `/.well-known/openid-configuration` OIDC format the rest of the configuration is discovered.
 
 #### [Client Credentials Flow](https://oauth.net/2/grant-types/client-credentials/)
 
-This flow is is for machine-to-machine communication.
+When configured with Client Credentials Flow, your Slipway server acts as
+an [OAuth 2.0 Resource Server](https://www.oauth.com/oauth2-servers/the-resource-server/). This flow is often used for
+machine-to-machine communication, but can also be used by humans or agents operating a CLI or TUI for example.
 
 A user manually obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
 a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
