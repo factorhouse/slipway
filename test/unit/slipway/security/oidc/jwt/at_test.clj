@@ -35,19 +35,19 @@
 
 (deftest processor-creation
 
-  (testing "missing required exact-iss"
+  (testing "missing required issuer"
     (is (thrown? ExceptionInfo
                  (jwt.at/processor
                   (jwk/source {::jwk/source  :rsa
                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                  {::jwt.at.verification/exact-aud "https://slipway.io/api"}))))
+                  {::jwt.at.verification/required-audience "https://slipway.io/api"}))))
 
-  (testing "missing required exact-aud"
+  (testing "missing required audience"
     (is (thrown? ExceptionInfo
                  (jwt.at/processor
                   (jwk/source {::jwk/source  :rsa
                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                  {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"})))))
+                  {::jwt.at.verification/required-issuer "http://localhost:8080/realms/master"})))))
 
 (deftest processor-defaults
 
@@ -56,8 +56,8 @@
         processor (jwt.at/processor
                    (jwk/source {::jwk/source  :rsa
                                 ::jwk.rsa/key rsa-key})
-                   {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                    ::jwt.at.verification/exact-aud "https://slipway.io/api"})]
+                   {::jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                    ::jwt.at.verification/required-audience "https://slipway.io/api"})]
 
     (testing "all valid defaults met"
 
@@ -90,8 +90,8 @@
                    (-> (.process (jwt.at/processor
                                   (jwk/source {::jwk/source  :rsa
                                                ::jwk.rsa/key (jwk.rsa/jwk {})})
-                                  {::jwt.at.verification/exact-iss "http://localhost:8080/realms/master"
-                                   ::jwt.at.verification/exact-aud "https://slipway.io/api"})
+                                  {::jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                                   ::jwt.at.verification/required-audience "https://slipway.io/api"})
                                  (signed-jwt rsa-key
                                              {:typ "at+jwt"
                                               :iss "http://localhost:8080/realms/master"

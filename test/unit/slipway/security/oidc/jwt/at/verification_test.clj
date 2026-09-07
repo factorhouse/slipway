@@ -17,45 +17,45 @@
 
   ;; common override to support "JWT"
   (is (= #{"JWT"}
-         (->> ^DefaultJOSEObjectTypeVerifier (verification/type-verifier {::verification/exact-typ ["JWT"]})
+         (->> ^DefaultJOSEObjectTypeVerifier (verification/type-verifier {::verification/allowed-types ["JWT"]})
               (.getAllowedTypes)
               (map #(.getType %1))
               set))))
 
 (deftest claims-verifier
 
-  (testing "required exact-iss"
-    (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/exact-aud "http://slipway-api"}))))
+  (testing "required issuer"
+    (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/required-audience "http://slipway-api"}))))
 
-  (testing "required exact-aud"
-    (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/exact-iss "http://oidc-idp"}))))
+  (testing "required audience"
+    (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/required-issuer "http://oidc-idp"}))))
 
   (testing "required claims"
 
     ;; default required claims
-    (is (= #{"aud"                                          ;; <-- required due to exact-iss
-             "iss"                                          ;; <-- required due to exact-aud
+    (is (= #{"aud"                                          ;; <-- required due to required-audience
+             "iss"                                          ;; <-- required due to required-issuer
              "exp"                                          ;; <-- here and below, default required claims set
              "iat"
              "jti"
              "sub"}
            (->> ^DefaultJWTClaimsVerifier (verification/claims-verifier
-                                           {::verification/exact-iss "http://oidc-idp"
-                                            ::verification/exact-aud "http://slipway-api"})
+                                           {::verification/required-issuer   "http://oidc-idp"
+                                            ::verification/required-audience "http://slipway-api"})
                 (.getRequiredClaims)
                 set)))
 
     ;; specific required claims
-    (is (= #{"aud"                                          ;; <-- required due to exact-iss
-             "iss"                                          ;; <-- required due to exact-aud
+    (is (= #{"aud"                                          ;; <-- required due to required audience
+             "iss"                                          ;; <-- required due to required issuer
              "exp"                                          ;; <-- here and below, specific required claims set
              "iat"
              "sub"}
            (->> ^DefaultJWTClaimsVerifier (verification/claims-verifier
-                                           {::verification/exact-iss       "http://oidc-idp"
-                                            ::verification/exact-aud       "http://slipway-api"
-                                            ::verification/required-claims #{JWTClaimNames/SUBJECT
-                                                                             JWTClaimNames/ISSUED_AT
-                                                                             JWTClaimNames/EXPIRATION_TIME}})
+                                           {::verification/required-issuer   "http://oidc-idp"
+                                            ::verification/required-audience "http://slipway-api"
+                                            ::verification/required-claims   #{JWTClaimNames/SUBJECT
+                                                                               JWTClaimNames/ISSUED_AT
+                                                                               JWTClaimNames/EXPIRATION_TIME}})
                 (.getRequiredClaims)
                 set)))))

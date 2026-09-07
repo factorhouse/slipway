@@ -61,14 +61,14 @@
 (defn start-with-openid-client-creds!
   []
   (start! #::server{:connector     {::http/port 3000}
-                    :handler       {::context/ring-handler               (app/handler)
-                                    ::security/handler                   :oidc
-                                    ::session/enabled?                   false
-                                    ::oidc/authorization-flow            :client-credentials
-                                    ::oidc/constraint-mappings           app/constraints
-                                    ::oidc.jwks/uri                      "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                                    ::oidc.jwt.at.verification/exact-iss "http://localhost:8080/realms/master" ;; <-- set in keycloak-realms-with-client.json
-                                    ::oidc.jwt.at.verification/exact-aud "https://slipway.io/api"
-                                    ::oidc.jwt/user-id-path              ["preferred_username"]
-                                    ::oidc.jwt/user-roles-path           ["realm_access" "roles"]}
+                    :handler       {::context/ring-handler                       (app/handler)
+                                    ::security/handler                           :oidc
+                                    ::session/enabled?                           false
+                                    ::oidc/authorization-flow                    :client-credentials
+                                    ::oidc/constraint-mappings                   app/constraints
+                                    ::oidc.jwks/uri                              "http://localhost:8080/realms/master/protocol/openid-connect/certs"
+                                    ::oidc.jwt.at.verification/required-issuer   "http://localhost:8080/realms/master" ;; <-- set in keycloak-realms-with-client.json
+                                    ::oidc.jwt.at.verification/required-audience "https://slipway.io/api"
+                                    ::oidc.jwt/user-id-path                      ["preferred_username"]
+                                    ::oidc.jwt/user-roles-path                   ["realm_access" "roles"]}
                     :error-handler app/server-error-handler}))
