@@ -18,8 +18,7 @@
 (defmethod verification/type-verifier :amazon-cognito
   [_opts]
   (log/debug "creating amazon cognito type-verifier")
-  ;; Amazon Cognito JWT do not include a 'typ' header
-  (DefaultJOSEObjectTypeVerifier.))
+  (DefaultJOSEObjectTypeVerifier.))                         ;; Amazon Cognito JWT do not include a 'typ' header
 
 (defmethod verification/claims-verifier :amazon-cognito
   [{::verification/keys [required-issuer required-audience required-claims]
