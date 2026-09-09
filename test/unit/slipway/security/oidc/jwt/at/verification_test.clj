@@ -24,10 +24,14 @@
 
 (deftest claims-verifier
 
-  (testing "required issuer"
+  (testing "both required available"
+    (is (not (nil? (verification/claims-verifier {::verification/required-issuer   "http://oidc-idp"
+                                                  ::verification/required-audience "http://slipway-api"})))))
+
+  (testing "required issuer throws"
     (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/required-audience "http://slipway-api"}))))
 
-  (testing "required audience"
+  (testing "required audience throws"
     (is (thrown? ExceptionInfo (verification/claims-verifier {::verification/required-issuer "http://oidc-idp"}))))
 
   (testing "required claims"
@@ -45,7 +49,7 @@
                 (.getRequiredClaims)
                 set)))
 
-    ;; specific required claims
+    ;; specific required claims (removing jti)
     (is (= #{"aud"                                          ;; <-- required due to required audience
              "iss"                                          ;; <-- required due to required issuer
              "exp"                                          ;; <-- here and below, specific required claims set

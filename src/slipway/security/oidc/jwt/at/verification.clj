@@ -24,10 +24,10 @@
 (defmulti ^JWTClaimsSetVerifier claims-verifier ::vendor)
 
 (defmethod type-verifier :default
-  [{::keys [allowed-types]
+  [{::keys [allowed-types vendor]
     :or    {allowed-types ["JWT" "at+jwt" "application/at+jwt"]}}] ;; we include "JWT" extra to RFC, note above.
   (let [^Set object-types-set (set (map #(JOSEObjectType. %1) allowed-types))]
-    (log/debugf "creating type-verifier with allowed types %s" (mapv #(.getType %1) object-types-set))
+    (log/debugf "creating default type-verifier with allowed types %s" vendor)
     (DefaultJOSEObjectTypeVerifier. object-types-set)))
 
 (defmethod claims-verifier :default
@@ -38,7 +38,7 @@
                               JWTClaimNames/EXPIRATION_TIME}}}]
   (when-not required-issuer (throw (ex-info "missing required configuration: required-issuer" {})))
   (when-not required-audience (throw (ex-info "missing required configuration: required-audience" {})))
-  (log/debugf "creating claims-verifier for issuer %s and audience %s" required-issuer required-audience)
+  (log/debugf "creating default claims-verifier for issuer %s and audience %s" required-issuer required-audience)
   (DefaultJWTClaimsVerifier.
    required-audience
    (-> (JWTClaimsSet$Builder.)
