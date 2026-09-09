@@ -55,9 +55,9 @@
 Slipway provides first-class support for embedded [Eclipse Jetty](https://www.eclipse.org/jetty/) 12.1
 in [Clojure](https://clojure.org/).
 
-The goal of this project is to provide access in Clojure to the full set of capabilities implemented by Jetty.
-
 The term Slipway, in English, can almost be considered to mean "a small Jetty". They both allow access to water.
+
+The goal of this project is to provide access in Clojure to the full set of capabilities implemented by Jetty.
 
 In addition to those capabilities, this library extends Jetty's feature-set where required to meet the needs
 of the [Factor House](https://factorhouse.io/) team in their product delivery work.
