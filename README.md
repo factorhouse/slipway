@@ -811,7 +811,7 @@ access-token 'typ' header by defaut.
 
 ### [ns: slipway.security.oidc.jwt.at.verification.cognito](src/slipway/security/oidc/jwt/at/verification/cognito.clj)
 
-A vendor specific access-token verification provided for Amazon Cognito.
+Vendor specific access-token verification provided for Amazon Cognito.
 
 Configure by setting:
 
