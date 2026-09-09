@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.4] - 2026-09-09
+
+* Provide `:slipway.security.oidc.jwt.at.verification.cognito` vendor-specific access-token verification
+
 ## [2.1.4] - 2026-09-07
 
 * Rename `:slipway.security.oidc.jwt.at.verification` configuration
