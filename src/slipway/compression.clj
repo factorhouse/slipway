@@ -1,7 +1,8 @@
 (ns slipway.compression
   (:refer-clojure :exclude [format])
   (:require [clojure.tools.logging :as log])
-  (:import (org.eclipse.jetty.compression.gzip GzipCompression)
+  (:import (org.eclipse.jetty.compression Compression)
+           (org.eclipse.jetty.compression.gzip GzipCompression)
            (org.eclipse.jetty.compression.server CompressionConfig CompressionHandler)))
 
 (comment
@@ -11,7 +12,7 @@
                         :compress-min-bytes "min response size to trigger compression (default 1024 bytes)"
                         :compression-config "a concrete Jetty CompressionConfig instance (nil for default configuration)"})
 
-(defmulti format ::format)
+(defmulti ^Compression format ::format)
 
 (defmethod format :default
   [_opts]
