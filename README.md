@@ -798,9 +798,9 @@ verified. This configuration gives you the flexibility required to ensure the ac
 
 ```clojure
 #:slipway.security.oidc.jwt.at.verification
-        {::allowed-types     "a sequence of acceptable 'typ' fields, default is ['at+jwt' 'application/at+jwt']"
-         ::required-issuer   "required: the URL of the OIDC provider"
-         ::required-audience "required: the audience of this service to match the 'aud' field in the jwt"
+        {::allowed-types     "a sequence of acceptable 'typ' fields, default is ['JWT' 'at+jwt' 'application/at+jwt']"
+         ::required-issuer   "the issuer identifier for the authorization server, presented as 'iss' in the JWT"
+         ::required-audience "a resource indicator value corresponding to an identifier the resource server expects for itself, presented as 'aud' in the JWT"
          ::required-claims   "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 ```
 
