@@ -43,6 +43,7 @@
     * [ns: slipway.security.oidc.jwks](#ns-slipwaysecurityoidcjwks)
     * [ns: slipway.security.oidc.jws](#ns-slipwaysecurityoidcjws)
     * [ns: slipway.security.oidc.jwt.at.verification](#ns-slipwaysecurityoidcjwtatverification)
+    * [ns: slipway.security.oidc.jwt.at.verification.cognito](#ns-slipwaysecurityoidcjwtatverificationcognito)
     * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
 * [Contributions](#contributions)
 * [License](#license)
@@ -794,6 +795,10 @@ algorithm or algorithms that can apply when validating the provided access-token
 When implementing `Client Credentials Flow` for OIDC, it is necessary to specify how the access-token should be
 verified. This configuration gives you the flexibility required to ensure the access-token is valid.
 
+The default access-token verification provided by Slipway, conforms
+to [rfc9068](https://datatracker.ietf.org/doc/html/rfc9068) some minor addition like supporting "JWT" as a valid
+access-token 'typ' header by defaut.
+
 #### slipway.security.oidc.jwt.at.verification configuration
 
 ```clojure
@@ -802,6 +807,16 @@ verified. This configuration gives you the flexibility required to ensure the ac
                                             ::required-issuer   "the issuer identifier for the authorization server, presented as 'iss' in the JWT"
                                             ::required-audience "a resource indicator value corresponding to an identifier the resource server expects for itself, presented as 'aud' in the JWT"
                                             ::required-claims   "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
+```
+
+### [ns: slipway.security.oidc.jwt.at.verification.cognito](src/slipway/security/oidc/jwt/at/verification/cognito.clj)
+
+A vendor specific access-token verification provided for Amazon Cognito.
+
+Configure by setting:
+
+```clojure
+{:slipway.security.oidc.jwt.at.verification :amazon-cognito}
 ```
 
 ### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
