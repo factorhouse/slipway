@@ -822,7 +822,7 @@ Configure by setting:
 ### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
 
 It is not expected that you will use this configuration, however it is possible to swap out the `jwks` implementation
-for a different one if you prefer when implementing `Client Credentials Flow` for OIDC,
+for a different one if you prefer when implementing OIDC `Client Credentials Flow`.
 
 For instance, in our tests we use an `ImmutableJWKSet` of a single key, rather than a full `jwks` source for testing
 purposes. See [slipway.security.oidc.jwk.rsa](src/slipway/security/oidc/jwk/rsa.clj)
