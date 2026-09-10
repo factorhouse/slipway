@@ -27,8 +27,8 @@
    :body    (html/login-page true)})
 
 (defn logout-handler
-  [req]
-  (request/logout-user req)
+  [request-map]
+  (request/logout-user request-map)
   {:status  302
    :headers {"location" "/"}
    :session nil})
