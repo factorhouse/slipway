@@ -12,6 +12,12 @@
   (is (= "Bearer resource_metadata=\"http://localhost:3000/.well-known/oauth-protected-resource\""
          (rfc9728/metadata-url-header-value "http://localhost:3000"))))
 
+(deftest response-401
+
+  (is (= {:status  401
+          :headers {"WWW-Authenticate" "Bearer resource_metadata=\"http://localhost:3000/.well-known/oauth-protected-resource\""}}
+         (rfc9728/response-401 "http://localhost:3000"))))
+
 (deftest metadata
 
   (is (= {} (rfc9728/metadata nil)))

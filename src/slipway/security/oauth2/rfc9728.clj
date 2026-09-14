@@ -14,6 +14,11 @@
   [resource-url]
   (format "Bearer resource_metadata=\"%s\"" (metadata-url resource-url)))
 
+(defn response-401
+  [resource-url]
+  {:status  401
+   :headers {"WWW-Authenticate" (metadata-url-header-value resource-url)}})
+
 (defn resource-url
   [request-map]
   (-> (request/uri-context request-map)
