@@ -133,6 +133,21 @@
                                               ::required-audience "a resource indicator value corresponding to an identifier the resource server expects for itself, presented as 'aud' in the JWT"
                                               ::required-claims   "set of required JWTClaimNames. Default #{JWTClaimNames/JWT_ID JWTClaimNames/SUBJECT JWTClaimNames/ISSUED_AT JWTClaimNames/EXPIRATION_TIME}"}
 
+  #:slipway.security.oauth2.rfc9728{:resource                                   "the protected resource's resource identifier"
+                                    :authorization-servers                      "array containing a list of OAuth authorization server issuer identifiers"
+                                    :jwks-uri                                   "URL of the protected resource's JSON Web Key (JWK) Set"
+                                    :scopes-supported                           "array containing a list of scope values used in authorization requests"
+                                    :bearer-methods-supported                   "array containing a list of the supported methods of sending an OAuth 2.0 bearer token to the protected resource"
+                                    :resource-signing-alg-values-supported      "array containing a list of the JWS [JWS] signing algorithms (alg values) [JWA] supported by the protected resource for signing resource responses"
+                                    :resource-name                              "name of the protected resource intended for display to the end user"
+                                    :resource-documentation                     "URL of a page containing human-readable information that developers might want or need to know when using the protected resource"
+                                    :resource-policy-uri                        "URL of a page containing human-readable information about the protected resource's requirements on how the client can use the data provided by the protected resource"
+                                    :resource-tos-uri                           "URL of a page containing human-readable information about the protected resource's terms of service"
+                                    :tls-client-certificate-bound-access-tokens "boolean value indicating protected resource support for mutual-TLS client certificate-bound access tokens"
+                                    :authorization-details-types-supported      "array containing a list of the authorization details type values supported by the resource server when the authorization_details request parameter [RFC9396] is used"
+                                    :dpop-signing-alg-values-supported          "array containing a list of the JWS alg values (from the \"JSON Web Signature and Encryption Algorithms\" registry [IANA.JOSE]) supported by the resource server for validating Demonstrating Proof of Possession (DPoP) proof JWTs [RFC9449]"
+                                    :dpop-bound-access-tokens-required          "boolean value specifying whether the protected resource always requires the use of DPoP-bound access tokens [RFC9449]"}
+
   #:slipway.session{:enabled?                "are sessions enabled for this server? Default true"
                     :secure-request-only?    "set the secure flag on session cookies"
                     :http-only?              "set the http-only flag on session cookies"

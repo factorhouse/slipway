@@ -42,9 +42,9 @@
           #::rfc9728{:resource                                   "http://localhost:3000"
                      :authorization-servers                      ["https://idp1:8000" "https://idp2:8000"]
                      :jwks-uri                                   "http://localhost:8080/realms/master/protocol/openid-connect/certs"
-                     :scopes                                     ["openid" "profile" "email"]
-                     :bearer-methods                             ["header"]
-                     :resource-signing-alg-values                ["RS256"]
+                     :scopes-supported                           ["openid" "profile" "email"]
+                     :bearer-methods-supported                   ["header"]
+                     :resource-signing-alg-values-supported      ["RS256"]
                      :resource-name                              "slipway-api"
                      :resource-documentation                     "http://localhost:3000/docs"
                      :resource-policy-uri                        "http://localhost:3000/policy"
