@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.7] - 2026-09-14
+
+* Provide utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
+
 ## [2.1.6] - 2026-09-10
 
 * Provide `:slipway.request` utility functions for uri-context, request, and response access.
