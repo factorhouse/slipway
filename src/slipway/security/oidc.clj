@@ -46,7 +46,6 @@
                           :token-endpoint                   "the URL of the OIDC provider's token endpoint if configured"
                           :authentication-method            "authentication method to use with the Token Endpoint"
                           :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
-                          :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
                           :http-client                      "the (optional) HttpClient instance to use"
                           :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
                           :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
