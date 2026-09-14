@@ -690,8 +690,8 @@ machine-to-machine communication, but can also be used by humans or agents opera
 
 A client obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
 a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
-to configure the `jwks-endpoint`, as that endpoint provides the public certificates that are used to validate the
-provenance of the bearer token.
+to configure the `slipway.security.oidc.jwks/uri`, as that endpoint provides the public certificates that are used to 
+validate the provenance of the bearer token.
 
 The example system in this readme demonstrates both flows for your reference.
 
@@ -713,7 +713,6 @@ Authorization Code Flow and Client Credentials flow.
          :token-endpoint                   "the URL of the OIDC provider's token endpoint if configured"
          :authentication-method            "authentication method to use with the Token Endpoint"
          :end-session-endpoint             "the URL of the OIDC provider's end session endpoint if configured"
-         :jwks-endpoint                    "the URL of the OIDC provider's public cryptographic keys for verifying JWT token signatures"
          :http-client                      "the (optional) HttpClient instance to use"
          :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
          :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
