@@ -74,9 +74,9 @@ In a simple sense, Slipway is currently:
 * Full support for Jaas, LDAP, Hash, and OIDC authentication.
 * Extended OIDC/OAuth2 support including:
     * Authorization Code Flow with refresh token redemption.
-    * Client Credentials Flow with token validation [(RFC9068)](https://www.rfc-editor.org/info/rfc9068/)
+    * Client Credentials Flow with token validation [(RFC9068)](https://www.rfc-editor.org/info/rfc9068/).
       via [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt).
-    * OAuth 2.0 Protected Resource Metadata [(RFC9728)](https://www.rfc-editor.org/info/rfc9728/)
+    * OAuth 2.0 Protected Resource Metadata [(RFC9728)](https://www.rfc-editor.org/info/rfc9728/).
 
 Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
