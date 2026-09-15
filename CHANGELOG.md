@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.8] - 2026-09-15
+
+* Introduce HasURIContext protocol for request, request-map types with `(uri-context ..)`
+
 ## [2.1.7] - 2026-09-14
 
 * Provide utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
