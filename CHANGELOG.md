@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.9] - 2026-09-15
+
+* Improved debug-logging and parameter naming
+
 ## [2.1.8] - 2026-09-15
 
 * Introduce HasURIContext protocol for request, request-map types with `(uri-context ..)`
