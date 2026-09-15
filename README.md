@@ -66,7 +66,7 @@ of the [Factor House](https://factorhouse.io/) team in their product delivery wo
 Slipway configuration models Jetty instead of exposing a simplified DSL or a new web-server abstraction. This allows
 leverage of Jetty capabilities while providing sensible defaults in a data-oriented way.
 
-In a very simple sense, Slipway is currently:
+In a simple sense, Slipway is currently:
 
 * Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
 * Websockets (combining Jetty with [Sente](https://github.com/taoensso/sente)).
