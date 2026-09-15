@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [slipway.user :as user])
   (:import (java.time Instant)
-           (java.util Locale)
+           (java.util Locale Map)
            (org.eclipse.jetty.http HttpField HttpHeader HttpURI ImmutableHttpFields)
            (org.eclipse.jetty.io EndPoint$SslSessionData)
            (org.eclipse.jetty.security AuthenticationState AuthenticationState$Succeeded)
@@ -64,18 +64,24 @@
   [request-map]
   (::user/identity request-map))
 
-(defn uri-context
-  [request-map]
-  (let [request      (jetty-request request-map)
-        scheme       (-> request (.getHttpURI) (.getScheme))
-        server-name  (Request/getServerName request)
-        server-port  (Request/getServerPort request)
-        context-path (-> request (.getContext) (.getContextPath))]
-    {:scheme       scheme
-     :server-name  server-name
-     :server-port  server-port
-     :context-path context-path
-     :uri-builder  (URIUtil/newURIBuilder scheme server-name server-port)}))
+(defprotocol HasURIContext
+  (uri-context [this]))
+
+(extend-protocol HasURIContext
+  Request
+  (uri-context [request]
+    (let [scheme       (-> request (.getHttpURI) (.getScheme))
+          server-name  (Request/getServerName request)
+          server-port  (Request/getServerPort request)
+          context-path (-> request (.getContext) (.getContextPath))]
+      {:scheme       scheme
+       :server-name  server-name
+       :server-port  server-port
+       :context-path context-path
+       :uri-builder  (URIUtil/newURIBuilder scheme server-name server-port)}))
+  Map
+  (uri-context [request-map]
+    (uri-context (jetty-request request-map))))
 
 (defn user-type
   [request-map]
