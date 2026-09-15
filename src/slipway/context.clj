@@ -52,7 +52,8 @@
 (defn base-handler
   [{::keys [path null-path-info? virtual-hosts error-handler]
     :or    {path "/"}}]
-  (log/debugf "creating context-handler, path %s, null-path-info? %s" path null-path-info?)
+  (log/debugf "creating context-handler, path %s, null-path-info? %s, virtual-hosts? %s, error-handler? %s"
+              path null-path-info? (some? virtual-hosts) (some? error-handler))
   (let [context-handler (ContextHandler.)]
     (.setContextPath context-handler path)
     (.setAllowNullPathInContext context-handler (not (false? null-path-info?)))

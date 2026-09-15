@@ -20,7 +20,8 @@
 
 (defn create-server ^Server
   [{::keys [connectors thread-pool scheduler buffer-pool error-handler] :as opts}]
-  (log/debugf "creating server with [%s] connectors" (count connectors))
+  (log/debugf "creating server with [%s] connectors, thread-pool? %s, scheduler? %s, buffer-pool? %s, error-handler? %s"
+              (count connectors) (some? thread-pool) (some? scheduler) (some? buffer-pool) (some? error-handler))
   (let [server (Server. ^ThreadPool thread-pool ^Scheduler scheduler ^ByteBufferPool buffer-pool)
         {handler-config   ::handler
          connector-config ::connector} opts]

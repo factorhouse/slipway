@@ -20,8 +20,8 @@
    :headers {"WWW-Authenticate" (metadata-url-header-value resource-url)}})
 
 (defn resource-url
-  [request-map]
-  (-> (request/uri-context request-map)
+  [request-or-request-map]
+  (-> (request/uri-context request-or-request-map)
       (:uri-builder)
       (.toString)))
 
