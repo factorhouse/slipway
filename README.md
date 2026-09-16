@@ -194,7 +194,7 @@ These errors will be handled by the configured `:slipway.context/error-handler` 
 
 #### Application level errors
 
-Your Clojure ring-handler may return any range of application level errors, this is beyond the scope of Slipway config.
+Your Clojure `:slipway.context/ring-handler` may return any range of application level errors.
 
 #### Reference error handler implementations
 
