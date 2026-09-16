@@ -90,10 +90,10 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
 ```clojure
 ;; deps.edn
-{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.10"}}
+{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.11"}}
 
 ;; project.clj
-[io.factorhouse/slipway-jetty12 "2.1.10"]
+[io.factorhouse/slipway-jetty12 "2.1.11"]
 ```
 
 ### JVM support
@@ -144,8 +144,7 @@ Slipway provides a base ContextHandler that processes a Request in the following
 ### Slipway requests
 
 Slipway decodes incoming Jetty Request objects into a Clojure map that resembles
-a [Ring](https://github.com/ring-clojure/ring)
-map with additional request, response, and authentication information,
+a [Ring](https://github.com/ring-clojure/ring) map with additional request, response, and authentication information,
 see: [src/slipway/request.clj](src/slipway/request.clj):
 
 ```Clojure
@@ -184,7 +183,8 @@ Occasionally Jetty will trigger an error at a Server level, these often include 
 lead to a [BadMessageException](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/http/BadMessageException.html).
 
 An example of a BadMessageException being triggered in Jetty is where a load-balancer makes a simple 'headerless' ping
-to your Slipway server. These pings are [interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
+to your Slipway server. These pings
+are [interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
 
 These errors will be handled by the configured `:slipway.server/error-handler`.
 

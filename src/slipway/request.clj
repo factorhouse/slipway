@@ -68,20 +68,37 @@
   (uri-context [this]))
 
 (extend-protocol HasURIContext
+
   Request
   (uri-context [request]
-    (let [scheme       (-> request (.getHttpURI) (.getScheme))
-          server-name  (Request/getServerName request)
-          server-port  (Request/getServerPort request)
-          context-path (-> request (.getContext) (.getContextPath))]
-      {:scheme       scheme
-       :server-name  server-name
-       :server-port  server-port
-       :context-path context-path
-       :uri-builder  (URIUtil/newURIBuilder scheme server-name server-port)}))
+    (let [http-uri    (.getHttpURI request)
+          scheme      (.getScheme http-uri)
+          server-name (Request/getServerName request)
+          server-port (Request/getServerPort request)]
+      {:scheme         scheme
+       :server-name    server-name
+       :server-port    server-port
+       :context-path   (-> request (.getContext) (.getContextPath))
+       :authority      (.getAuthority http-uri)
+       :path           (.getPath http-uri)
+       :canonical-path (.getCanonicalPath http-uri)
+       :decoded-path   (.getDecodedPath http-uri)
+       :param          (.getParam http-uri)
+       :query          (.getQuery http-uri)
+       :fragment       (.getFragment http-uri)
+       :uri-builder    (URIUtil/newURIBuilder scheme server-name server-port)}))
+
   Map
   (uri-context [request-map]
     (uri-context (jetty-request request-map))))
+
+(defn url
+  ([request-or-request-map]
+   (url request-or-request-map [:decoded-path]))
+  ([request-or-request-map elts]
+   (let [{:keys [uri-builder] :as uri-context} (uri-context request-or-request-map)]
+     (reduce #(.append ^StringBuilder %1 (get uri-context %2)) uri-builder elts)
+     (.toString uri-builder))))
 
 (defn user-type
   [request-map]

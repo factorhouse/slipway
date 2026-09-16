@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 
+## [2.1.11] - 2026-09-16
+
+* Improve http-uri state and provide request/url convenience function
+
 ## [2.1.10] - 2026-09-16
 
 * Introduce RFC9728 and plain JSON error handler implementations
