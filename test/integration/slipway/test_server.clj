@@ -10,7 +10,8 @@
             [slipway.security.oidc.jwt.at.verification :as oidc.jwt.at.verification]
             [slipway.sente]
             [slipway.server :as server]
-            [slipway.session :as session]))
+            [slipway.session :as session])
+  (:import (slipway.security.oauth2 RFC9728ErrorHandler)))
 
 (def state (atom nil))
 
@@ -62,6 +63,7 @@
   []
   (start! #::server{:connector     {::http/port 3000}
                     :handler       {::context/ring-handler                       (app/handler)
+                                    ::context/error-handler                      (RFC9728ErrorHandler. true)
                                     ::security/handler                           :oidc
                                     ::session/enabled?                           false
                                     ::oidc/authorization-flow                    :client-credentials

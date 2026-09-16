@@ -12,9 +12,10 @@
     * [Installation](#installation)
     * [JVM support](#jvm-support)
     * [Archived versions](#archived-versions)
+    * [Future goals](#future-goals)
 * [Eclipse Jetty](#eclipse-jetty)
     * [Slipway requests](#slipway-requests)
-* [Future goals](#future-goals)
+    * [Slipway error handling](#slipway-error-handling)
 * [Full-stack development](#full-stack-development)
 * [Example system](#example-system)
 * [Example](#example)
@@ -71,6 +72,7 @@ In a simple sense, Slipway is currently:
 * Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
 * Websockets (combining Jetty with [Sente](https://github.com/taoensso/sente)).
 * Multi-connector, multi-handler support with Virtual Hosts configuration.
+* Configurable fine-grained Server and Context exception handling.
 * Full support for Jaas, LDAP, Hash, and OIDC authentication.
 * Extended OIDC/OAuth2 support including:
     * Authorization Code Flow with refresh token redemption.
@@ -88,10 +90,10 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
 ```clojure
 ;; deps.edn
-{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.9"}}
+{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.10"}}
 
 ;; project.clj
-[io.factorhouse/slipway-jetty12 "2.1.9"]
+[io.factorhouse/slipway-jetty12 "2.1.10"]
 ```
 
 ### JVM support
@@ -102,6 +104,14 @@ Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and 
 
 Implementations supporting Jetty 9, 10, and 11 are no longer maintained and preserved in the [`archive/`](archive/)
 directory.
+
+### Future goals
+
+* Remove `org.ring-clojure/ring-core-protocols` dependency.
+* Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
+* Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
+    * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
+    * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
 
 ## Eclipse Jetty
 
@@ -151,13 +161,57 @@ Maintaining compatibility with Ring is not a goal of this project and future req
 
 Read more about our intention to remove Ring and Sente from this project [here](docs/ring-and-sente.md).
 
-## Future goals
+### Slipway error handling
 
-* Remove `org.ring-clojure/ring-core-protocols` dependency.
-* Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
-* Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
-    * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
-    * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
+Slipway anticipates three types of errors:
+
+* [Server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html) level errors
+* [Context](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) level errors
+* Application level errors
+
+Fine-grained control over exceptions can be very important, particularly if you are running a server with multiple
+contexts configured with virtual hosts. For example, imagine you are running a server with:
+
+* A WebUI context with OIDC Authentication Code flow authentication, serving HTML error pages.
+* An API context configured with OIDC Client Credentials flow, serving JSON error pages
+* Both contexts are running on a single Jetty server with virtual hosts configured
+
+In that case you will have different exception handling configured for the Server, WebUI context, and API Context.
+
+#### Server level errors
+
+Occasionally Jetty will trigger an error at a Server level, these often include HTTP Protocol and Parsing errors that
+lead to a [BadMessageException](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/http/BadMessageException.html).
+
+An example of a BadMessageException being triggered in Jetty is where a load-balancer makes a simple 'headerless' ping
+to your Slipway server. These pings are [interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
+
+These errors will be handled by the configured `:slipway.server/error-handler`.
+
+This error handler will also handle any other exception that is not caught by a Context error-handler.
+
+#### Context level errors
+
+Jetty may trigger a much wider range of errors at a Context level, these will be caught by your Server exception handler
+if you don't specifically configure a Context level error handler.
+
+Errors triggered at a Context level include anything related to Jetty security, e.g. a `401/UNAUTHORIZED`. You may also
+encounter `404/NOT_FOUND` and similar errors if you have Jetty configured to serve static resources.
+
+These errors will be handled by the configured `:slipway.context/error-handler` for each context.
+
+#### Application level errors
+
+Your Clojure `:slipway.context/ring-handler` may return any range of application level errors.
+
+#### Reference error handler implementations
+
+Slipway contains several error handler implementations:
+
+* A simple [HTML error-handler](/src/slipway/error.clj) for customizable html pages.
+* A [JSONErrorHandler](/src/slipway/handler/json_error_handler.clj) that may be useful for APIs.
+* An [RFC9728ErrorHandler](/src/slipway/security/oauth2/rfc9728/error_handler.clj) that demonstrates setting custom
+  headers on the response.
 
 ## Full-stack development
 
@@ -215,6 +269,7 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
       handler-api     {::context/path                               "/api"
                        ::context/virtual-hosts                      ["@connector-3443"]
                        ::context/ring-handler                       (app/api-handler)
+                       ::context/error-handler                      (RFC9728ErrorHandler. true)
                        ::security/handler                           :oidc
                        ::session/enabled?                           false
                        ::oidc/authorization-flow                    :client-credentials
@@ -692,7 +747,7 @@ machine-to-machine communication, but can also be used by humans or agents opera
 
 A client obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
 a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
-to configure the `slipway.security.oidc.jwks/uri`, as that endpoint provides the public certificates that are used to 
+to configure the `slipway.security.oidc.jwks/uri`, as that endpoint provides the public certificates that are used to
 validate the provenance of the bearer token.
 
 The example system in this readme demonstrates both flows for your reference.
@@ -839,7 +894,8 @@ and [the test that uses that source](test/integration/slipway/security/oidc_clie
 
 #### [ns: slipway.security.oauth2.rfc9728](src/slipway/security/oauth2/rfc9728.clj)
 
-Utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
+Utility functions to support implementation
+of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
 
 #### slipway.security.oauth2.rfc9728 configuration
 
@@ -860,6 +916,7 @@ Utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Re
          :dpop-signing-alg-values-supported          "array containing a list of the JWS alg values (from the \"JSON Web Signature and Encryption Algorithms\" registry [IANA.JOSE]) supported by the resource server for validating Demonstrating Proof of Possession (DPoP) proof JWTs [RFC9449]"
          :dpop-bound-access-tokens-required          "boolean value specifying whether the protected resource always requires the use of DPoP-bound access tokens [RFC9449]"}
 ```
+
 ## Contributions
 
 This library warmly accepts bugs and issues raised in the attached Github issue tracker.

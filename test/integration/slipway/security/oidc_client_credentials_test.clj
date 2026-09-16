@@ -21,7 +21,9 @@
            (com.nimbusds.jose.jwk RSAKey)
            (com.nimbusds.jwt JWTClaimsSet$Builder SignedJWT)
            (java.time Instant)
-           (java.util Date List)))
+           (java.util Date List)
+           (slipway.handler JSONErrorHandler)
+           (slipway.security.oauth2 RFC9728ErrorHandler)))
 
 (defn signed-jwt ^SignedJWT
   [^RSAKey rsa-key {:keys [typ jti iss aud sub iat exp]}]
@@ -52,6 +54,7 @@
       (test-server/start!
        #::server{:connector     {::http/port 3000}
                  :handler       {::context/ring-handler                       (app/handler)
+                                 ::context/error-handler                      (RFC9728ErrorHandler. false)
                                  ::security/handler                           :oidc
                                  ::session/enabled?                           false
                                  ::oidc/authorization-flow                    :client-credentials
@@ -64,10 +67,30 @@
 
       (testing "no authorization header"
 
-        (is (= 401
-               (:status (client/request {:url              "http://localhost:3000/user"
-                                         :method           "GET"
-                                         :throw-exceptions false})))))
+        (is (= {:reason-phrase         "Unauthorized"
+                :status                401
+                :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                        "Connection"       "close"
+                                        "Content-Length"   "80"
+                                        "Content-Type"     "application/json"
+                                        "Vary"             "Accept-Encoding"
+                                        ;; RFC9728ErrorHandler includes this specific WWW-Authenticate header
+                                        "WWW-Authenticate" "Bearer resource_metadata=\"http://localhost:3000/.well-known/oauth-protected-resource\""}
+                :body                  "{\n\"message\":\"Unauthorized\",\n\"url\":\"http://localhost:3000/user\",\n\"status\":\"401\"\n}"
+                :length                80
+                :cached                nil
+
+                :chunked?              false
+                :orig-content-encoding nil
+                :protocol-version      {:major 1
+                                        :minor 1
+                                        :name  "HTTP"}
+                :repeatable?           false
+                :streaming?            true
+                :trace-redirects       []}
+               (dissoc (client/request {:url              "http://localhost:3000/user"
+                                        :method           "GET"
+                                        :throw-exceptions false}) :http-client :request-time))))
 
       (testing "malformed authorization header"
 
@@ -290,6 +313,104 @@
                                                :method           "GET"
                                                :headers          {:authorization (str "Bearer " token)}
                                                :throw-exceptions false})))))))
+
+    (finally
+      (test-server/stop!))))
+
+(deftest client-credentials-flow-with-configured-oauth2-resource
+
+  (try
+
+    (let [rsa-key (oidc.jwk.rsa/jwk {})]
+
+      (test-server/start!
+       #::server{:connector     {::http/port 3000}
+                 :handler       {::context/ring-handler                       (app/handler)
+                                 ::context/error-handler                      (RFC9728ErrorHandler. "https://myhost:123" false)
+                                 ::security/handler                           :oidc
+                                 ::session/enabled?                           false
+                                 ::oidc/authorization-flow                    :client-credentials
+                                 ::oidc.jwk/source                            :rsa
+                                 ::oidc.jwk.rsa/key                           rsa-key
+                                 ::oidc.jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                                 ::oidc.jwt.at.verification/required-audience "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                 ::oidc/constraint-mappings                   app/constraints}
+                 :error-handler app/server-error-handler})
+
+      (testing "no authorization header"
+
+        (is (= {:reason-phrase         "Unauthorized"
+                :status                401
+                :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                        "Connection"       "close"
+                                        "Content-Length"   "80"
+                                        "Content-Type"     "application/json"
+                                        "Vary"             "Accept-Encoding"
+                                        ;; RFC9728ErrorHandler includes this specific WWW-Authenticate header
+                                        "WWW-Authenticate" "Bearer resource_metadata=\"https://myhost:123/.well-known/oauth-protected-resource\""}
+                :body                  "{\n\"message\":\"Unauthorized\",\n\"url\":\"http://localhost:3000/user\",\n\"status\":\"401\"\n}"
+                :length                80
+                :cached                nil
+
+                :chunked?              false
+                :orig-content-encoding nil
+                :protocol-version      {:major 1
+                                        :minor 1
+                                        :name  "HTTP"}
+                :repeatable?           false
+                :streaming?            true
+                :trace-redirects       []}
+               (dissoc (client/request {:url              "http://localhost:3000/user"
+                                        :method           "GET"
+                                        :throw-exceptions false}) :http-client :request-time)))))
+
+    (finally
+      (test-server/stop!))))
+
+(deftest client-credentials-flow-with-json-error-handler
+
+  (try
+
+    (let [rsa-key (oidc.jwk.rsa/jwk {})]
+
+      (test-server/start!
+       #::server{:connector     {::http/port 3000}
+                 :handler       {::context/ring-handler                       (app/handler)
+                                 ::context/error-handler                      (JSONErrorHandler. false)
+                                 ::security/handler                           :oidc
+                                 ::session/enabled?                           false
+                                 ::oidc/authorization-flow                    :client-credentials
+                                 ::oidc.jwk/source                            :rsa
+                                 ::oidc.jwk.rsa/key                           rsa-key
+                                 ::oidc.jwt.at.verification/required-issuer   "http://localhost:8080/realms/master"
+                                 ::oidc.jwt.at.verification/required-audience "https://slipway.io/api" ;; <-- set in keycloak-realms-with-client.json
+                                 ::oidc/constraint-mappings                   app/constraints}
+                 :error-handler app/server-error-handler})
+
+      (testing "no authorization header"
+
+        (is (= {:reason-phrase         "Unauthorized"
+                :status                401
+                :headers               {"Cache-Control"    "must-revalidate,no-cache,no-store"
+                                        "Connection"       "close"
+                                        "Content-Length"   "80"
+                                        "Content-Type"     "application/json"
+                                        "Vary"             "Accept-Encoding"}
+                :body                  "{\n\"message\":\"Unauthorized\",\n\"url\":\"http://localhost:3000/user\",\n\"status\":\"401\"\n}"
+                :length                80
+                :cached                nil
+
+                :chunked?              false
+                :orig-content-encoding nil
+                :protocol-version      {:major 1
+                                        :minor 1
+                                        :name  "HTTP"}
+                :repeatable?           false
+                :streaming?            true
+                :trace-redirects       []}
+               (dissoc (client/request {:url              "http://localhost:3000/user"
+                                        :method           "GET"
+                                        :throw-exceptions false}) :http-client :request-time)))))
 
     (finally
       (test-server/stop!))))
