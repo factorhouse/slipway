@@ -187,8 +187,8 @@ This error handler will also handle any other exception that is not caught by a 
 Jetty may trigger a much wider range of errors at a Context level, these will be caught by your Server exception handler
 if you don't specifically configure a Context level error handler.
 
-Errors triggered at a Context level include anything related to Jetty security, e.g. a 401/UNAUTHORIZED. You may also
-encounter regular 404/NOT_FOUND and similar errors if you have Jetty configured to serve static resources.
+Errors triggered at a Context level include anything related to Jetty security, e.g. a `401/UNAUTHORIZED`. You may also
+encounter regular `404/NOT_FOUND` and similar errors if you have Jetty configured to serve static resources.
 
 These errors will be handled by the configured `:slipway.context/error-handler` for each context.
 
