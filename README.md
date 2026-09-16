@@ -161,11 +161,11 @@ Slipway anticipates three types of errors:
 * [Context](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) level errors
 * Application level errors
 
-Fine-grained control over exceptions can be very important, particularly if you are running a server with multiple 
+Fine-grained control over exceptions can be very important, particularly if you are running a server with multiple
 contexts configured with virtual hosts. For example, imagine you are running a server with:
 
 * A WebUI context with OIDC Authentication Code flow authentication, serving HTML error pages.
-* An API context configured with OIDC Client Credentials flow, serving JSON error pages 
+* An API context configured with OIDC Client Credentials flow, serving JSON error pages
 * Both contexts are running on a single Jetty server with virtual hosts configured
 
 In that case you will have different exception handling configured for the Server, WebUI context, and API Context.
@@ -175,9 +175,8 @@ In that case you will have different exception handling configured for the Serve
 Occasionally Jetty will trigger an error at a Server level, these often include HTTP Protocol and Parsing errors that
 lead to a [BadMessageException](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/http/BadMessageException.html).
 
-One example of a BadMessageException being triggered in Jetty is where a load-balancer or other network infrastructure
-makes a simple 'headerless' ping to your Slipway
-server. [These pings are interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
+An example of a BadMessageException being triggered in Jetty is where a load-balancer makes a simple 'headerless' ping
+to your Slipway server. These pings are [interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
 
 These errors will be handled by the configured `:slipway.server/error-handler`.
 
@@ -203,7 +202,8 @@ Slipway contains several error handler implementations:
 
 * A simple [HTML error-handler](/src/slipway/error.clj) for customizable html pages.
 * A [JSONErrorHandler](/src/slipway/handler/json_error_handler.clj) that may be useful for APIs.
-* An [RFC9728ErrorHandler](/src/slipway/security/oauth2/rfc9728/error_handler.clj) that demonstrates setting custom headers on the response.
+* An [RFC9728ErrorHandler](/src/slipway/security/oauth2/rfc9728/error_handler.clj) that demonstrates setting custom
+  headers on the response.
 
 ## Future goals
 
