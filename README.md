@@ -12,10 +12,10 @@
     * [Installation](#installation)
     * [JVM support](#jvm-support)
     * [Archived versions](#archived-versions)
+    * [Future goals](#future-goals)
 * [Eclipse Jetty](#eclipse-jetty)
     * [Slipway requests](#slipway-requests)
     * [Slipway error handling](#slipway-error-handling)
-* [Future goals](#future-goals)
 * [Full-stack development](#full-stack-development)
 * [Example system](#example-system)
 * [Example](#example)
@@ -105,7 +105,7 @@ Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and 
 Implementations supporting Jetty 9, 10, and 11 are no longer maintained and preserved in the [`archive/`](archive/)
 directory.
 
-## Future goals
+### Future goals
 
 * Remove `org.ring-clojure/ring-core-protocols` dependency.
 * Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
