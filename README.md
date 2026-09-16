@@ -269,6 +269,7 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
       handler-api     {::context/path                               "/api"
                        ::context/virtual-hosts                      ["@connector-3443"]
                        ::context/ring-handler                       (app/api-handler)
+                       ::context/error-handler                      (RFC9728ErrorHandler. true)
                        ::security/handler                           :oidc
                        ::session/enabled?                           false
                        ::oidc/authorization-flow                    :client-credentials
