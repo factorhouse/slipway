@@ -105,6 +105,14 @@ Slipway (and Jetty 12.1) Requires Java 17+. Archived version support Java 8 and 
 Implementations supporting Jetty 9, 10, and 11 are no longer maintained and preserved in the [`archive/`](archive/)
 directory.
 
+## Future goals
+
+* Remove `org.ring-clojure/ring-core-protocols` dependency.
+* Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
+* Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
+    * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
+    * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
+
 ## Eclipse Jetty
 
 Eclipse Jetty is a widely deployed, open-source Java web server that is considered ubiquitous across enterprise Java
@@ -204,14 +212,6 @@ Slipway contains several error handler implementations:
 * A [JSONErrorHandler](/src/slipway/handler/json_error_handler.clj) that may be useful for APIs.
 * An [RFC9728ErrorHandler](/src/slipway/security/oauth2/rfc9728/error_handler.clj) that demonstrates setting custom
   headers on the response.
-
-## Future goals
-
-* Remove `org.ring-clojure/ring-core-protocols` dependency.
-* Replace Sente with a Slipway-like [Socket.IO](https://socket.io/) implementation.
-* Advance Slipway OIDC capabilities to support OAuth 2.1 by either:
-    * Contributing to Jetty (see: https://github.com/jetty/jetty.project/discussions/15611), or;
-    * Adoption and integration of [pac4j](https://www.pac4j.org/), augmenting existing Jetty-provided security model.
 
 ## Full-stack development
 
