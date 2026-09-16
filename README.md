@@ -14,6 +14,7 @@
     * [Archived versions](#archived-versions)
 * [Eclipse Jetty](#eclipse-jetty)
     * [Slipway requests](#slipway-requests)
+    * [Slipway error handling](#slipway-error-handling)
 * [Future goals](#future-goals)
 * [Full-stack development](#full-stack-development)
 * [Example system](#example-system)
@@ -71,6 +72,7 @@ In a simple sense, Slipway is currently:
 * Embedded Jetty 12.1 with native handlers (no Servlet/EE dependencies).
 * Websockets (combining Jetty with [Sente](https://github.com/taoensso/sente)).
 * Multi-connector, multi-handler support with Virtual Hosts configuration.
+* Configurable fine-grained Server and Context exception handling.
 * Full support for Jaas, LDAP, Hash, and OIDC authentication.
 * Extended OIDC/OAuth2 support including:
     * Authorization Code Flow with refresh token redemption.
@@ -88,10 +90,10 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
 ```clojure
 ;; deps.edn
-{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.9"}}
+{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.10"}}
 
 ;; project.clj
-[io.factorhouse/slipway-jetty12 "2.1.9"]
+[io.factorhouse/slipway-jetty12 "2.1.10"]
 ```
 
 ### JVM support
@@ -150,6 +152,59 @@ see: [src/slipway/request.clj](src/slipway/request.clj):
 Maintaining compatibility with Ring is not a goal of this project and future request-maps may not be 'Ring-like'.
 
 Read more about our intention to remove Ring and Sente from this project [here](docs/ring-and-sente.md).
+
+### Slipway error handling
+
+Slipway anticipates three types of errors:
+
+* [Server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html) level errors
+* [Context](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html#handler-use-context) level errors
+* Application level errors
+
+Fine-grained control over exceptions can be very important, particularly if you are running a server with multiple 
+contexts configured with virtual hosts. 
+
+For example your WebUI context might be configured with OIDC Authentication Code flow authentication and serving HTML 
+error pages, where your API context might be configured with OIDC Client Credentials flow and serving JSON error pages
+with OAuth 2.0 Protected Resource metadata in the 401/Unauthorized response headers.
+
+Both context might be running on a single Jetty server with virtual hosts configured, and in that case you will have
+different exception handling configured at the Server, WebUI context, and API Context.
+
+#### Server level errors
+
+Occasionally Jetty will trigger an error at a Server level, these often include HTTP Protocol and Parsing errors that
+lead to a [BadMessageException](https://javadoc.jetty.org/jetty-12.1/org/eclipse/jetty/http/BadMessageException.html).
+
+One example of a BadMessageException being triggered in Jetty is where a load-balancer or other network infrastructure
+makes a simple 'headerless' ping to your Slipway
+server. [These pings are interpreted as HTTP/0.9 and rejected](https://github.com/factorhouse/slipway/pull/32).
+
+These errors will be handled by the configured `:slipway.server/error-handler`.
+
+This error handler will also handle any other exception that is not caught by a Context error-handler.
+
+#### Context level errors
+
+Jetty may trigger a much wider range of errors at a Context level, these will be caught by your Server exception handler
+if you don't specifically configure a Context level error handler.
+
+Errors triggered at a Context level include anything related to Jetty security, e.g. a 401/UNAUTHORIZED. You may also
+encounter regular 404/NOT_FOUND and similar errors if you have Jetty configured to serve static resources.
+
+These errors will be handled by the configured `:slipway.context/error-handler` for each context.
+
+#### Application level errors
+
+Your Clojure ring-handler may return any range of application level errors, this is beyond the scope of Slipway config.
+
+#### Reference error handler implementations
+
+Slipway contains several error handler implementations:
+
+* A simple [HTML error-handler](/src/slipway/error.clj) for customizable html pages.
+* A [JSONErrorHandler](/src/slipway/handler/json_error_handler.clj) that may be useful for APIs.
+* An [RFC9728ErrorHandler](/src/slipway/security/oauth2/rfc9728/error_handler.clj) that demonstrates setting custom headers on the response.
 
 ## Future goals
 
@@ -692,7 +747,7 @@ machine-to-machine communication, but can also be used by humans or agents opera
 
 A client obtains an access token from their IdP and configures it to be sent to a Slipway server encoded as
 a bearer token header in the request, e.g. `Bearer: token-here`. When implementing Client Credentials it is required
-to configure the `slipway.security.oidc.jwks/uri`, as that endpoint provides the public certificates that are used to 
+to configure the `slipway.security.oidc.jwks/uri`, as that endpoint provides the public certificates that are used to
 validate the provenance of the bearer token.
 
 The example system in this readme demonstrates both flows for your reference.
@@ -839,7 +894,8 @@ and [the test that uses that source](test/integration/slipway/security/oidc_clie
 
 #### [ns: slipway.security.oauth2.rfc9728](src/slipway/security/oauth2/rfc9728.clj)
 
-Utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
+Utility functions to support implementation
+of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
 
 #### slipway.security.oauth2.rfc9728 configuration
 
@@ -860,6 +916,7 @@ Utility functions to support implementation of [RFC 9728: OAuth 2.0 Protected Re
          :dpop-signing-alg-values-supported          "array containing a list of the JWS alg values (from the \"JSON Web Signature and Encryption Algorithms\" registry [IANA.JOSE]) supported by the resource server for validating Demonstrating Proof of Possession (DPoP) proof JWTs [RFC9449]"
          :dpop-bound-access-tokens-required          "boolean value specifying whether the protected resource always requires the use of DPoP-bound access tokens [RFC9449]"}
 ```
+
 ## Contributions
 
 This library warmly accepts bugs and issues raised in the attached Github issue tracker.
