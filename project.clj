@@ -24,8 +24,10 @@
             "fmtfix" ["with-profile" "+pedantic" "cljfmt" "fix"]}
 
   :aot [slipway.handler.sync-handler
+        slipway.handler.json-error-handler
         slipway.security.oidc.jwt.processor
-        slipway.security.oidc.user.principal]
+        slipway.security.oidc.user.principal
+        slipway.security.oauth2.rfc9728.error-handler]
 
   :dependencies [[org.clojure/clojure "1.12.6"]
                  [org.clojure/tools.logging "1.3.1"]
