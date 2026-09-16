@@ -162,14 +162,13 @@ Slipway anticipates three types of errors:
 * Application level errors
 
 Fine-grained control over exceptions can be very important, particularly if you are running a server with multiple 
-contexts configured with virtual hosts. 
+contexts configured with virtual hosts. For example, imagine you are running a server with:
 
-For example your WebUI context might be configured with OIDC Authentication Code flow authentication and serving HTML 
-error pages, where your API context might be configured with OIDC Client Credentials flow and serving JSON error pages
-with OAuth 2.0 Protected Resource metadata in the 401/Unauthorized response headers.
+* A WebUI context with OIDC Authentication Code flow authentication, serving HTML error pages.
+* An API context configured with OIDC Client Credentials flow, serving JSON error pages 
+* Both contexts are running on a single Jetty server with virtual hosts configured
 
-Both context might be running on a single Jetty server with virtual hosts configured, and in that case you will have
-different exception handling configured at the Server, WebUI context, and API Context.
+In that case you will have different exception handling configured for the Server, WebUI context, and API Context.
 
 #### Server level errors
 
