@@ -47,7 +47,7 @@
    required-claims))
 
 (comment
-  #:slipway.security.oidc.jwt.at.verification{::vendor            "(optional) switch to a specific vendor verification implementation"
+  #:slipway.security.oidc.jwt.at.verification{::vendor            "(optional) switch to a specific vendor verification implementation, supported are :default, :amazon-cognito, and :okta"
                                               ::allowed-types     "a sequence of acceptable 'typ' fields, default is ['JWT' 'at+jwt' 'application/at+jwt']"
                                               ::required-issuer   "the issuer identifier for the authorization server, presented as 'iss' in the JWT"
                                               ::required-audience "a resource indicator value corresponding to an identifier the resource server expects for itself, presented as 'aud' in the JWT"

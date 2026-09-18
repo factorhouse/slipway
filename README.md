@@ -45,6 +45,7 @@
     * [ns: slipway.security.oidc.jws](#ns-slipwaysecurityoidcjws)
     * [ns: slipway.security.oidc.jwt.at.verification](#ns-slipwaysecurityoidcjwtatverification)
     * [ns: slipway.security.oidc.jwt.at.verification.cognito](#ns-slipwaysecurityoidcjwtatverificationcognito)
+    * [ns: slipway.security.oidc.jwt.at.verification.okta](#ns-slipwaysecurityoidcjwtatverificationokta)
     * [ns: slipway.security.oidc.jwk](#ns-slipwaysecurityoidcjwk)
     * [ns: slipway.security.oauth2.rfc9723](#ns-slipwaysecurityoauth2rfc9728)
 * [Contributions](#contributions)
@@ -860,7 +861,7 @@ access-token 'typ' header by defaut.
 
 ```clojure
 #:slipway.security.oidc.jwt.at.verification
-        {::vendor            "(optional) switch to a specific vendor verification implementation"
+        {::vendor            "(optional) switch to a specific vendor verification implementation, supported are :default, :amazon-cognito, and :okta"
          ::allowed-types     "a sequence of acceptable 'typ' fields, default is ['JWT' 'at+jwt' 'application/at+jwt']"
          ::required-issuer   "the issuer identifier for the authorization server, presented as 'iss' in the JWT"
          ::required-audience "a resource indicator value corresponding to an identifier the resource server expects for itself, presented as 'aud' in the JWT"
@@ -875,6 +876,16 @@ Configure by setting:
 
 ```clojure
 {:slipway.security.oidc.jwt.at.verification :amazon-cognito}
+```
+
+### [ns: slipway.security.oidc.jwt.at.verification.okta](src/slipway/security/oidc/jwt/at/verification/okta.clj)
+
+Vendor specific access-token verification provided for Okta.
+
+Configure by setting:
+
+```clojure
+{:slipway.security.oidc.jwt.at.verification :okta}
 ```
 
 ### [ns: slipway.security.oidc.jwk](src/slipway/security/oidc/jwks.clj)
