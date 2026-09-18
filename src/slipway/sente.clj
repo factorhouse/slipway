@@ -42,9 +42,9 @@
   #:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"})
 
 (defn start
-  [opts]
-  (log/debugf "starting sente server %s" opts)
-  (let [server (sente/make-channel-socket-server! (JettyServerChanAdapter.) opts)
+  [{::keys [options]}]
+  (log/debugf "starting sente server %s" options)
+  (let [server (sente/make-channel-socket-server! (JettyServerChanAdapter.) options)
         {:keys [ch-recv send-fn connected-uids ajax-get-or-ws-handshake-fn]} server]
     {:ch-recv         ch-recv
      :chsk-send!      (partial send-message connected-uids send-fn)

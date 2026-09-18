@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [2.1.11] - 2026-09-16
 
-* Improve http-uri state and provide request/url convenience function
+* Improve http-uri state and provide `request/url` convenience function
 
 ## [2.1.10] - 2026-09-16
 
