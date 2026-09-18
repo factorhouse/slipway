@@ -1,5 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
+add okta at verification implementation
+
+## [2.1.12] - 2026-09-18
+
+* Provide support for Okta vendor-specific access token validation
 
 ## [2.1.11] - 2026-09-16
 
