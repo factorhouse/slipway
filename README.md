@@ -80,6 +80,7 @@ In a simple sense, Slipway is currently:
     * Client Credentials Flow with token validation [(RFC9068)](https://www.rfc-editor.org/info/rfc9068/).
       via [Nimbus JOSE + JWT](https://connect2id.com/products/nimbus-jose-jwt).
     * OAuth 2.0 Protected Resource Metadata [(RFC9728)](https://www.rfc-editor.org/info/rfc9728/).
+    * Vendor-specific access token verification for Amazon Cognito and Okta.
 
 Predominantly Slipway is Jetty, when in doubt read the [Jetty docs](https://jetty.org/docs/).
 
