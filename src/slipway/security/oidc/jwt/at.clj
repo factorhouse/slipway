@@ -3,7 +3,8 @@
             [slipway.security.oidc.jwk.source :as jwk.source]
             [slipway.security.oidc.jws :as jws]
             [slipway.security.oidc.jwt.at.verification :as verification]
-            [slipway.security.oidc.jwt.at.verification.cognito])
+            [slipway.security.oidc.jwt.at.verification.cognito]
+            [slipway.security.oidc.jwt.at.verification.okta])
   (:import (com.nimbusds.jwt.proc DefaultJWTProcessor JWTProcessor)
            (slipway.security.oidc.jwt JWTProcessorBean)))
 
