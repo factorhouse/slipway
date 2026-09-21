@@ -4,6 +4,10 @@ add okta at verification implementation
 
 ## [2.1.13] - 2026-09-21
 
+* Add missing Okta require in access token ns
+
+## [2.1.13] - 2026-09-21
+
 * Tests and bugfix for Okta vendor-specific access token validation
 
 ## [2.1.12] - 2026-09-18
