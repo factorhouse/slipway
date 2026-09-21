@@ -92,10 +92,10 @@ Add `io.factorhouse/slipway-jetty12` to your project dependencies:
 
 ```clojure
 ;; deps.edn
-{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.12"}}
+{io.factorhouse/slipway-jetty12 {:mvn/version "2.1.13"}}
 
 ;; project.clj
-[io.factorhouse/slipway-jetty12 "2.1.12"]
+[io.factorhouse/slipway-jetty12 "2.1.13"]
 ```
 
 ### JVM support
