@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 add okta at verification implementation
 
-## [2.1.13] - 2026-09-21
+## [2.1.14] - 2026-09-21
 
 * Add missing Okta require in access token ns
 
