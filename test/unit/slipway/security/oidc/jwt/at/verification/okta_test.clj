@@ -20,7 +20,6 @@
                                                                           ::verification/allowed-types ["abc" "efg"]})
               (.getAllowedTypes)))))
 
-
 (deftest claims-verifier
 
   ;; All tests the same as default claims verification
