@@ -766,7 +766,7 @@ can be configured with a `:slipway.security.oidc/redirect-absolute-uri` which is
 authentication flow.
 
 E.g. If your public URL is `https://tools.zcorp.com/kpow`, configure your proxy to map `/kpow/` directly to your Slipway
-server, and set `slipway.security.oidc/redirect-absolute-uri` to "https://tools.zcorp.com/kpow"`.
+server, and set `slipway.security.oidc/redirect-absolute-uri` to `"https://tools.zcorp.com/kpow"`.
 
 Alternately, you could [match your context path and proxy sub-path](#match-context-path-and-proxy-sub-path).
 
