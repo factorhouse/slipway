@@ -49,9 +49,10 @@
                           :http-client                      "the (optional) HttpClient instance to use"
                           :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
                           :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
-                          :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
-                          :oidc-redirect-error              "optional page where authentication errors are redirected"
-                          :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+                          :redirect-absolute-uri            "(optional) the absolute base URI for all relative redirects"
+                          :redirect-success                 "the path where the OIDC provider redirects back to Jetty"
+                          :redirect-error                   "optional page where authentication errors are redirected"
+                          :redirect-logout                  "optional page where the user is redirected to this page after logout"
                           :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
                           :identity-service                 "a concrete Jetty IdentityService"
                           :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"})

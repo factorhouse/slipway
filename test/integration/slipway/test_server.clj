@@ -32,13 +32,13 @@
 (defn start-with-openid-auth-code!
   []
   (start! #::server{:connector     {::http/port 3000}
-                    :handler       {::context/ring-handler       (app/handler)
-                                    ::security/handler           :oidc
-                                    ::oidc/issuer                "http://localhost:8080/realms/master"
-                                    ::oidc/client-id             "slipway"
-                                    ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
-                                    ::oidc/constraint-mappings   app/constraints
-                                    ::oidc.jwt/user-id-path      ["name"]
+                    :handler       {::context/ring-handler     (app/handler)
+                                    ::security/handler         :oidc
+                                    ::oidc/issuer              "http://localhost:8080/realms/master"
+                                    ::oidc/client-id           "slipway"
+                                    ::oidc/client-secret       "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                                    ::oidc/constraint-mappings app/constraints
+                                    ::oidc.jwt/user-id-path    ["name"]
 
                                     ;; The following three parameters are derived automatically from the issuer
                                     ;; E.g. http://localhost:8080/realms/master/.well-known/openid-configuration
@@ -49,11 +49,54 @@
                                     ;::oidc/end-session-endpoint   "http://localhost:8080/realms/master/protocol/openid-connect/logout"
 
                                     ;; Optional redirect testing
-                                    ::oidc.jwt/user-roles-path   ["realm_access" "roles"] ;; defaults to /j_security_check but is configurable
-                                    ::oidc/oidc-redirect-success "/oauth2/openid/callback" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
-                                    ::oidc/oidc-redirect-error   "/login-error" ;; redirected to post-logout
+                                    ::oidc.jwt/user-roles-path ["realm_access" "roles"]
 
-                                    ::oidc/oidc-redirect-logout  "/logout-success"}
+                                    ::oidc/redirect-success    "/oauth2/openid/callback" ;; defaults to /j_security_check but is configurable
+                                    ::oidc/redirect-error      "/login-error" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
+                                    ::oidc/redirect-logout     "/logout-success"} ;; redirected to post-logout
+                    :error-handler app/server-error-handler}))
+
+;; With keycloak.sh and:
+;; > ngrok http 3000 --url https://xyz.ngrok-free.dev
+(defn start-with-openid-auth-code-proxied!
+  []
+  (start! #::server{:connector     {::http/port            3000
+                                    ::http/http-forwarded? true} ;; <---- specific http-forwarded configuration for proxied oidc
+                    :handler       {::context/ring-handler     (app/handler)
+                                    ::session/same-site        :lax
+                                    ::security/handler         :oidc
+                                    ::oidc/issuer              "http://localhost:8080/realms/master"
+                                    ::oidc/client-id           "slipway"
+                                    ::oidc/client-secret       "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                                    ::oidc/constraint-mappings app/constraints
+                                    ::oidc.jwt/user-id-path    ["name"]
+                                    ::oidc.jwt/user-roles-path ["realm_access" "roles"]
+                                    ::oidc/redirect-success    "/oauth2/openid/callback" ;; defaults to /j_security_check but is configurable
+                                    ::oidc/redirect-error      "/login-error" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
+                                    ::oidc/redirect-logout     "/logout-success"} ;; redirected to post-logout
+                    :error-handler app/server-error-handler}))
+
+;; With keycloak.sh and:
+;; Update keycloak-ream-with-clients.json
+;;  - "redirectUris": ["http://localhost:3000/*", "https://xyz.ngrok-free.dev/*"],
+;; Then
+;; > ngrok http 3000 --url https://xyz.ngrok-free.dev
+(defn start-with-openid-auth-code-absolute!
+  []
+  (start! #::server{:connector     {::http/port 3000}
+                    :handler       {::context/ring-handler       (app/handler)
+                                    ::session/same-site          :lax
+                                    ::security/handler           :oidc
+                                    ::oidc/issuer                "http://localhost:8080/realms/master"
+                                    ::oidc/client-id             "slipway"
+                                    ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
+                                    ::oidc/constraint-mappings   app/constraints
+                                    ::oidc.jwt/user-id-path      ["name"]
+                                    ::oidc.jwt/user-roles-path   ["realm_access" "roles"] ;; defaults to /j_security_check but is configurable
+                                    ::oidc/redirect-absolute-uri "https://xyz.ngrok-free.dev" ;; <---- specific absolute base URI for oidc redirects
+                                    ::oidc/redirect-success      "/oauth2/openid/callback" ;; defaults to /j_security_check but is configurable
+                                    ::oidc/redirect-error        "/login-error" ;; `http://localhost:3000/login-error?error_description_jetty=ID+Token+has+expired` when token expired mid-auth-flow
+                                    ::oidc/redirect-logout       "/logout-success"} ;; redirected to post-logout
                     :error-handler app/server-error-handler}))
 
 ;; ./scripts/keycloak.sh

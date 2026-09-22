@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 add okta at verification implementation
 
+## [2.1.15] - 2026-09-22
+
+* Support absolute base URI configuration for OIDC authorization code flow
+
 ## [2.1.14] - 2026-09-21
 
 * Add missing Okta require in access token ns

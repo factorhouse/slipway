@@ -11,7 +11,8 @@
            (java.util.function Function)
            (javax.security.auth Subject)
            (org.eclipse.jetty.security IdentityService LoginService SecurityHandler$PathMapped UserIdentity)
-           (org.eclipse.jetty.security.openid JwtDecoder OpenIdAuthenticator OpenIdConfiguration OpenIdLoginService OpenIdUserPrincipal)
+           (org.eclipse.jetty.security.authentication LoginAuthenticator)
+           (org.eclipse.jetty.security.openid JwtDecoder OpenIdAbsoluteAuthenticator OpenIdAuthenticator OpenIdConfiguration OpenIdLoginService OpenIdUserPrincipal)
            (org.eclipse.jetty.server Request)
            (slipway.security.oidc.user.principal OpenIdUserPrincipalWithState)))
 
@@ -116,10 +117,23 @@
         (reset! id-service-state identity-service))
       (^void logout [_ ^UserIdentity _user]))))
 
-(defn authenticator ^OpenIdAuthenticator
-  [config {::oidc/keys [oidc-redirect-success oidc-redirect-error oidc-redirect-logout]
-           :or         {oidc-redirect-success OpenIdAuthenticator/J_SECURITY_CHECK}}]
-  (OpenIdAuthenticator. config oidc-redirect-success oidc-redirect-error oidc-redirect-logout))
+(defn relative-authenticator ^OpenIdAuthenticator
+  [config {::oidc/keys [redirect-success redirect-error redirect-logout]
+           :or         {redirect-success OpenIdAuthenticator/J_SECURITY_CHECK}}]
+  (log/debugf "relative authenticator: %s, %s, %s" redirect-success redirect-error redirect-logout)
+  (OpenIdAuthenticator. config redirect-success redirect-error redirect-logout))
+
+(defn absolute-authenticator ^OpenIdAbsoluteAuthenticator
+  [config {::oidc/keys [redirect-absolute-uri redirect-success redirect-error redirect-logout]
+           :or         {redirect-success OpenIdAuthenticator/J_SECURITY_CHECK}}]
+  (log/debugf "absolute authenticator: %s, %s, %s, %s" redirect-absolute-uri redirect-success redirect-error redirect-logout)
+  (OpenIdAbsoluteAuthenticator. config redirect-absolute-uri redirect-success redirect-error redirect-logout))
+
+(defn authenticator ^LoginAuthenticator
+  [config {::oidc/keys [redirect-absolute-uri] :as opts}]
+  (if redirect-absolute-uri
+    (absolute-authenticator config opts)
+    (relative-authenticator config opts)))
 
 (defmethod oidc/flow-handler :default
   [{::oidc/keys [issuer] :as opts}]

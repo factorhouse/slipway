@@ -1,4 +1,4 @@
-(defproject io.factorhouse/slipway-jetty12 "2.1.14"
+(defproject io.factorhouse/slipway-jetty12 "2.1.15"
 
   :description "A Clojure Companion for Jetty 12.1"
 
@@ -44,6 +44,8 @@
                  [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.13"]]
 
   :source-paths ["src"]
+  :java-source-paths ["src-java"]
+
   :test-paths ["test/unit" "test/integration"]
 
   :javac-options ["--release" "17"])
