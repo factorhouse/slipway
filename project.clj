@@ -44,6 +44,8 @@
                  [org.eclipse.jetty.compression/jetty-compression-gzip "12.1.13"]]
 
   :source-paths ["src"]
+  :java-source-paths ["src-java"]
+
   :test-paths ["test/unit" "test/integration"]
 
   :javac-options ["--release" "17"])

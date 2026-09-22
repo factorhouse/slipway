@@ -4,7 +4,8 @@
             [slipway.security.oidc :as oidc]
             [slipway.security.oidc.authorization-code-flow :as authorization-code-flow]
             [slipway.security.oidc.jwt :as oidc.jwt]
-            [slipway.user :as user]))
+            [slipway.user :as user])
+  (:import (org.eclipse.jetty.security.openid OpenIdAbsoluteAuthenticator OpenIdAuthenticator)))
 
 (defn munge-expiry
   [m]
@@ -201,3 +202,151 @@
            "other" {"roles" ["x-role"]}}
           {"access_token" "some-access-token"}
           {}))))
+
+(deftest authenticator
+
+  (is OpenIdAuthenticator
+      (type (authorization-code-flow/authenticator nil {::oidc/redirect-success "/success"
+                                                        ::oidc/redirect-error   "/error"
+                                                        ::oidc/redirect-logout  "/logout"})))
+
+  (is OpenIdAbsoluteAuthenticator
+      (type (authorization-code-flow/authenticator nil {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                                                        ::oidc/redirect-success      "/success"
+                                                        ::oidc/redirect-error        "/error"
+                                                        ::oidc/redirect-logout       "/logout"})))
+
+  (testing "absolute redirect uri construction"
+
+    (is (= {:redirect-path                "/success"
+            :error-path                   "/error"
+            :absolute-redirect-uri        "http://zcorp.com/tools/kpow/success"
+            :absolute-error-page          "http://zcorp.com/tools/kpow/error"
+            :absolute-logout-redirect-uri "http://zcorp.com/tools/kpow/logout"}
+
+           ;; absolute trailing slash, relative starting slash
+           (let [authenticator (authorization-code-flow/absolute-authenticator
+                                nil {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                                     ::oidc/redirect-success      "/success"
+                                     ::oidc/redirect-error        "/error"
+                                     ::oidc/redirect-logout       "/logout"})]
+             {:redirect-path                (.getRedirectPath authenticator)
+              :absolute-redirect-uri        (.getAbsoluteRedirectUri authenticator)
+              :absolute-logout-redirect-uri (.getAbsoluteLogoutRedirectUri authenticator)
+              :error-path                   (.getErrorPath authenticator)
+              :absolute-error-page          (.getAbsoluteErrorPage authenticator)})
+
+           ;; absolute no trailing slash, relative starting slash
+           (let [authenticator (authorization-code-flow/absolute-authenticator
+                                nil {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow"
+                                     ::oidc/redirect-success      "/success"
+                                     ::oidc/redirect-error        "/error"
+                                     ::oidc/redirect-logout       "/logout"})]
+             {:redirect-path                (.getRedirectPath authenticator)
+              :absolute-redirect-uri        (.getAbsoluteRedirectUri authenticator)
+              :absolute-logout-redirect-uri (.getAbsoluteLogoutRedirectUri authenticator)
+              :error-path                   (.getErrorPath authenticator)
+              :absolute-error-page          (.getAbsoluteErrorPage authenticator)})
+
+           ;; no trailing or starting slashes
+           (let [authenticator (authorization-code-flow/absolute-authenticator
+                                nil {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow"
+                                     ::oidc/redirect-success      "success"
+                                     ::oidc/redirect-error        "error"
+                                     ::oidc/redirect-logout       "logout"})]
+             {:redirect-path                (.getRedirectPath authenticator)
+              :absolute-redirect-uri        (.getAbsoluteRedirectUri authenticator)
+              :absolute-logout-redirect-uri (.getAbsoluteLogoutRedirectUri authenticator)
+              :error-path                   (.getErrorPath authenticator)
+              :absolute-error-page          (.getAbsoluteErrorPage authenticator)})
+
+           ;; absolute trailing slash, no starting slashes
+           (let [authenticator (authorization-code-flow/absolute-authenticator
+                                nil {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                                     ::oidc/redirect-success      "success"
+                                     ::oidc/redirect-error        "error"
+                                     ::oidc/redirect-logout       "logout"})]
+             {:redirect-path                (.getRedirectPath authenticator)
+              :absolute-redirect-uri        (.getAbsoluteRedirectUri authenticator)
+              :absolute-logout-redirect-uri (.getAbsoluteLogoutRedirectUri authenticator)
+              :error-path                   (.getErrorPath authenticator)
+              :absolute-error-page          (.getAbsoluteErrorPage authenticator)}))))
+
+  (testing "expected behaviour in Jetty authenticator implementation"
+
+    (is (.isJSecurityCheck (authorization-code-flow/relative-authenticator
+                            nil
+                            {::oidc/redirect-success "/success"
+                             ::oidc/redirect-error   "/error"
+                             ::oidc/redirect-logout  "/logout"})
+                           "/success"))
+
+    (is (not (.isJSecurityCheck (authorization-code-flow/relative-authenticator
+                                 nil
+                                 {::oidc/redirect-success "/success"
+                                  ::oidc/redirect-error   "/error"
+                                  ::oidc/redirect-logout  "/logout"})
+                                "/error")))
+
+    (is (not (.isJSecurityCheck (authorization-code-flow/relative-authenticator
+                                 nil
+                                 {::oidc/redirect-success "/success"
+                                  ::oidc/redirect-error   "/error"
+                                  ::oidc/redirect-logout  "/logout"})
+                                "/logout")))
+
+    (is (.isErrorPage (authorization-code-flow/relative-authenticator
+                       nil
+                       {::oidc/redirect-success "/success"
+                        ::oidc/redirect-error   "/error"
+                        ::oidc/redirect-logout  "/logout"})
+                      "/error"))
+
+    (is (.isErrorPage (authorization-code-flow/relative-authenticator
+                       nil
+                       {::oidc/redirect-success "/success"
+                        ::oidc/redirect-error   "/error?one-two"
+                        ::oidc/redirect-logout  "/logout"})
+                      "/error")))
+
+  (testing "expected behaviour in Jetty authenticator implementation"
+
+    (is (.isJSecurityCheck (authorization-code-flow/absolute-authenticator
+                            nil
+                            {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                             ::oidc/redirect-success      "/success"
+                             ::oidc/redirect-error        "/error"
+                             ::oidc/redirect-logout       "/logout"})
+                           "/success"))
+
+    (is (not (.isJSecurityCheck (authorization-code-flow/absolute-authenticator
+                                 nil
+                                 {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                                  ::oidc/redirect-success      "/success"
+                                  ::oidc/redirect-error        "/error"
+                                  ::oidc/redirect-logout       "/logout"})
+                                "/error")))
+
+    (is (not (.isJSecurityCheck (authorization-code-flow/absolute-authenticator
+                                 nil
+                                 {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                                  ::oidc/redirect-success      "/success"
+                                  ::oidc/redirect-error        "/error"
+                                  ::oidc/redirect-logout       "/logout"})
+                                "/logout")))
+
+    (is (.isErrorPage (authorization-code-flow/absolute-authenticator
+                       nil
+                       {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                        ::oidc/redirect-success      "/success"
+                        ::oidc/redirect-error        "/error"
+                        ::oidc/redirect-logout       "/logout"})
+                      "/error"))
+
+    (is (.isErrorPage (authorization-code-flow/absolute-authenticator
+                       nil
+                       {::oidc/redirect-absolute-uri "http://zcorp.com/tools/kpow/"
+                        ::oidc/redirect-success      "/success"
+                        ::oidc/redirect-error        "/error?one-two"
+                        ::oidc/redirect-logout       "/logout"})
+                      "/error"))))

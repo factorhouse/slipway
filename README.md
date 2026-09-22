@@ -264,9 +264,9 @@ See [slipway.clj](src/slipway.clj) for all configuration options.
                        ::oidc/client-secret         "81a0d6ea-1468-4b20-b115-fa68a8df9cf8"
                        ::oidc.jwt/user-id-path      ["name"]
                        ::oidc.jwt/user-roles-path   ["realm_access" "roles"]
-                       ::oidc/oidc-redirect-success "/oauth2/openid/callback"
-                       ::oidc/oidc-redirect-error   "/login-error"
-                       ::oidc/oidc-redirect-logout  "/logout-success"
+                       ::oidc/redirect-success      "/oauth2/openid/callback"
+                       ::oidc/redirect-error        "/login-error"
+                       ::oidc/redirect-logout       "/logout-success"
                        ::hash/constraint-mappings   app/constraints}
       handler-api     {::context/path                               "/api"
                        ::context/virtual-hosts                      ["@connector-3443"]
@@ -637,10 +637,9 @@ function in the [slipway.security.oidc](src/slipway/security/oidc.clj) namespace
 
 #### Proxied installations and redirects
 
-Imagine you are running a Slipway-based system behind a reverse-proxy, where the proxy terminates HTTPS, and further
-your instance is running at a sub-path that it is unaware of.
+Imagine you are running a Slipway-based system behind a reverse-proxy, where the proxy terminates HTTPS.
 
-E.g. your instance thinks it is running inside a Docker container and is simply binding to:
+E.g. your instance thinks it is running inside a Docker container in K8s and is simply binding to:
 
 ```
 http://localhost:3000/
@@ -649,26 +648,44 @@ http://localhost:3000/
 Your users are accessing that system via the URL exposed by the reverse-proxy:
 
 ```
-https://devtools.zcorp.com/kafka/kpow
+https://kpow.devtools.zcorp.com/
 ```
 
-Regardless if your implementation requires relative or absolute redirect URLs, there's no way of performing that
-redirect from the Slipway server without any further context.
+This can be a problem, particularly if you are generating redirects (see: [OIDC security](#ns--slipwaysecurityoidc))
+that are used in user authentication flows.
 
-One solution is to encode the 'true' base URL in configuration to your server, in each instance, and then rely on that
-information to calculate the redirects.
-
-Jetty has a better solution, which is to implement as broad a range possible of the different request-header
-based solutions that have been implemented by teams at scale trying to solve this problem already.
-
-This solution is presented as the
-Jetty [Http Forwarded](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) module, and
-when configured Jetty will detect and use a range of standard forwarded-headers provided by the proxy to the server,
-and adjust redirects accordingly.
+Jetty provides a solution to this problem with
+the [Http Forwarded](https://jetty.org/docs/jetty/12.1/operations-guide/modules/standard.html#forwarded) module, when
+configured Jetty will detect a range of standard forwarded-headers provided by the proxy to the server and adjust
+redirects and request metadata accordingly.
 
 This can be very important specifically with Jetty Security implementations. Set the `http-forwarded?` option on
 your [slipway.connector.http](#ns-slipwayconnectorhttp) or [slipway.connector.https](#ns-slipwayconnectorhttps)
 connectors to enable the module.
+
+See a examples in [/test/integration/slipway/test_server.clj](/test/integration/slipway/test_server.clj) of Slipway
+servers configured with OIDC authentication and running behind reverse-proxies.
+
+##### Http-Forwarded limitations
+
+Jetty's HTTP Forwarded module strictly only updated the request Authority (host, port, and protocol/scheme), it does
+not modify or prepend proxy subpaths, e.g. `ProxyPass /myapp/ http://jetty:8080/`.
+
+Additionally, some proxies encode headers for a proxy subpath, for example `X-Forwarded-Prefix`. These headers also fall
+outside the scope of Jetty's HTTP Forwarded module.
+
+In the case of proxied servers running at a proxy subpath, you have a few options:
+
+###### Match context path and proxy sub-path
+
+Match the slipway `:slipway.context/path` with the proxied sub-path and then avoid having the proxy strip or inject
+paths.
+
+E.g. If your public URL is `https://tools.zcorp.com/kpow`, configure your proxy to map `/kpow/` directly to your Jetty container, and configure Jetty to serve your application at the `/kpow` context path.
+
+###### Encode a base URI for redirects
+
+See: [Authorization code flow at a proxied sub-path](#authorization-code-flow-at-a-proxied-sub-path).
 
 ### [ns: slipway.security.hash](src/slipway/security/hash.clj)
 
@@ -741,6 +758,19 @@ tokens (id, access, and refresh) for that user from the IdP token endpoint.
 When using Authorization Code Flow, you can configure only the `client-id`, `client-secret`, and `issuer`. If your IdP
 respects the `/.well-known/openid-configuration` OIDC format the rest of the configuration is discovered.
 
+##### Authorization code flow at a proxied sub-path
+
+Slipway extends Jetty's OIDC implementation with a
+custom [OpenIdAbsoluteAuthenticator](/src-java/org/eclipse/jetty/security/openid/OpenIdAbsoluteAuthenticator.java) that
+can be configured with a `:slipway.security.oidc/redirect-absolute-uri` which is applied to all redirects in the
+authentication flow.
+
+E.g. If your public URL is `https://tools.zcorp.com/kpow`, configure your proxy to map `/kpow/` directly to your Slipway
+server, and configure `{:slipway.security.oidc/redirect-absolute-uri "https://tools.zcorp.com/kpow"}` as your base
+URI.
+
+Alternately, you could [match your context path and proxy sub-path](#match-context-path-and-proxy-sub-path).
+
 #### [Client Credentials Flow](https://oauth.net/2/grant-types/client-credentials/)
 
 When configured with Client Credentials Flow, your Slipway server acts as
@@ -775,9 +805,10 @@ Authorization Code Flow and Client Credentials flow.
          :http-client                      "the (optional) HttpClient instance to use"
          :scopes                           "a sequence of ^String scopes to request, included in addition to 'openid' scope which is always requested, default is ['profile' 'email']"
          :logout-when-id-token-is-expired? "whether to logout when the ID token is expired, default false"
-         :oidc-redirect-success            "the path where the OIDC provider redirects back to Jetty"
-         :oidc-redirect-error              "optional page where authentication errors are redirected"
-         :oidc-redirect-logout             "optional page where the user is redirected to this page after logout"
+         :redirect-absolute-uri            "(optional) the absolute base URI for all relative redirects"                                 
+         :redirect-success                 "the path where the OIDC provider redirects back to Jetty"
+         :redirect-error                   "optional page where authentication errors are redirected"
+         :redirect-logout                  "optional page where the user is redirected to this page after logout"
          :identity-fn                      "optional Clojure function applied to user identity post-authentication, pre-user-identity creation"
          :identity-service                 "a concrete Jetty IdentityService"
          :constraint-mappings              "a vector of [^String pathSpec, org.eclipse.jetty.security.Constraint]"}
@@ -904,7 +935,7 @@ and [the test that uses that source](test/integration/slipway/security/oidc_clie
 #:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
 ```
 
-#### [ns: slipway.security.oauth2.rfc9728](src/slipway/security/oauth2/rfc9728.clj)
+### [ns: slipway.security.oauth2.rfc9728](src/slipway/security/oauth2/rfc9728.clj)
 
 Utility functions to support implementation
 of [RFC 9728: OAuth 2.0 Protected Resource Metadata](https://www.rfc-editor.org/info/rfc9728/).
