@@ -676,14 +676,14 @@ outside the scope of Jetty's HTTP Forwarded module.
 
 In the case of proxied servers running at a proxy subpath, you have a few options:
 
-###### Match context path and proxy sub-path
+##### Match context path and proxy sub-path
 
 Match the slipway `:slipway.context/path` with the proxied sub-path and then avoid having the proxy strip or inject
 paths.
 
 E.g. If your public URL is `https://tools.zcorp.com/kpow`, configure your proxy to map `/kpow/` directly to your Jetty container, and configure Jetty to serve your application at the `/kpow` context path.
 
-###### Encode a base URI for redirects
+##### Encode a base URI for redirects
 
 See: [Authorization code flow at a proxied sub-path](#authorization-code-flow-at-a-proxied-sub-path).
 
@@ -766,8 +766,7 @@ can be configured with a `:slipway.security.oidc/redirect-absolute-uri` which is
 authentication flow.
 
 E.g. If your public URL is `https://tools.zcorp.com/kpow`, configure your proxy to map `/kpow/` directly to your Slipway
-server, and configure `{:slipway.security.oidc/redirect-absolute-uri "https://tools.zcorp.com/kpow"}` as your base
-URI.
+server, and set `slipway.security.oidc/redirect-absolute-uri` to "https://tools.zcorp.com/kpow"`.
 
 Alternately, you could [match your context path and proxy sub-path](#match-context-path-and-proxy-sub-path).
 
