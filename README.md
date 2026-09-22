@@ -528,7 +528,10 @@ compatibilty reasons. It is not easy or safe to change that to a later version.
 
 #### slipway.sente configuration
 
-#:slipway.sente{:options "A map of options passed directly to sente/make-channel-socket-server!"}
+```clojure
+#:slipway.sente
+        {:options "A map of options passed directly to sente/make-channel-socket-server!"}
+```
 
 ### [ns: slipway.security](src/slipway/security.clj)
 
