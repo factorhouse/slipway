@@ -545,7 +545,8 @@ Configured within a handler, enables auth within that handler.
 Slipway supports `jaas`, `hash`, and `oidc` out of the box.
 
 ```clojure
-#:slipway.security{:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
+#:slipway.security
+        {:handler "identifies a SecurityHandler impl, :jaas', :hash, and :oidc supported by default"}
 ```
 
 #### Security constraints
@@ -934,7 +935,8 @@ and [the test that uses that source](test/integration/slipway/security/oidc_clie
 #### slipway.security.oidc.jwk configuration
 
 ```clojure
-#:slipway.security.oidc.jwk{::source "configurable JWT key source, leave empty for default (JWKS)"}
+#:slipway.security.oidc.jwk
+        {::source "configurable JWT key source, leave empty for default (JWKS)"}
 ```
 
 ### [ns: slipway.security.oauth2.rfc9728](src/slipway/security/oauth2/rfc9728.clj)
