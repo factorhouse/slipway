@@ -12,7 +12,7 @@
 //
 // 2026-09-22: Modified by Derek Troy-West (derek@factorhouse.io) to support absolute redirect URLs
 //
-// See original source: org.eclipse.jetty.security.openid.OpenIdAbsoluteAuthenticator
+// See original source: org.eclipse.jetty.security.openid.OpenIdAuthenticator
 
 package org.eclipse.jetty.security.openid;
 

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/)
 add okta at verification implementation
 
+## [2.1.16] - 2026-10-06
+
+* Bump to Jetty 12.1.14 and Nimbus Jose 10.10
+
 ## [2.1.15] - 2026-09-22
 
 * Support absolute base URI configuration for OIDC authorization code flow
